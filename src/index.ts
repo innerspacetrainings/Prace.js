@@ -35,7 +35,7 @@ fs.readFile(filePath, {encoding: 'utf-8'}, function (err, data) {
 
 
 app.post('/', async (req, res) => {
-    var praceApp = PraceApp.BuildPrace(req.body, config);
+    var praceApp = PraceApp.BuildPraceApp(req.body, config);
     res.send('Hello World!')
 });
 

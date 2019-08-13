@@ -28,18 +28,19 @@ class ConventionEvaluator {
 
     GetTicketInformation(): TicketInformation | null {
         const match = this.title.match("\\w*\\/(\\w*)\\s(\\d*)");
-        if (match != null && match.length > 1) {
-            let ticketNumber: Number = -1;
-            let ticketKey: string | null = null;
-            for (let _i = 0; _i < match.length; _i++) {
-                const currentValue: string = match[_i];
+        if (match !== null && match.length > 1) {
+            let ticketNumber: number = -1;
+            let ticketKey: string = null;
+            for (const i in match) {
+                const currentValue: string | any = match[i];
+                console.log(typeof currentValue, currentValue);
                 if (Number(currentValue) > 0) {
                     ticketNumber = +currentValue;
-                } else if (currentValue !== this.title) {
+                } else if ((currentValue instanceof String) && (currentValue !== this.title)) {
                     ticketKey = currentValue.toUpperCase();
                 }
             }
-            if (ticketNumber !== -1 && ticketKey != null)
+            if (ticketNumber !== -1 && ticketKey !== null)
                 return {ticketKey, ticketNumber};
         }
         return null;
@@ -51,4 +52,5 @@ interface TicketInformation {
     ticketNumber: Number
 }
 
-export {ConventionEvaluator};
+// export {ConventionEvaluator};
+export default ConventionEvaluator;

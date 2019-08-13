@@ -4,7 +4,7 @@ import {GithubApi} from "./GithubApi";
 class PraceApp {
     private readonly githubApi: IGithubApi;
 
-    public static BuildPrace(reqBody: any, config: IConfig): PraceApp {
+    public static BuildPraceApp(reqBody: any, config: IConfig): PraceApp {
         const pr = reqBody as PullRequestData;
 
         if (pr === null || pr.pull_request === null)
@@ -22,12 +22,9 @@ class PraceApp {
     }
 
     public async GetPullRequestData(): Promise<{ prTitle: string, prExpression: string }> {
-        const data = await this.githubApi.GetTemplateConvention(this.prData.repository.name, this.prData.repository.full_name.split('/')[0], this.prData.pull_request.head.ref);
-        const pullRequest = await this.githubApi.GetPullRequest(this.prData.repository.id, this.prData.number);
+        const regexTemaplate = await this.githubApi.GetTemplateConvention(this.prData.repository.name, this.prData.repository.full_name.split('/')[0], this.prData.pull_request.head.ref);
 
-        const branchName = this.prData.pull_request.head.ref;
-
-        return {prTitle: "hola", prExpression: "fdsa"};
+        return {prTitle: this.prData.pull_request.title, prExpression: regexTemaplate};
     }
 
 }
