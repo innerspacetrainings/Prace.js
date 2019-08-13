@@ -15,7 +15,7 @@ tmp
 
 
 # Build
-lib/
+dist/
 
 # Coverage reports
 coverage

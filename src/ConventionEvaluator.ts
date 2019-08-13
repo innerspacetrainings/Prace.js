@@ -26,12 +26,12 @@ class ConventionEvaluator {
     }
 
 
-    GetTicketInformation(): TicketInformation {
+    GetTicketInformation(): TicketInformation | null {
         const match = this.title.match("\\w*\\/(\\w*)\\s(\\d*)");
         if (match != null && match.length > 1) {
             let ticketNumber: Number = -1;
-            let ticketKey: string = null;
-            for (var _i = 0; _i < match.length; _i++) {
+            let ticketKey: string | null = null;
+            for (let _i = 0; _i < match.length; _i++) {
                 const currentValue: string = match[_i];
                 if (Number(currentValue) > 0) {
                     ticketNumber = +currentValue;

@@ -3,12 +3,16 @@
     "lib": ["es2017"],
     "module": "commonjs",
     "noImplicitReturns": true,
-    "outDir": "lib",
     "sourceMap": true,
-    "target": "es2017"
+    "strict": true,
+    "declaration": true,
+    "esModuleInterop": true,
+    "target": "es2017",
+    "declarationDir": "./dist",
+    "outDir": "./dist",
+    "typeRoots": ["node_modules/@types"]
   },
   "compileOnSave": true,
-  "include": [
-    "src"
-  ]
+  "include": ["src/**/*.ts"],
+  "exclude": ["node_modues"]
 }
