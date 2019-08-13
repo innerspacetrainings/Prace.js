@@ -2,17 +2,27 @@
   "compilerOptions": {
     "lib": ["es2017"],
     "module": "commonjs",
+    "moduleResolution": "node",
     "noImplicitReturns": true,
     "sourceMap": true,
-    "strict": true,
-    "declaration": true,
+    //    "strict": true,
+    //    "declaration": true,
     "esModuleInterop": true,
     "target": "es2017",
-    "declarationDir": "./dist",
+    "allowSyntheticDefaultImports": true,
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+    //    "declarationDir": "./dist",
     "outDir": "./dist",
-    "typeRoots": ["node_modules/@types"]
+    "typeRoots": [
+      "node_modules/@types"
+    ]
   },
-  "compileOnSave": true,
-  "include": ["src/**/*.ts"],
-  "exclude": ["node_modues"]
+  "include": [
+    "src/**/*"
+  ],
+  "exclude": [
+    "node_modules",
+    "**/*.spec.ts"
+  ]
 }
