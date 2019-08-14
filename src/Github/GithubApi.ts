@@ -1,17 +1,13 @@
 import {App} from '@octokit/app';
-import Octokit, {
-    ChecksCreateParamsOutput,
-    ChecksCreateParamsOutputAnnotations,
-    ChecksCreateParamsOutputImages
-} from "@octokit/rest";
+import Octokit, {ChecksCreateParamsOutput} from "@octokit/rest";
 import {IConfig} from '../Config/IConfig';
 import rp from 'request-promise';
-import {TitleEvaluationResult, TitleResult} from "../Prace";
+import {TitleEvaluationResult, TitleResult} from "../Utils";
 import IGithubApi, {RepoInfo} from "./IGithubApi";
 
 class GithubApi implements IGithubApi {
     private octokit: Octokit | null = null;
-    private authorization: string = null;
+    private authorization: string = '';
 
     constructor(readonly installationId: number, readonly config: IConfig) {
     }
@@ -25,12 +21,7 @@ class GithubApi implements IGithubApi {
         const installationAccessAccessToken = await app.getInstallationAccessToken({installationId: this.installationId});
         this.octokit = new Octokit({
             async auth() {
-                try {
-                    return `token ${installationAccessAccessToken}`;
-                } catch (e) {
-                    console.error(e);
-                    return null;
-                }
+                return `token ${installationAccessAccessToken}`;
             }
         });
 
@@ -39,7 +30,7 @@ class GithubApi implements IGithubApi {
         return this.octokit;
     }
 
-   public async GetTemplateConvention(repoInfo: RepoInfo, branchName: string): Promise<string> | null {
+    public async GetTemplateConvention(repoInfo: RepoInfo, branchName: string): Promise<string | null> {
         const octokit = await this.GetOctokit();
         const {owner, repo} = repoInfo;
         try {

@@ -1,7 +1,7 @@
-import {TitleEvaluationResult} from "../Prace";
+import {TitleEvaluationResult} from "../Utils";
 
 interface IGithubApi {
-    GetTemplateConvention(repoInfo: RepoInfo, branchName: string): Promise<string> | null;
+    GetTemplateConvention(repoInfo: RepoInfo, branchName: string): Promise<string | null>;
 
     SetCheckStatus(repoInfo: RepoInfo, pullRequestNumber: number, result: TitleEvaluationResult): Promise<void>;
 }

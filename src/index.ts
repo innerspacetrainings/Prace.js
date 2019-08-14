@@ -1,5 +1,5 @@
 import express from 'express';
-import {PraceApp} from "./PraceApp";
+import Prace from "./Prace";
 import {IConfig} from "./Config/IConfig";
 import fs from 'fs';
 import path from 'path';
@@ -21,7 +21,7 @@ class Config implements IConfig {
     }
 }
 
-let config: Config = null;
+let config: Config | null = null;
 
 const filePath = path.join(__dirname, '../appData.pem');
 fs.readFile(filePath, {encoding: 'utf-8'}, function (err, data) {
@@ -35,7 +35,13 @@ fs.readFile(filePath, {encoding: 'utf-8'}, function (err, data) {
 
 
 app.post('/', async (req, res) => {
-    var praceApp = PraceApp.Build(req.body, config);
+    if(config) {
+        const praceApp = Prace.Build(req.body, config);
+        if (praceApp) {
+            const checkExecution = await praceApp.ExecuteCheck();
+            console.log(checkExecution);
+        }
+    }
     res.send('Hello World!')
 });
 

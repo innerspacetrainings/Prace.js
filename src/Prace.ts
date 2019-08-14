@@ -1,34 +1,73 @@
-import ConventionEvaluator from "./ConventionEvaluator";
+import {IConfig} from "./Config/IConfig";
+import EvaluateTitle, {TitleEvaluationResult, TitleResult} from "./Utils";
+import IGithubApi, {RepoInfo} from "./Github/IGithubApi";
+import GithubApi from "./Github/GithubApi";
 
-export interface TitleEvaluationResult {
-    resultType: TitleResult;
-    exampleMessage?: string;
-}
+class Prace {
+    private readonly githubApi: IGithubApi;
+    private readonly repoInfo: RepoInfo;
 
-export enum TitleResult {
-    Correct,
-    Invalid,
-    InvalidRegex
-}
+    public static Build(pr: PullRequestData, config: IConfig): Prace | null {
+        if (pr === null || pr.pull_request === null)
+            return null;
+        else if (pr.action === "closed") {
+            console.log(`Ignoring action ${pr.action}`);
+            return null;
+        }
 
-export default function EvaluateTitle(result: { prTitle: string, prExpression: string }): TitleEvaluationResult {
-    const {prTitle, prExpression} = result;
-    const evaluator = new ConventionEvaluator(prTitle, prExpression);
-
-    if (!evaluator.IsValidRegex()) {
-        return {resultType: TitleResult.InvalidRegex, exampleMessage: 'Invalid Regex'};
-    } else if (evaluator.TitleMatches()) {
-        return {resultType: TitleResult.Correct};
+        return new Prace(pr, config);
     }
 
-    const ticketInformation = evaluator.GetTicketInformation();
-    if (ticketInformation) {
-        const {ticketKey, ticketNumber} = ticketInformation;
-        const exampleTitle = `[${ticketKey}-${ticketNumber}] Description of ticket`;
-        if (new ConventionEvaluator(exampleTitle, prExpression).TitleMatches()) {
-            return {resultType: TitleResult.Invalid, exampleMessage: `Example Title: ${exampleTitle}`};
+    private constructor(private readonly prData: PullRequestData, config: IConfig) {
+        this.githubApi = new GithubApi(prData.installation.id, config);
+        this.repoInfo = {repo: prData.repository.name, owner: prData.repository.full_name.split('/')[0]};
+    }
+
+    public async GetPullRequestData(): Promise<{ prTitle: string, prExpression: string } | null> {
+        const regexTemplate = await this.githubApi.GetTemplateConvention(this.repoInfo, this.prData.pull_request.head.ref);
+
+        if (regexTemplate)
+            return {prTitle: this.prData.pull_request.title, prExpression: regexTemplate};
+        return null;
+    }
+
+    public async ExecuteCheck(): Promise<CheckResult> {
+        const data = await this.GetPullRequestData();
+        if (data === null) {
+            return CheckResult.NoValues;
+        }
+
+        const evaluation: TitleEvaluationResult = EvaluateTitle(data);
+
+        await this.githubApi.SetCheckStatus(this.repoInfo, this.prData.number, evaluation);
+        return evaluation.resultType === TitleResult.Correct ? CheckResult.CorrectTitle : CheckResult.HadError;
+    }
+}
+
+export enum CheckResult {
+    NoValues,
+    HadError,
+    CorrectTitle
+}
+
+export interface PullRequestData {
+    action: string;
+    number: number;
+    pull_request: {
+        title: string,
+        head: {
+            label: string;
+            ref: string;
         }
     }
-
-    return {resultType: TitleResult.Invalid};
+    repository: {
+        id: number;
+        name: string;
+        full_name: string;
+    }
+    installation: {
+        id: number;
+    }
 }
+
+export default Prace;
