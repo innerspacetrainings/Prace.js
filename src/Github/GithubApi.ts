@@ -9,7 +9,7 @@ class GithubApi implements IGithubApi {
     private octokit: Octokit | null = null;
     private authorization: string = '';
 
-    constructor(readonly installationId: number, readonly config: IConfig) {
+    constructor(readonly installationId: number, readonly config: IConfig, private readonly appName: string) {
     }
 
     async GetOctokit(): Promise<Octokit> {
@@ -42,7 +42,7 @@ class GithubApi implements IGithubApi {
             });
 
             if (configFile === null || configFile.data === null) {
-                console.log('No prace file found');
+                console.log('No .prace file found');
                 return null;
             }
 
@@ -58,8 +58,8 @@ class GithubApi implements IGithubApi {
             };
             const response = await rp(options);
 
-            if (response instanceof String) {
-                return response as string;
+            if (typeof response === 'string') {
+                return response.replace(/^\s+|\s+$/g, '');
             }
             console.log(`Incorrect type: ${typeof response}`, response)
         } catch (e) {
@@ -75,19 +75,23 @@ class GithubApi implements IGithubApi {
 
         const pullRequest = await octokit.pulls.get({owner, repo, pull_number: pullRequestNumber});
 
+        const checksCall = await octokit.checks.listForRef({
+            owner,
+            repo,
+            ref: pullRequest.data.head.sha,
+            check_name: this.appName
+        });
+        const lastCheck = checksCall.data.check_runs.find(ch => ch.id === this.config.GitHubAppId);
 
-        const checkGet = await octokit.checks.get({owner, repo, check_run_id: this.config.GitHubAppId});
-        let check: { id: number };
-        const checkOutput = GithubApi.GenerateCheckRunOutput(repoInfo, result, pullRequest.data);
-        if (checkGet.data) {
-            check = checkGet.data;
-            await octokit.checks.update(Object.assign(checkOutput, {check_run_id: check.id}));
+        const checkOutput = this.GenerateCheckRunOutput(repoInfo, result, pullRequest.data);
+        if (lastCheck) {
+            await octokit.checks.update(Object.assign(checkOutput, {check_run_id: lastCheck.id}));
         } else {
             await octokit.checks.create(checkOutput);
         }
     }
 
-    private static GenerateCheckRunOutput(repoInfo: RepoInfo, result: TitleEvaluationResult, PR: Octokit.PullsGetResponse): CheckParams {
+    private GenerateCheckRunOutput(repoInfo: RepoInfo, result: TitleEvaluationResult, PR: Octokit.PullsGetResponse): CheckParams {
         let title: string, summary: string;
         switch (result.resultType) {
             case TitleResult.Correct:
@@ -112,7 +116,7 @@ class GithubApi implements IGithubApi {
         return {
             owner: owner,
             repo: repo,
-            name: "PRACE",
+            name: this.appName,
             head_sha: PR.head.sha,
             status: "completed",
             started_at: now.toISOString(),

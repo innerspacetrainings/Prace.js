@@ -19,7 +19,7 @@ class Prace {
     }
 
     private constructor(private readonly prData: PullRequestData, config: IConfig) {
-        this.githubApi = new GithubApi(prData.installation.id, config);
+        this.githubApi = new GithubApi(prData.installation.id, config, "PRACE");
         this.repoInfo = {repo: prData.repository.name, owner: prData.repository.full_name.split('/')[0]};
     }
 
@@ -29,6 +29,10 @@ class Prace {
         if (regexTemplate)
             return {prTitle: this.prData.pull_request.title, prExpression: regexTemplate};
         return null;
+    }
+
+    public async SetCheckStatus(repoInfo: RepoInfo, pullRequestNumber: number, result: TitleEvaluationResult): Promise<void> {
+        await this.githubApi.SetCheckStatus(repoInfo, pullRequestNumber, result);
     }
 
     public async ExecuteCheck(): Promise<CheckResult> {
