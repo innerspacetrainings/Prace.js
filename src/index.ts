@@ -35,7 +35,7 @@ fs.readFile(filePath, {encoding: 'utf-8'}, function (err, data) {
 
 
 app.post('/', async (req, res) => {
-    if(config) {
+    if (config) {
         const praceApp = Prace.Build(req.body, config);
         if (praceApp) {
             const checkExecution = await praceApp.ExecuteCheck();
