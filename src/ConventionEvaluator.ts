@@ -1,12 +1,13 @@
-class ConventionEvaluator {
-    constructor(readonly title: string, readonly regexEvaluator: string) {
+/** Logic that analyze a title and a regex to see if it complies */
+export default class ConventionEvaluator {
+    constructor(private readonly title: string, private readonly regularExpression: string) {
     }
 
-    IsValidRegex(): boolean {
-        if (this.regexEvaluator == null || this.regexEvaluator.length === 0) return false;
+    public IsValidRegex(): boolean {
+        if (this.regularExpression == null || this.regularExpression.length === 0) return false;
 
-        let parts = this.regexEvaluator.split('/'),
-            regex = this.regexEvaluator,
+        let parts = this.regularExpression.split('/'),
+            regex = this.regularExpression,
             options = "";
         if (parts.length > 1) {
             regex = parts[1];
@@ -20,12 +21,17 @@ class ConventionEvaluator {
         }
     }
 
-    TitleMatches(): boolean {
-        const regexp = new RegExp(this.regexEvaluator);
+    /** Analyze the regular expression to the given title */
+    public TitleMatches(): boolean {
+        const regexp = new RegExp(this.regularExpression);
         return regexp.test(this.title);
     }
 
-
+    /**
+     * Extract the ticket information. Only work for titles with parameters feature/ab 123
+     * whose regex search for cases as [AB-123] Example
+     * @returns Object with the ticket number and the ticket key
+     */
     GetTicketInformation(): TicketInformation | null {
         const match = this.title.match("\\w*\\/(\\w*)\\s(\\d*)");
         if (match !== null && match.length > 1) {
@@ -50,6 +56,3 @@ interface TicketInformation {
     ticketKey: String,
     ticketNumber: Number
 }
-
-// export {ConventionEvaluator};
-export default ConventionEvaluator;

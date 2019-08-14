@@ -1,5 +1,5 @@
 {
-  "name": "prace-lib",
+  "name": "prace",
   "version": "1.0.0",
   "description": "Prace lib for github app",
   "main": "lib/index.js",
@@ -8,7 +8,8 @@
     "lint": "./node_modules/.bin/tslint -p tsconfig.json",
     "build": "./node_modules/.bin/tsc",
     "start": "npm run build && node dist/index.js",
-    "test": "mocha -r ts-node/register src/**/*.spec.ts"
+    "test": "mocha -r ts-node/register src/**/*.spec.ts",
+    "typedocs": "typedoc"
   },
   "engines": {
     "node": "8"
@@ -33,6 +34,7 @@
     "mocha": "^6.2.0",
     "ts-node": "^8.3.0",
     "tslint": "^5.8.0",
+    "typedoc": "^0.15.0",
     "typescript": "^3.5.3"
   }
 }

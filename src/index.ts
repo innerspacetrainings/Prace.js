@@ -1,6 +1,6 @@
 import express from 'express';
 import Prace from "./Prace";
-import {IConfig} from "./Config/IConfig";
+import IConfig from "./Config/IConfig";
 import fs from 'fs';
 import path from 'path';
 
@@ -16,8 +16,8 @@ class Config implements IConfig {
 
     GitHubAppId: number = 38357;
 
-    GetParsedPrivateKey() {
-        return this.privateKey;
+    GetParsedPrivateKey() : Promise<string> {
+        return Promise.resolve(this.privateKey);
     }
 }
 
@@ -26,7 +26,7 @@ let config: Config | null = null;
 const filePath = path.join(__dirname, '../appData.pem');
 fs.readFile(filePath, {encoding: 'utf-8'}, function (err, data) {
     if (!err) {
-        console.log('received data: ' + data);
+        console.log('received data');
         config = new Config(data);
     } else {
         console.log(err);
@@ -43,6 +43,10 @@ app.post('/', async (req, res) => {
         }
     }
     res.send('Hello World!')
+});
+
+app.get('/', (req, res) =>{
+    res.send('HOLA');
 });
 
 app.listen(port, () => console.log(`Example app listening on port ${port}!`));

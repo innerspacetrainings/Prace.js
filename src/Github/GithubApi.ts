@@ -1,6 +1,6 @@
 import {App} from '@octokit/app';
 import Octokit, {ChecksCreateParamsOutput} from "@octokit/rest";
-import {IConfig} from '../Config/IConfig';
+import IConfig from '../Config/IConfig';
 import rp from 'request-promise';
 import {TitleEvaluationResult, TitleResult} from "../Utils";
 import IGithubApi, {RepoInfo} from "./IGithubApi";
@@ -12,10 +12,10 @@ class GithubApi implements IGithubApi {
     constructor(readonly installationId: number, readonly config: IConfig, private readonly appName: string) {
     }
 
-    async GetOctokit(): Promise<Octokit> {
+    private async GetOctokit(): Promise<Octokit> {
         if (this.octokit !== null) return this.octokit;
 
-        const ppk = this.config.GetParsedPrivateKey();
+        const ppk = await this.config.GetParsedPrivateKey();
 
         const app = new App({id: this.config.GitHubAppId, privateKey: ppk});
         const installationAccessAccessToken = await app.getInstallationAccessToken({installationId: this.installationId});
@@ -69,7 +69,7 @@ class GithubApi implements IGithubApi {
     }
 
 
-    async SetCheckStatus(repoInfo: RepoInfo, pullRequestNumber: number, result: TitleEvaluationResult): Promise<void> {
+    public async SetCheckStatus(repoInfo: RepoInfo, pullRequestNumber: number, result: TitleEvaluationResult): Promise<void> {
         const octokit = await this.GetOctokit();
         const {owner, repo} = repoInfo;
 

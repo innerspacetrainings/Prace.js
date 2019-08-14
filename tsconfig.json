@@ -9,7 +9,7 @@
     "noUnusedLocals": true,
     "forceConsistentCasingInFileNames": true,
     "sourceMap": true,
-//    "strict": true,
+    //    "strict": true,
     "declaration": true,
     "esModuleInterop": true,
     "target": "es2017",
@@ -28,5 +28,16 @@
   "exclude": [
     "node_modules",
     "**/*.spec.ts"
-  ]
+  ],
+  "typedocOptions": {
+    "mode": "file",
+    "out": "docs",
+    "theme": "minimal",
+    "excludePrivate": true,
+    "excludeNotExported": true,
+    "excludeExternals": true,
+    "media": "media",
+    "name": "Prace.js",
+    "categorizeByGroup": false
+  }
 }

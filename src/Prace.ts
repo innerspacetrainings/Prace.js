@@ -1,12 +1,19 @@
-import {IConfig} from "./Config/IConfig";
-import EvaluateTitle, {TitleEvaluationResult, TitleResult} from "./Utils";
+import IConfig from "./Config/IConfig";
+import EvaluateTitle, {PullRequestTitleAndRegex, TitleEvaluationResult, TitleResult} from "./Utils";
 import IGithubApi, {RepoInfo} from "./Github/IGithubApi";
 import GithubApi from "./Github/GithubApi";
 
-class Prace {
+/** Github App Entry point. This class manage the logic of the system */
+export default class Prace {
     private readonly githubApi: IGithubApi;
     private readonly repoInfo: RepoInfo;
 
+    /**
+     * Builds the Prace app object. If data is null or closed, it returns a null object instead
+     * @param pr Pull request data that should be in the body of the github app post.
+     * @param config Config file with the application information and keys
+     * @constructor
+     */
     public static Build(pr: PullRequestData, config: IConfig): Prace | null {
         if (pr === null || pr.pull_request === null)
             return null;
@@ -23,18 +30,31 @@ class Prace {
         this.repoInfo = {repo: prData.repository.name, owner: prData.repository.full_name.split('/')[0]};
     }
 
-    public async GetPullRequestData(): Promise<{ prTitle: string, prExpression: string } | null> {
+    /**
+     * Gets the request data.
+     * @returns Object with the title of the pull request and the regular expresion.
+     * Will be null if there is no configuration file in the project
+     */
+    public async GetPullRequestData(): Promise<PullRequestTitleAndRegex | null> {
         const regexTemplate = await this.githubApi.GetTemplateConvention(this.repoInfo, this.prData.pull_request.head.ref);
 
         if (regexTemplate)
-            return {prTitle: this.prData.pull_request.title, prExpression: regexTemplate};
+            return {title: this.prData.pull_request.title, regularExpression: regexTemplate};
         return null;
     }
 
+    /**
+     * Set the status of the check. Can be successful or incorrect with a example message
+     * @param repoInfo Name and owner of the repo
+     * @param result Type of result and example message for incorrect cases
+     */
     public async SetCheckStatus(repoInfo: RepoInfo, pullRequestNumber: number, result: TitleEvaluationResult): Promise<void> {
         await this.githubApi.SetCheckStatus(repoInfo, pullRequestNumber, result);
     }
 
+    /** Run automatic check to the pull request. Let Prace handle the config file and the result
+     * @returns Enum with the kind of result that it had
+     */
     public async ExecuteCheck(): Promise<CheckResult> {
         const data = await this.GetPullRequestData();
         if (data === null) {
@@ -48,12 +68,14 @@ class Prace {
     }
 }
 
+/** Result of the check execution */
 export enum CheckResult {
-    NoValues,
-    HadError,
-    CorrectTitle
+    NoValues = "No values",
+    HadError = "Had error",
+    CorrectTitle = "Correct Title"
 }
 
+/** Object send by the PullRequest webhook. This are the values that this object must have */
 export interface PullRequestData {
     action: string;
     number: number;
@@ -73,5 +95,3 @@ export interface PullRequestData {
         id: number;
     }
 }
-
-export default Prace;
