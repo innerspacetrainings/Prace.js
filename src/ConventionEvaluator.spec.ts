@@ -24,8 +24,12 @@ describe('Convention Evaluator test', () => {
         const evaluator = new ConventionEvaluator("feature/blob 123", DefaultValidPattern);
         const ticketInformation = evaluator.GetTicketInformation();
         expect(ticketInformation).not.to.be.null;
-        expect(ticketInformation.ticketNumber).to.equal(123);
-        expect(ticketInformation.ticketKey).to.equal("BLOB");
+        if (ticketInformation) {
+            expect(ticketInformation.ticketNumber).to.equal(123);
+            expect(ticketInformation.ticketKey).to.equal("BLOB");
+        } else {
+            expect.fail();
+        }
     });
 
     it('Should return null when getting number from invalid non standard title', () => {

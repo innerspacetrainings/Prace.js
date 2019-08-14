@@ -1,7 +1,13 @@
 import {App} from '@octokit/app';
-import Octokit from "@octokit/rest";
+import Octokit, {
+    ChecksCreateParamsOutput,
+    ChecksCreateParamsOutputAnnotations,
+    ChecksCreateParamsOutputImages
+} from "@octokit/rest";
 import {IConfig} from '../Config/IConfig';
 import rp from 'request-promise';
+import {TitleEvaluationResult, TitleResult} from "../Prace";
+import IGithubApi, {RepoInfo} from "./IGithubApi";
 
 class GithubApi implements IGithubApi {
     private octokit: Octokit | null = null;
@@ -33,12 +39,13 @@ class GithubApi implements IGithubApi {
         return this.octokit;
     }
 
-    async GetTemplateConvention(repoName: string, repoOwner: string, branchName: string): Promise<string> | null {
+   public async GetTemplateConvention(repoInfo: RepoInfo, branchName: string): Promise<string> | null {
         const octokit = await this.GetOctokit();
+        const {owner, repo} = repoInfo;
         try {
             const configFile = await octokit.repos.getContents({
-                owner: repoOwner,
-                repo: repoName,
+                owner,
+                repo,
                 path: '.prace',
                 ref: branchName
             });
@@ -71,14 +78,73 @@ class GithubApi implements IGithubApi {
     }
 
 
-    SetCheckStatus(repositoryId: number, pullRequestNumber: number, correctTitle: boolean, message?: string): Promise<string> {
-        return undefined;
+    async SetCheckStatus(repoInfo: RepoInfo, pullRequestNumber: number, result: TitleEvaluationResult): Promise<void> {
+        const octokit = await this.GetOctokit();
+        const {owner, repo} = repoInfo;
+
+        const pullRequest = await octokit.pulls.get({owner, repo, pull_number: pullRequestNumber});
+
+
+        const checkGet = await octokit.checks.get({owner, repo, check_run_id: this.config.GitHubAppId});
+        let check: { id: number };
+        const checkOutput = GithubApi.GenerateCheckRunOutput(repoInfo, result, pullRequest.data);
+        if (checkGet.data) {
+            check = checkGet.data;
+            await octokit.checks.update(Object.assign(checkOutput, {check_run_id: check.id}));
+        } else {
+            await octokit.checks.create(checkOutput);
+        }
     }
 
-    GetPullRequest(repositoryId: number, prNumber: number): Promise<string> | null {
-        return undefined;
-    }
+    private static GenerateCheckRunOutput(repoInfo: RepoInfo, result: TitleEvaluationResult, PR: Octokit.PullsGetResponse): CheckParams {
+        let title: string, summary: string;
+        switch (result.resultType) {
+            case TitleResult.Correct:
+                title = 'Correct title';
+                summary = 'PR Title fills the correct required conventions.';
+                break;
+            case TitleResult.Invalid:
+                title = 'Incorrect title';
+                summary = `Title has incorrect form. Be sure to keep the required conventions\n${result.exampleMessage}`;
+                break;
+            case TitleResult.InvalidRegex:
+                title = 'Invalid regex';
+                summary = 'Configuration file is invalid. Be sure to set the correct config file.';
+                break;
+            default:
+                throw new Error('Invalid result type')
+        }
 
+        const {owner, repo} = repoInfo;
+
+        const now = new Date();
+        return {
+            owner: owner,
+            repo: repo,
+            name: "PRACE",
+            head_sha: PR.head.sha,
+            status: "completed",
+            started_at: now.toISOString(),
+            conclusion: result.resultType === TitleResult.Correct ? 'success' : "failure",
+            completed_at: now.toISOString(),
+            output: {title, summary}
+        };
+    }
+}
+
+interface CheckParams {
+    owner: string;
+    repo: string;
+    name: string;
+    head_sha: string;
+    details_url?: string;
+    status?: "queued" | "in_progress" | "completed";
+    started_at?: string;
+    conclusion?:
+        | "success"
+        | "failure";
+    completed_at?: string;
+    output?: ChecksCreateParamsOutput;
 }
 
 interface FileInformation {
@@ -89,4 +155,4 @@ interface FileInformation {
     git_url: string;
 }
 
-export {GithubApi};
+export default GithubApi;

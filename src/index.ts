@@ -1,5 +1,5 @@
 import express from 'express';
-import {PraceApp} from "./Github/PraceApp";
+import {PraceApp} from "./PraceApp";
 import {IConfig} from "./Config/IConfig";
 import fs from 'fs';
 import path from 'path';
@@ -35,7 +35,7 @@ fs.readFile(filePath, {encoding: 'utf-8'}, function (err, data) {
 
 
 app.post('/', async (req, res) => {
-    var praceApp = PraceApp.BuildPraceApp(req.body, config);
+    var praceApp = PraceApp.Build(req.body, config);
     res.send('Hello World!')
 });
 

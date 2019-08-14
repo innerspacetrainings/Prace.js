@@ -1,8 +1,14 @@
 import ConventionEvaluator from "./ConventionEvaluator";
 
 export interface TitleEvaluationResult {
-    success: boolean;
+    resultType: TitleResult;
     exampleMessage?: string;
+}
+
+export enum TitleResult {
+    Correct,
+    Invalid,
+    InvalidRegex
 }
 
 export default function EvaluateTitle(result: { prTitle: string, prExpression: string }): TitleEvaluationResult {
@@ -10,16 +16,19 @@ export default function EvaluateTitle(result: { prTitle: string, prExpression: s
     const evaluator = new ConventionEvaluator(prTitle, prExpression);
 
     if (!evaluator.IsValidRegex()) {
-        return {success: false, exampleMessage: 'Invalid Regex'};
+        return {resultType: TitleResult.InvalidRegex, exampleMessage: 'Invalid Regex'};
     } else if (evaluator.TitleMatches()) {
-        return {success: true};
+        return {resultType: TitleResult.Correct};
     }
 
-    const {ticketKey, ticketNumber} = evaluator.GetTicketInformation();
-    const exampleTitle = `[${ticketKey}-${ticketNumber}] Description of ticket`;
-    if (new ConventionEvaluator(exampleTitle, prExpression).TitleMatches()) {
-        return {success: false, exampleMessage: `Example Title: ${exampleTitle}`};
+    const ticketInformation = evaluator.GetTicketInformation();
+    if (ticketInformation) {
+        const {ticketKey, ticketNumber} = ticketInformation;
+        const exampleTitle = `[${ticketKey}-${ticketNumber}] Description of ticket`;
+        if (new ConventionEvaluator(exampleTitle, prExpression).TitleMatches()) {
+            return {resultType: TitleResult.Invalid, exampleMessage: `Example Title: ${exampleTitle}`};
+        }
     }
 
-    return {success: false};
+    return {resultType: TitleResult.Invalid};
 }

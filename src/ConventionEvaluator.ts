@@ -30,13 +30,12 @@ class ConventionEvaluator {
         const match = this.title.match("\\w*\\/(\\w*)\\s(\\d*)");
         if (match !== null && match.length > 1) {
             let ticketNumber: number = -1;
-            let ticketKey: string = null;
+            let ticketKey: null | string = null;
             for (const i in match) {
                 const currentValue: string | any = match[i];
-                console.log(typeof currentValue, currentValue);
                 if (Number(currentValue) > 0) {
                     ticketNumber = +currentValue;
-                } else if ((currentValue instanceof String) && (currentValue !== this.title)) {
+                } else if ((typeof currentValue === 'string') && (currentValue !== this.title)) {
                     ticketKey = currentValue.toUpperCase();
                 }
             }

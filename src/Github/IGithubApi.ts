@@ -1,8 +1,15 @@
+import {TitleEvaluationResult} from "../Prace";
+
 interface IGithubApi {
-    GetTemplateConvention(repoName: string, repoOwner: string, branchName: string): Promise<string>;
+    GetTemplateConvention(repoInfo: RepoInfo, branchName: string): Promise<string> | null;
 
-    SetCheckStatus(repositoryId: number, pullRequestNumber: number, correctTitle: boolean, message?: string): Promise<string>;
-
-    GetPullRequest(repositoryId: number, prNumber: number): Promise<string> | null;
+    SetCheckStatus(repoInfo: RepoInfo, pullRequestNumber: number, result: TitleEvaluationResult): Promise<void>;
 }
+
+export interface RepoInfo {
+    repo: string;
+    owner: string;
+}
+
+export default IGithubApi
 
