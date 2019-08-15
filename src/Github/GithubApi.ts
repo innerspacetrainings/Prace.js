@@ -9,7 +9,7 @@ class GithubApi implements IGithubApi {
     private octokit: Octokit | null = null;
     private authorization: string = '';
 
-    constructor(readonly installationId: number, readonly config: IConfig, private readonly appName: string) {
+    constructor(readonly installationId: number, readonly config: IConfig) {
     }
 
     private async GetOctokit(): Promise<Octokit> {
@@ -79,7 +79,7 @@ class GithubApi implements IGithubApi {
             owner,
             repo,
             ref: pullRequest.data.head.sha,
-            check_name: this.appName
+            check_name: this.config.CheckName
         });
         const lastCheck = checksCall.data.check_runs.find(ch => ch.id === this.config.GitHubAppId);
 
@@ -116,7 +116,7 @@ class GithubApi implements IGithubApi {
         return {
             owner: owner,
             repo: repo,
-            name: this.appName,
+            name: this.config.CheckName,
             head_sha: PR.head.sha,
             status: "completed",
             started_at: now.toISOString(),

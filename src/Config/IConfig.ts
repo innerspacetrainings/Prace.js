@@ -2,6 +2,8 @@
 export default interface IConfig {
     /** ID given by github to define the App id */
     GitHubAppId: number;
+    /** Name of the status check. Appears on the status section of Github's Pull request */
+    CheckName: string;
 
     /** The App private key. This method is awaited, so the file can be loaded from an external source */
     GetParsedPrivateKey(): Promise<string>;

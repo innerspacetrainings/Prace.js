@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "Prace lib for github app",
   "main": "lib/index.js",
+  "types": "dist/index.d.ts",
   "private": true,
   "scripts": {
     "lint": "./node_modules/.bin/tslint -p tsconfig.json",
@@ -33,7 +34,7 @@
     "chai": "^4.2.0",
     "mocha": "^6.2.0",
     "ts-node": "^8.3.0",
-    "tslint": "^5.8.0",
+    "tslint": "^5.18.0",
     "typedoc": "^0.15.0",
     "typescript": "^3.5.3"
   }

@@ -3,36 +3,29 @@ import Prace from "./Prace";
 import IConfig from "./Config/IConfig";
 import fs from 'fs';
 import path from 'path';
+import DefaultConfig from "./Config/DefaultConfig";
+import ConventionEvaluator from "./ConventionEvaluator";
+import IGithubApi, {RepoInfo} from "./Github/IGithubApi";
 
 const app = express();
 const port = 3000;
 
 app.use(express.json());
 
-class Config implements IConfig {
-    constructor(private readonly privateKey: string) {
+export default Prace;
+export {IConfig, DefaultConfig, ConventionEvaluator, RepoInfo, IGithubApi};
 
-    }
-
-    GitHubAppId: number = 38357;
-
-    GetParsedPrivateKey() : Promise<string> {
-        return Promise.resolve(this.privateKey);
-    }
-}
-
-let config: Config | null = null;
+let config: IConfig;
 
 const filePath = path.join(__dirname, '../appData.pem');
 fs.readFile(filePath, {encoding: 'utf-8'}, function (err, data) {
     if (!err) {
-        console.log('received data');
-        config = new Config(data);
+        console.log('loaded private key');
+        config = new DefaultConfig(null, data);
     } else {
         console.log(err);
     }
 });
-
 
 app.post('/', async (req, res) => {
     if (config) {
@@ -43,10 +36,6 @@ app.post('/', async (req, res) => {
         }
     }
     res.send('Hello World!')
-});
-
-app.get('/', (req, res) =>{
-    res.send('HOLA');
 });
 
 app.listen(port, () => console.log(`Example app listening on port ${port}!`));

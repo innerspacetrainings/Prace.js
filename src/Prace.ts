@@ -26,7 +26,7 @@ export default class Prace {
     }
 
     private constructor(private readonly prData: PullRequestData, config: IConfig) {
-        this.githubApi = new GithubApi(prData.installation.id, config, "PRACE");
+        this.githubApi = new GithubApi(prData.installation.id, config);
         this.repoInfo = {repo: prData.repository.name, owner: prData.repository.full_name.split('/')[0]};
     }
 
@@ -75,7 +75,7 @@ export enum CheckResult {
     CorrectTitle = "Correct Title"
 }
 
-/** Object send by the PullRequest webhook. This are the values that this object must have */
+/** Object send by the PullRequest web hook. This are the values that this object must have */
 export interface PullRequestData {
     action: string;
     number: number;

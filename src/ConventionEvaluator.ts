@@ -4,10 +4,10 @@ export default class ConventionEvaluator {
     }
 
     public IsValidRegex(): boolean {
-        if (this.regularExpression == null || this.regularExpression.length === 0) return false;
+        if (this.regularExpression === null || this.regularExpression.length === 0) return false;
 
-        let parts = this.regularExpression.split('/'),
-            regex = this.regularExpression,
+        const parts = this.regularExpression.split('/');
+        let regex = this.regularExpression,
             options = "";
         if (parts.length > 1) {
             regex = parts[1];
