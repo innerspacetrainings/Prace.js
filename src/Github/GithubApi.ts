@@ -43,7 +43,7 @@ class GithubApi implements IGithubApi {
             });
 
             if (configFile === null || configFile.data === null) {
-                console.log('No .prace file found');
+                this.config.logger.log('No .prace file found');
                 return null;
             }
 
@@ -62,9 +62,9 @@ class GithubApi implements IGithubApi {
             if (typeof response === 'string') {
                 return response.replace(/^\s+|\s+$/g, '');
             }
-            console.log(`Incorrect type: ${typeof response}`, response);
+            this.config.logger.log(`Incorrect type: ${typeof response}`, response);
         } catch (e) {
-            console.error(e);
+            this.config.logger.error(e);
         }
         return null;
     }

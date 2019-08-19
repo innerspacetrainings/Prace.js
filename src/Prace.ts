@@ -25,7 +25,7 @@ export class Prace {
     public static Build(pr: PullRequestData, config: IConfig): Prace | null {
         if (pr === null || pr.pull_request === null) return null;
         else if (pr.action === 'closed') {
-            console.log(`Ignoring action ${pr.action}`);
+            config.logger.log(`Ignoring action ${pr.action}`);
             return null;
         }
 

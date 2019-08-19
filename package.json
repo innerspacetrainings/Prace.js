@@ -20,7 +20,7 @@
     "fix": "run-s fix:*",
     "fix:prettier": "prettier \"src/**/*.ts\" --write",
     "fix:tslint": "tslint --fix --project .",
-    "start": "run-s build && node dist/index.js",
+    "start": "run-s build && node dist/main/node-example.js",
     "test": "run-s build test:*",
     "test:lint": "tslint --project . && prettier \"src/**/*.ts\" --list-different",
     "test:unit": "nyc mocha -r ts-node/register src/**/*.spec.ts",

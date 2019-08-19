@@ -12,7 +12,7 @@ app.use(express.json());
 
 let config: IConfig;
 
-const filePath = path.join(__dirname, '../appData.pem');
+const filePath = path.join(__dirname, '../../appData.pem');
 fs.readFile(filePath, { encoding: 'utf-8' }, function(err, data) {
     if (!err) {
         console.log('loaded private key');
