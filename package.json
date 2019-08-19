@@ -95,7 +95,8 @@
     "exclude": [
       "**/*.d.ts",
       "**/*.spec.js",
-      "docs/*"
+      "docs/*",
+      "**/index.ts"
     ],
     "include": [
       "src/**"
