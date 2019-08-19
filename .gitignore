@@ -17,8 +17,9 @@ tmp
 # Build
 dist/
 
-# Coverage reports
+# Reports
 coverage
+.nyc_output
 
 # API keys and secrets
 .env

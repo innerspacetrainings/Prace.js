@@ -1,5 +1,5 @@
 import ConventionEvaluator from "./ConventionEvaluator";
-import 'mocha';
+import {describe, it} from 'mocha';
 import {expect} from 'chai';
 
 describe('Convention Evaluator test', () => {

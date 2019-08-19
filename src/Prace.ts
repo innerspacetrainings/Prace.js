@@ -2,9 +2,17 @@ import IConfig from "./Config/IConfig";
 import EvaluateTitle, {PullRequestTitleAndRegex, TitleEvaluationResult, TitleResult} from "./Utils";
 import IGithubApi, {RepoInfo} from "./Github/IGithubApi";
 import GithubApi from "./Github/GithubApi";
+import {PullRequestData} from "./PullRequestData";
+
+/** Result of the check execution */
+export enum CheckResult {
+    NoValues = "No values",
+    HadError = "Had error",
+    CorrectTitle = "Correct Title"
+}
 
 /** Github App Entry point. This class manage the logic of the system */
-export default class Prace {
+export class Prace {
     private readonly githubApi: IGithubApi;
     private readonly repoInfo: RepoInfo;
 
@@ -68,30 +76,4 @@ export default class Prace {
     }
 }
 
-/** Result of the check execution */
-export enum CheckResult {
-    NoValues = "No values",
-    HadError = "Had error",
-    CorrectTitle = "Correct Title"
-}
 
-/** Object send by the PullRequest web hook. This are the values that this object must have */
-export interface PullRequestData {
-    action: string;
-    number: number;
-    pull_request: {
-        title: string,
-        head: {
-            label: string;
-            ref: string;
-        }
-    }
-    repository: {
-        id: number;
-        name: string;
-        full_name: string;
-    }
-    installation: {
-        id: number;
-    }
-}
