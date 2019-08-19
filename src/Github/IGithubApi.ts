@@ -1,4 +1,4 @@
-import {TitleEvaluationResult} from "../Utils";
+import { TitleEvaluationResult } from '../Utils';
 
 export default interface IGithubApi {
     /** Extract the content of the config file from the repo using octokit */
@@ -13,4 +13,3 @@ export interface RepoInfo {
     repo: string;
     owner: string;
 }
-

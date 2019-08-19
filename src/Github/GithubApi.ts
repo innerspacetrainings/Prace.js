@@ -1,24 +1,25 @@
-import {App} from '@octokit/app';
-import Octokit, {ChecksCreateParamsOutput} from "@octokit/rest";
+import { App } from '@octokit/app';
+import Octokit, { ChecksCreateParamsOutput } from '@octokit/rest';
 import IConfig from '../Config/IConfig';
 import rp from 'request-promise';
-import {TitleEvaluationResult, TitleResult} from "../Utils";
-import IGithubApi, {RepoInfo} from "./IGithubApi";
+import { TitleEvaluationResult, TitleResult } from '../Utils';
+import IGithubApi, { RepoInfo } from './IGithubApi';
 
 class GithubApi implements IGithubApi {
     private octokit: Octokit | null = null;
     private authorization: string = '';
 
-    constructor(readonly installationId: number, readonly config: IConfig) {
-    }
+    constructor(readonly installationId: number, readonly config: IConfig) {}
 
     private async GetOctokit(): Promise<Octokit> {
         if (this.octokit !== null) return this.octokit;
 
         const ppk = await this.config.GetParsedPrivateKey();
 
-        const app = new App({id: this.config.GitHubAppId, privateKey: ppk});
-        const installationAccessAccessToken = await app.getInstallationAccessToken({installationId: this.installationId});
+        const app = new App({ id: this.config.GitHubAppId, privateKey: ppk });
+        const installationAccessAccessToken = await app.getInstallationAccessToken({
+            installationId: this.installationId
+        });
         this.octokit = new Octokit({
             async auth() {
                 return `token ${installationAccessAccessToken}`;
@@ -32,7 +33,7 @@ class GithubApi implements IGithubApi {
 
     public async GetTemplateConvention(repoInfo: RepoInfo, branchName: string): Promise<string | null> {
         const octokit = await this.GetOctokit();
-        const {owner, repo} = repoInfo;
+        const { owner, repo } = repoInfo;
         try {
             const configFile = await octokit.repos.getContents({
                 owner,
@@ -51,9 +52,9 @@ class GithubApi implements IGithubApi {
             const options = {
                 uri: fileData.url,
                 headers: {
-                    'Authorization': this.authorization,
-                    "User-Agent": "prace",
-                    'Accept': 'application/vnd.github.v3.raw'
+                    Authorization: this.authorization,
+                    'User-Agent': 'prace',
+                    Accept: 'application/vnd.github.v3.raw'
                 }
             };
             const response = await rp(options);
@@ -61,19 +62,22 @@ class GithubApi implements IGithubApi {
             if (typeof response === 'string') {
                 return response.replace(/^\s+|\s+$/g, '');
             }
-            console.log(`Incorrect type: ${typeof response}`, response)
+            console.log(`Incorrect type: ${typeof response}`, response);
         } catch (e) {
             console.error(e);
         }
         return null;
     }
 
-
-    public async SetCheckStatus(repoInfo: RepoInfo, pullRequestNumber: number, result: TitleEvaluationResult): Promise<void> {
+    public async SetCheckStatus(
+        repoInfo: RepoInfo,
+        pullRequestNumber: number,
+        result: TitleEvaluationResult
+    ): Promise<void> {
         const octokit = await this.GetOctokit();
-        const {owner, repo} = repoInfo;
+        const { owner, repo } = repoInfo;
 
-        const pullRequest = await octokit.pulls.get({owner, repo, pull_number: pullRequestNumber});
+        const pullRequest = await octokit.pulls.get({ owner, repo, pull_number: pullRequestNumber });
 
         const checksCall = await octokit.checks.listForRef({
             owner,
@@ -85,13 +89,17 @@ class GithubApi implements IGithubApi {
 
         const checkOutput = this.GenerateCheckRunOutput(repoInfo, result, pullRequest.data);
         if (lastCheck) {
-            await octokit.checks.update(Object.assign(checkOutput, {check_run_id: lastCheck.id}));
+            await octokit.checks.update(Object.assign(checkOutput, { check_run_id: lastCheck.id }));
         } else {
             await octokit.checks.create(checkOutput);
         }
     }
 
-    private GenerateCheckRunOutput(repoInfo: RepoInfo, result: TitleEvaluationResult, PR: Octokit.PullsGetResponse): CheckParams {
+    private GenerateCheckRunOutput(
+        repoInfo: RepoInfo,
+        result: TitleEvaluationResult,
+        PR: Octokit.PullsGetResponse
+    ): CheckParams {
         let title: string, summary: string;
         switch (result.resultType) {
             case TitleResult.Correct:
@@ -107,10 +115,10 @@ class GithubApi implements IGithubApi {
                 summary = 'Configuration file is invalid. Be sure to set the correct config file.';
                 break;
             default:
-                throw new Error('Invalid result type')
+                throw new Error('Invalid result type');
         }
 
-        const {owner, repo} = repoInfo;
+        const { owner, repo } = repoInfo;
 
         const now = new Date();
         return {
@@ -118,11 +126,11 @@ class GithubApi implements IGithubApi {
             repo: repo,
             name: this.config.CheckName,
             head_sha: PR.head.sha,
-            status: "completed",
+            status: 'completed',
             started_at: now.toISOString(),
-            conclusion: result.resultType === TitleResult.Correct ? 'success' : "failure",
+            conclusion: result.resultType === TitleResult.Correct ? 'success' : 'failure',
             completed_at: now.toISOString(),
-            output: {title, summary}
+            output: { title, summary }
         };
     }
 }
@@ -133,11 +141,9 @@ interface CheckParams {
     name: string;
     head_sha: string;
     details_url?: string;
-    status?: "queued" | "in_progress" | "completed";
+    status?: 'queued' | 'in_progress' | 'completed';
     started_at?: string;
-    conclusion?:
-        | "success"
-        | "failure";
+    conclusion?: 'success' | 'failure';
     completed_at?: string;
     output?: ChecksCreateParamsOutput;
 }

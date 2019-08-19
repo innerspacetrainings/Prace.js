@@ -1,14 +1,14 @@
-import IConfig from "./Config/IConfig";
-import EvaluateTitle, {PullRequestTitleAndRegex, TitleEvaluationResult, TitleResult} from "./Utils";
-import IGithubApi, {RepoInfo} from "./Github/IGithubApi";
-import GithubApi from "./Github/GithubApi";
-import {PullRequestData} from "./PullRequestData";
+import IConfig from './Config/IConfig';
+import EvaluateTitle, { PullRequestTitleAndRegex, TitleEvaluationResult, TitleResult } from './Utils';
+import IGithubApi, { RepoInfo } from './Github/IGithubApi';
+import GithubApi from './Github/GithubApi';
+import { PullRequestData } from './PullRequestData';
 
 /** Result of the check execution */
 export enum CheckResult {
-    NoValues = "No values",
-    HadError = "Had error",
-    CorrectTitle = "Correct Title"
+    NoValues = 'No values',
+    HadError = 'Had error',
+    CorrectTitle = 'Correct Title'
 }
 
 /** Github App Entry point. This class manage the logic of the system */
@@ -23,9 +23,8 @@ export class Prace {
      * @constructor
      */
     public static Build(pr: PullRequestData, config: IConfig): Prace | null {
-        if (pr === null || pr.pull_request === null)
-            return null;
-        else if (pr.action === "closed") {
+        if (pr === null || pr.pull_request === null) return null;
+        else if (pr.action === 'closed') {
             console.log(`Ignoring action ${pr.action}`);
             return null;
         }
@@ -35,7 +34,7 @@ export class Prace {
 
     private constructor(private readonly prData: PullRequestData, config: IConfig) {
         this.githubApi = new GithubApi(prData.installation.id, config);
-        this.repoInfo = {repo: prData.repository.name, owner: prData.repository.full_name.split('/')[0]};
+        this.repoInfo = { repo: prData.repository.name, owner: prData.repository.full_name.split('/')[0] };
     }
 
     /**
@@ -44,10 +43,12 @@ export class Prace {
      * Will be null if there is no configuration file in the project
      */
     public async GetPullRequestData(): Promise<PullRequestTitleAndRegex | null> {
-        const regexTemplate = await this.githubApi.GetTemplateConvention(this.repoInfo, this.prData.pull_request.head.ref);
+        const regexTemplate = await this.githubApi.GetTemplateConvention(
+            this.repoInfo,
+            this.prData.pull_request.head.ref
+        );
 
-        if (regexTemplate)
-            return {title: this.prData.pull_request.title, regularExpression: regexTemplate};
+        if (regexTemplate) return { title: this.prData.pull_request.title, regularExpression: regexTemplate };
         return null;
     }
 
@@ -56,7 +57,11 @@ export class Prace {
      * @param repoInfo Name and owner of the repo
      * @param result Type of result and example message for incorrect cases
      */
-    public async SetCheckStatus(repoInfo: RepoInfo, pullRequestNumber: number, result: TitleEvaluationResult): Promise<void> {
+    public async SetCheckStatus(
+        repoInfo: RepoInfo,
+        pullRequestNumber: number,
+        result: TitleEvaluationResult
+    ): Promise<void> {
         await this.githubApi.SetCheckStatus(repoInfo, pullRequestNumber, result);
     }
 
@@ -75,5 +80,3 @@ export class Prace {
         return evaluation.resultType === TitleResult.Correct ? CheckResult.CorrectTitle : CheckResult.HadError;
     }
 }
-
-

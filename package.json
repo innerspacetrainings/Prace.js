@@ -2,10 +2,14 @@
   "name": "prace",
   "version": "1.0.0",
   "description": "Github status check app for parsing a PR title against a regex",
-  "main": "lib/index.js",
-  "typings": "dist/index.d.ts",
+  "source": "dist/main/index.js",
+  "main": "dist/main/index.js",
+  "typings": "dist/main/index.d.ts",
   "module": "build/module/index.js",
-  "repository": "https://github.com:Bullrich/Prace.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com:Bullrich/Prace.js.git"
+  },
   "private": true,
   "scripts": {
     "describe": "npm-scripts-info",
@@ -42,6 +46,9 @@
     "version": "Bump package.json version, update CHANGELOG.md, tag release",
     "reset": "Delete all untracked files and reset the repo to the last commit",
     "prepare-release": "One-step: clean, build, test, publish docs, and prep a release"
+  },
+  "engines": {
+    "node": ">=8"
   },
   "keywords": [
     "prace",
@@ -90,7 +97,9 @@
       "**/*.spec.js",
       "docs/*"
     ],
-    "include": ["src/**"],
+    "include": [
+      "src/**"
+    ],
     "reporter": [
       "html"
     ],

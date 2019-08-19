@@ -3,18 +3,18 @@ export interface PullRequestData {
     action: string;
     number: number;
     pull_request: {
-        title: string,
+        title: string;
         head: {
             label: string;
             ref: string;
-        }
-    }
+        };
+    };
     repository: {
         id: number;
         name: string;
         full_name: string;
-    }
+    };
     installation: {
         id: number;
-    }
+    };
 }
