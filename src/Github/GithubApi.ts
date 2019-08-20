@@ -1,15 +1,15 @@
 import { App } from '@octokit/app';
 import Octokit, { ChecksCreateParamsOutput } from '@octokit/rest';
-import IConfig from '../Config/IConfig';
-import rp from 'request-promise';
 import { TitleEvaluationResult, TitleResult } from '../Utils';
 import IGithubApi, { RepoInfo } from './IGithubApi';
+import { IConfig, TemplateFetchResult, TemplateResult } from '../Config';
 
 class GithubApi implements IGithubApi {
     private octokit: Octokit | null = null;
     private authorization: string = '';
 
-    constructor(readonly installationId: number, readonly config: IConfig) {}
+    constructor(readonly installationId: number, readonly config: IConfig) {
+    }
 
     private async GetOctokit(): Promise<Octokit> {
         if (this.octokit !== null) return this.octokit;
@@ -31,7 +31,7 @@ class GithubApi implements IGithubApi {
         return this.octokit;
     }
 
-    public async GetTemplateConvention(repoInfo: RepoInfo, branchName: string): Promise<string | null> {
+    public async GetTemplateConvention(repoInfo: RepoInfo, branchName: string): Promise<TemplateFetchResult> {
         const octokit = await this.GetOctokit();
         const { owner, repo } = repoInfo;
         try {
@@ -44,7 +44,7 @@ class GithubApi implements IGithubApi {
 
             if (configFile === null || configFile.data === null) {
                 this.config.logger.log('No .prace file found');
-                return null;
+                return { result: TemplateResult.NoPraceFile };
             }
 
             const fileData = configFile.data as FileInformation;
@@ -57,16 +57,11 @@ class GithubApi implements IGithubApi {
                     Accept: 'application/vnd.github.v3.raw'
                 }
             };
-            const response = await rp(options);
-
-            if (typeof response === 'string') {
-                return response.replace(/^\s+|\s+$/g, '');
-            }
-            this.config.logger.log(`Incorrect type: ${typeof response}`, response);
+            return await this.config.request.request(options);
         } catch (e) {
             this.config.logger.error(e);
         }
-        return null;
+        return { result: TemplateResult.UnknownError };
     }
 
     public async SetCheckStatus(

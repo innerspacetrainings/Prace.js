@@ -1,5 +1,5 @@
 /** Logs message into the prefer system. */
-export default interface ILogger {
+export interface ILogger {
     log(message: string, ...optionalParams: any[]): void;
 
     warn(message: string, ...optionalParams: any[]): void;

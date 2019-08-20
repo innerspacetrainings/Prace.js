@@ -3,6 +3,7 @@ import EvaluateTitle, { PullRequestTitleAndRegex, TitleEvaluationResult, TitleRe
 import IGithubApi, { RepoInfo } from './Github/IGithubApi';
 import GithubApi from './Github/GithubApi';
 import { PullRequestData } from './PullRequestData';
+import { TemplateResult } from './Config';
 
 /** Result of the check execution */
 export enum CheckResult {
@@ -43,12 +44,16 @@ export class Prace {
      * Will be null if there is no configuration file in the project
      */
     public async GetPullRequestData(): Promise<PullRequestTitleAndRegex | null> {
-        const regexTemplate = await this.githubApi.GetTemplateConvention(
+        const templateResult = await this.githubApi.GetTemplateConvention(
             this.repoInfo,
             this.prData.pull_request.head.ref
         );
 
-        if (regexTemplate) return { title: this.prData.pull_request.title, regularExpression: regexTemplate };
+        if (templateResult.result === TemplateResult.Success && templateResult.regularExpression)
+            return {
+                title: this.prData.pull_request.title,
+                regularExpression: templateResult.regularExpression
+            };
         return null;
     }
 

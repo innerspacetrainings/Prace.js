@@ -72,7 +72,7 @@ app.listen(port, () => console.log(`Example app listening on port ${port}!`));
 
 You can configure more of the functionalities of Prace or set up a more advanced configuration file instead of the default config.
 
-That way you can use your own logger or load the private key from a different source.
+That way you can use your own logger, request client or load the private key from a different source.
 
 This is the interface for it:
 ```typescript
@@ -84,6 +84,8 @@ interface IConfig {
     CheckName: string;
     /** Logger to which the app send messages. */
     logger: ILogger;
+    /** Class in charge of requesting the github api for the .prace file through a https call */
+    request: IRequest;
 
     /** The App private key. This method is awaited, so the file can be loaded from an external source */
     GetParsedPrivateKey(): Promise<string>;
@@ -95,6 +97,23 @@ interface ILogger {
     warn(message: string, ...optionalParams: any[]): void;
 
     error(message: string, error?: Error): void;
+}
+
+export enum TemplateResult {
+    Success = 'success',
+    NoPraceFile = 'noPraceFile',
+    InvalidFormat = 'invalidFormat',
+    UnknownError = 'unknownError'
+}
+
+export interface TemplateFetchResult {
+    regularExpression?: string;
+    result: TemplateResult
+}
+
+/** Class in charge of fetching the content of the .prace file inside the repo. */
+export interface IRequest {
+    request(options: { uri: string, headers: any }): Promise<TemplateFetchResult>;
 }
 ```
 

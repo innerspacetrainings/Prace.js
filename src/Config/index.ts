@@ -1,2 +1,5 @@
+export {IConfig} from './IConfig';
+export {ILogger} from './ILogger';
+export * from './IRequest';
 export * from './DefaultConfig';
-export * from './IConfig';
+export {DefaultRequestClient} from './DefaultRequestClient';
