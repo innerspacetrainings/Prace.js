@@ -14,4 +14,3 @@ export interface RepoInfo {
     repo: string;
     owner: string;
 }
-

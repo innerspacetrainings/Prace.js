@@ -7,11 +7,10 @@ export enum TemplateResult {
 
 export interface TemplateFetchResult {
     regularExpression?: string;
-    result: TemplateResult
+    result: TemplateResult;
 }
 
 /** Class in charge of fetching the content of the .prace file inside the repo. */
 export interface IRequest {
-    request(options: { uri: string, headers: any }): Promise<TemplateFetchResult>;
+    request(options: { uri: string; headers: any }): Promise<TemplateFetchResult>;
 }
-

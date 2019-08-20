@@ -8,8 +8,7 @@ class GithubApi implements IGithubApi {
     private octokit: Octokit | null = null;
     private authorization: string = '';
 
-    constructor(readonly installationId: number, readonly config: IConfig) {
-    }
+    constructor(readonly installationId: number, readonly config: IConfig) {}
 
     private async GetOctokit(): Promise<Octokit> {
         if (this.octokit !== null) return this.octokit;

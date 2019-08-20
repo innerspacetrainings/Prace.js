@@ -1,7 +1,7 @@
 import { IConfig, ILogger, IRequest, DefaultRequestClient } from '.';
 
 /** Default config which extracts it's values from env */
-export default class DefaultConfig implements IConfig {
+export class DefaultConfig implements IConfig {
     public readonly CheckName: string = 'PRACE';
     public readonly GitHubAppId: number;
     public readonly logger: ILogger;

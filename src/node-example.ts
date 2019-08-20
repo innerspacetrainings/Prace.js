@@ -1,8 +1,7 @@
 import express from 'express';
-import IConfig from './Config/IConfig';
+import { DefaultConfig, IConfig } from './Config';
 import fs from 'fs';
 import path from 'path';
-import DefaultConfig from './Config/DefaultConfig';
 import { Prace } from '.';
 
 const app = express();

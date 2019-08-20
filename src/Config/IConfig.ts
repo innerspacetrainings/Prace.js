@@ -1,6 +1,5 @@
 import { ILogger, IRequest } from '.';
 
-
 /** Interface with all the configurations for the project */
 export interface IConfig {
     /** ID given by github to define the App id */

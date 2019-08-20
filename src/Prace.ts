@@ -1,9 +1,8 @@
-import IConfig from './Config/IConfig';
+import { IConfig, TemplateResult } from './Config';
 import EvaluateTitle, { PullRequestTitleAndRegex, TitleEvaluationResult, TitleResult } from './Utils';
 import IGithubApi, { RepoInfo } from './Github/IGithubApi';
 import GithubApi from './Github/GithubApi';
 import { PullRequestData } from './PullRequestData';
-import { TemplateResult } from './Config';
 
 /** Result of the check execution */
 export enum CheckResult {
