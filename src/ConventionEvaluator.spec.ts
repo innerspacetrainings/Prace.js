@@ -1,4 +1,4 @@
-import ConventionEvaluator from './ConventionEvaluator';
+import { ConventionEvaluator } from './ConventionEvaluator';
 import { describe, it } from 'mocha';
 import { expect } from 'chai';
 

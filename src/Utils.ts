@@ -1,4 +1,4 @@
-import ConventionEvaluator from './ConventionEvaluator';
+import { ConventionEvaluator } from './ConventionEvaluator';
 
 /** Result and example message for incorrect results */
 export interface TitleEvaluationResult {

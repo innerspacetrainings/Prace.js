@@ -1,5 +1,6 @@
-import evaluateTitle, { TitleResult } from './Utils';
+import { evaluateTitle, TitleResult } from './Utils';
 import { expect } from 'chai';
+import { describe, it } from 'mocha';
 
 describe('Utils test', () => {
     const DefaultValidPattern: string = '\\[BLOB-\\d*\\]\\s[\\w\\s]*';

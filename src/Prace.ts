@@ -1,7 +1,7 @@
 import { IConfig, TemplateResult } from './Config';
 import { evaluateTitle, PullRequestTitleAndRegex, TitleEvaluationResult, TitleResult } from './Utils';
 import IGithubApi, { RepoInfo } from './Github/IGithubApi';
-import GithubApi from './Github/GithubApi';
+import { GithubApi } from './Github/GithubApi';
 import { PullRequestData } from './PullRequestData';
 
 /** Result of the check execution */

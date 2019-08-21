@@ -4,7 +4,7 @@ import { TitleEvaluationResult, TitleResult } from '../Utils';
 import IGithubApi, { RepoInfo } from './IGithubApi';
 import { IConfig, TemplateFetchResult, TemplateResult } from '../Config';
 
-class GithubApi implements IGithubApi {
+export class GithubApi implements IGithubApi {
     private octokit: Octokit | null = null;
     private authorization: string = '';
 
@@ -149,5 +149,3 @@ interface FileInformation {
     sha: string;
     git_url: string;
 }
-
-export default GithubApi;

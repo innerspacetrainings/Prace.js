@@ -1,5 +1,5 @@
 /** Logic that analyze a title and a regex to see if it complies */
-export default class ConventionEvaluator {
+export class ConventionEvaluator {
     constructor(private readonly title: string, private readonly regularExpression: string) {}
 
     public isValidRegex(): boolean {
