@@ -2,8 +2,8 @@ import { IConfig, ILogger, IRequest, DefaultRequestClient } from '.';
 
 /** Default config which extracts it's values from env */
 export class DefaultConfig implements IConfig {
-    public readonly CheckName: string = 'PRACE';
-    public readonly GitHubAppId: number;
+    public readonly checkName: string = 'PRACE';
+    public readonly gitHubAppId: number;
     public readonly logger: ILogger;
     public readonly request: IRequest;
     private readonly privateKey: string;
@@ -16,7 +16,7 @@ export class DefaultConfig implements IConfig {
      * @param logger Logger to which the app send messages. If it's undefined **the console will be used by default**
      */
     public constructor(appId?: number, privateKey?: string, logger?: ILogger) {
-        this.GitHubAppId = appId ? appId : Number(process.env.GITHUB_APP_ID);
+        this.gitHubAppId = appId ? appId : Number(process.env.GITHUB_APP_ID);
         this.logger = logger ? logger : console;
         const key = privateKey ? privateKey : process.env.GITHUB_PRIVATE_KEY;
         if (key === undefined) throw TypeError('private key can not be undefined!');
@@ -24,7 +24,7 @@ export class DefaultConfig implements IConfig {
         this.request = new DefaultRequestClient(this.logger);
     }
 
-    GetParsedPrivateKey(): Promise<string> {
+    getParsedPrivateKey(): Promise<string> {
         return Promise.resolve(this.privateKey);
     }
 }

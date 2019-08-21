@@ -25,7 +25,7 @@ app.post('/', async (req, res) => {
     if (config) {
         const praceApp = Prace.Build(req.body, config);
         if (praceApp) {
-            const checkExecution = await praceApp.ExecuteCheck();
+            const checkExecution = await praceApp.executeCheck();
             console.log(checkExecution);
         }
     }

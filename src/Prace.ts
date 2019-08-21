@@ -1,5 +1,5 @@
 import { IConfig, TemplateResult } from './Config';
-import EvaluateTitle, { PullRequestTitleAndRegex, TitleEvaluationResult, TitleResult } from './Utils';
+import { evaluateTitle, PullRequestTitleAndRegex, TitleEvaluationResult, TitleResult } from './Utils';
 import IGithubApi, { RepoInfo } from './Github/IGithubApi';
 import GithubApi from './Github/GithubApi';
 import { PullRequestData } from './PullRequestData';
@@ -42,8 +42,8 @@ export class Prace {
      * @returns Object with the title of the pull request and the regular expresion.
      * Will be null if there is no configuration file in the project
      */
-    public async GetPullRequestData(): Promise<PullRequestTitleAndRegex | null> {
-        const templateResult = await this.githubApi.GetTemplateConvention(
+    public async getPullRequestData(): Promise<PullRequestTitleAndRegex | null> {
+        const templateResult = await this.githubApi.getTemplateConvention(
             this.repoInfo,
             this.prData.pull_request.head.ref
         );
@@ -66,21 +66,21 @@ export class Prace {
         pullRequestNumber: number,
         result: TitleEvaluationResult
     ): Promise<void> {
-        await this.githubApi.SetCheckStatus(repoInfo, pullRequestNumber, result);
+        await this.githubApi.setCheckStatus(repoInfo, pullRequestNumber, result);
     }
 
     /** Run automatic check to the pull request. Let Prace handle the config file and the result
      * @returns Enum with the kind of result that it had
      */
-    public async ExecuteCheck(): Promise<CheckResult> {
-        const data = await this.GetPullRequestData();
+    public async executeCheck(): Promise<CheckResult> {
+        const data = await this.getPullRequestData();
         if (data === null) {
             return CheckResult.NoValues;
         }
 
-        const evaluation: TitleEvaluationResult = EvaluateTitle(data);
+        const evaluation: TitleEvaluationResult = evaluateTitle(data);
 
-        await this.githubApi.SetCheckStatus(this.repoInfo, this.prData.number, evaluation);
+        await this.githubApi.setCheckStatus(this.repoInfo, this.prData.number, evaluation);
         return evaluation.resultType === TitleResult.Correct ? CheckResult.CorrectTitle : CheckResult.HadError;
     }
 }

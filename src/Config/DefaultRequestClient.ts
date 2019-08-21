@@ -1,4 +1,4 @@
-import rp from 'request-promise';
+import requestPromise from 'request-promise';
 import { ILogger } from '.';
 import { IRequest, TemplateFetchResult, TemplateResult } from './IRequest';
 
@@ -6,7 +6,7 @@ export class DefaultRequestClient implements IRequest {
     public constructor(private readonly logger: ILogger) {}
 
     public async request(options: { uri: string; headers: any }): Promise<TemplateFetchResult> {
-        const response = await rp(options);
+        const response = await requestPromise(options);
 
         if (typeof response === 'string') {
             // Clean end of file format

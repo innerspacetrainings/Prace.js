@@ -10,12 +10,12 @@ class GithubApi implements IGithubApi {
 
     constructor(readonly installationId: number, readonly config: IConfig) {}
 
-    private async GetOctokit(): Promise<Octokit> {
+    private async getOctokit(): Promise<Octokit> {
         if (this.octokit !== null) return this.octokit;
 
-        const ppk = await this.config.GetParsedPrivateKey();
+        const ppk = await this.config.getParsedPrivateKey();
 
-        const app = new App({ id: this.config.GitHubAppId, privateKey: ppk });
+        const app = new App({ id: this.config.gitHubAppId, privateKey: ppk });
         const installationAccessAccessToken = await app.getInstallationAccessToken({
             installationId: this.installationId
         });
@@ -30,8 +30,8 @@ class GithubApi implements IGithubApi {
         return this.octokit;
     }
 
-    public async GetTemplateConvention(repoInfo: RepoInfo, branchName: string): Promise<TemplateFetchResult> {
-        const octokit = await this.GetOctokit();
+    public async getTemplateConvention(repoInfo: RepoInfo, branchName: string): Promise<TemplateFetchResult> {
+        const octokit = await this.getOctokit();
         const { owner, repo } = repoInfo;
         try {
             const configFile = await octokit.repos.getContents({
@@ -63,12 +63,12 @@ class GithubApi implements IGithubApi {
         return { result: TemplateResult.UnknownError };
     }
 
-    public async SetCheckStatus(
+    public async setCheckStatus(
         repoInfo: RepoInfo,
         pullRequestNumber: number,
         result: TitleEvaluationResult
     ): Promise<void> {
-        const octokit = await this.GetOctokit();
+        const octokit = await this.getOctokit();
         const { owner, repo } = repoInfo;
 
         const pullRequest = await octokit.pulls.get({ owner, repo, pull_number: pullRequestNumber });
@@ -77,11 +77,11 @@ class GithubApi implements IGithubApi {
             owner,
             repo,
             ref: pullRequest.data.head.sha,
-            check_name: this.config.CheckName
+            check_name: this.config.checkName
         });
-        const lastCheck = checksCall.data.check_runs.find(ch => ch.id === this.config.GitHubAppId);
+        const lastCheck = checksCall.data.check_runs.find(ch => ch.id === this.config.gitHubAppId);
 
-        const checkOutput = this.GenerateCheckRunOutput(repoInfo, result, pullRequest.data);
+        const checkOutput = this.generateCheckRunOutput(repoInfo, result, pullRequest.data);
         if (lastCheck) {
             await octokit.checks.update(Object.assign(checkOutput, { check_run_id: lastCheck.id }));
         } else {
@@ -89,7 +89,7 @@ class GithubApi implements IGithubApi {
         }
     }
 
-    private GenerateCheckRunOutput(
+    private generateCheckRunOutput(
         repoInfo: RepoInfo,
         result: TitleEvaluationResult,
         PR: Octokit.PullsGetResponse
@@ -118,7 +118,7 @@ class GithubApi implements IGithubApi {
         return {
             owner: owner,
             repo: repo,
-            name: this.config.CheckName,
+            name: this.config.checkName,
             head_sha: PR.head.sha,
             status: 'completed',
             started_at: now.toISOString(),
