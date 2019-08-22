@@ -11,9 +11,11 @@ export class DefaultRequestClient implements IRequest {
         if (typeof response === 'string') {
             // Clean end of file format
             const expression = response.replace(/^\s+|\s+$/g, '');
+
             return { regularExpression: expression, result: TemplateResult.Success };
         }
         this.logger.log(`Incorrect type: ${typeof response}`, response);
+
         return { result: TemplateResult.InvalidFormat };
     }
 }

@@ -10,26 +10,6 @@ export class GithubApi implements IGithubApi {
 
     constructor(readonly installationId: number, readonly config: IConfig) {}
 
-    private async getOctokit(): Promise<Octokit> {
-        if (this.octokit !== null) return this.octokit;
-
-        const ppk = await this.config.getParsedPrivateKey();
-
-        const app = new App({ id: this.config.gitHubAppId, privateKey: ppk });
-        const installationAccessAccessToken = await app.getInstallationAccessToken({
-            installationId: this.installationId
-        });
-        this.octokit = new Octokit({
-            async auth() {
-                return `token ${installationAccessAccessToken}`;
-            }
-        });
-
-        this.authorization = `token ${installationAccessAccessToken}`;
-
-        return this.octokit;
-    }
-
     public async getTemplateConvention(repoInfo: RepoInfo, branchName: string): Promise<TemplateFetchResult> {
         const octokit = await this.getOctokit();
         const { owner, repo } = repoInfo;
@@ -43,6 +23,7 @@ export class GithubApi implements IGithubApi {
 
             if (configFile === null || configFile.data === null) {
                 this.config.logger.log('No .prace file found');
+
                 return { result: TemplateResult.NoPraceFile };
             }
 
@@ -56,10 +37,12 @@ export class GithubApi implements IGithubApi {
                     Accept: 'application/vnd.github.v3.raw'
                 }
             };
+
             return await this.config.request.request(options);
         } catch (e) {
             this.config.logger.error(e);
         }
+
         return { result: TemplateResult.UnknownError };
     }
 
@@ -79,7 +62,7 @@ export class GithubApi implements IGithubApi {
             ref: pullRequest.data.head.sha,
             check_name: this.config.checkName
         });
-        const lastCheck = checksCall.data.check_runs.find(ch => ch.id === this.config.gitHubAppId);
+        const lastCheck = checksCall.data.check_runs.find((ch) => ch.id === this.config.gitHubAppId);
 
         const checkOutput = this.generateCheckRunOutput(repoInfo, result, pullRequest.data);
         if (lastCheck) {
@@ -87,6 +70,28 @@ export class GithubApi implements IGithubApi {
         } else {
             await octokit.checks.create(checkOutput);
         }
+    }
+
+    private async getOctokit(): Promise<Octokit> {
+        if (this.octokit !== null) {
+            return this.octokit;
+        }
+
+        const ppk = await this.config.getParsedPrivateKey();
+
+        const app = new App({ id: this.config.gitHubAppId, privateKey: ppk });
+        const installationAccessAccessToken = await app.getInstallationAccessToken({
+            installationId: this.installationId
+        });
+        this.octokit = new Octokit({
+            async auth() {
+                return `token ${installationAccessAccessToken}`;
+            }
+        });
+
+        this.authorization = `token ${installationAccessAccessToken}`;
+
+        return this.octokit;
     }
 
     private generateCheckRunOutput(
@@ -115,9 +120,10 @@ export class GithubApi implements IGithubApi {
         const { owner, repo } = repoInfo;
 
         const now = new Date();
+
         return {
-            owner: owner,
-            repo: repo,
+            owner,
+            repo,
             name: this.config.checkName,
             head_sha: PR.head.sha,
             status: 'completed',

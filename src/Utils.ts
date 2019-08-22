@@ -34,7 +34,7 @@ export function evaluateTitle(result: PullRequestTitleAndRegex): TitleEvaluation
     const ticketInformation = evaluator.getTicketInformation();
     if (ticketInformation) {
         const { ticketKey, ticketNumber } = ticketInformation;
-        const exampleTitle = `[${ticketKey}-${ticketNumber}] Description of ticket`;
+        const exampleTitle = `[${ticketKey}-${ticketNumber}] Description of the ticket`;
         if (new ConventionEvaluator(exampleTitle, regularExpression).titleMatches()) {
             return { resultType: TitleResult.Invalid, exampleMessage: `Example Title: ${exampleTitle}` };
         }

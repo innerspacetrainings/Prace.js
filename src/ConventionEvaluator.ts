@@ -3,7 +3,9 @@ export class ConventionEvaluator {
     constructor(private readonly title: string, private readonly regularExpression: string) {}
 
     public isValidRegex(): boolean {
-        if (this.regularExpression === null || this.regularExpression.length === 0) return false;
+        if (this.regularExpression === null || this.regularExpression.length === 0) {
+            return false;
+        }
 
         const parts = this.regularExpression.split('/');
         let regex = this.regularExpression,
@@ -13,8 +15,9 @@ export class ConventionEvaluator {
             options = parts[2];
         }
         try {
-            new RegExp(regex, options);
-            return true;
+            const newRegex: RegExp = new RegExp(regex, options);
+
+            return newRegex !== null;
         } catch (e) {
             return false;
         }
@@ -23,6 +26,7 @@ export class ConventionEvaluator {
     /** Analyze the regular expression to the given title */
     public titleMatches(): boolean {
         const regexp = new RegExp(this.regularExpression);
+
         return regexp.test(this.title);
     }
 
@@ -36,21 +40,24 @@ export class ConventionEvaluator {
         if (match !== null && match.length > 1) {
             let ticketNumber: number = -1;
             let ticketKey: null | string = null;
-            for (const i in match) {
-                const currentValue: string | any = match[i];
+            for (const currentMatch of match) {
+                const currentValue: string | any = currentMatch;
                 if (Number(currentValue) > 0) {
                     ticketNumber = +currentValue;
                 } else if (typeof currentValue === 'string' && currentValue !== this.title) {
                     ticketKey = currentValue.toUpperCase();
                 }
             }
-            if (ticketNumber !== -1 && ticketKey !== null) return { ticketKey, ticketNumber };
+            if (ticketNumber !== -1 && ticketKey !== null) {
+                return { ticketKey, ticketNumber };
+            }
         }
+
         return null;
     }
 }
 
 interface TicketInformation {
-    ticketKey: String;
-    ticketNumber: Number;
+    ticketKey: string;
+    ticketNumber: number;
 }

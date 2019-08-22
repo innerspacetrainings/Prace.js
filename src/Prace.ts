@@ -13,9 +13,6 @@ export enum CheckResult {
 
 /** Github App Entry point. This class manage the logic of the system */
 export class Prace {
-    private readonly githubApi: IGithubApi;
-    private readonly repoInfo: RepoInfo;
-
     /**
      * Builds the Prace app object. If data is null or closed, it returns a null object instead
      * @param pr Pull request data that should be in the body of the github app post.
@@ -23,14 +20,19 @@ export class Prace {
      * @constructor
      */
     public static Build(pr: PullRequestData, config: IConfig): Prace | null {
-        if (pr === null || pr.pull_request === null) return null;
-        else if (pr.action === 'closed') {
+        if (pr === null || pr.pull_request === null) {
+            return null;
+        } else if (pr.action === 'closed') {
             config.logger.log(`Ignoring action ${pr.action}`);
+
             return null;
         }
 
         return new Prace(pr, config);
     }
+
+    private readonly githubApi: IGithubApi;
+    private readonly repoInfo: RepoInfo;
 
     private constructor(private readonly prData: PullRequestData, config: IConfig) {
         this.githubApi = new GithubApi(prData.installation.id, config);
@@ -48,11 +50,13 @@ export class Prace {
             this.prData.pull_request.head.ref
         );
 
-        if (templateResult.result === TemplateResult.Success && templateResult.regularExpression)
+        if (templateResult.result === TemplateResult.Success && templateResult.regularExpression) {
             return {
                 title: this.prData.pull_request.title,
                 regularExpression: templateResult.regularExpression
             };
+        }
+
         return null;
     }
 
@@ -61,7 +65,7 @@ export class Prace {
      * @param repoInfo Name and owner of the repo
      * @param result Type of result and example message for incorrect cases
      */
-    public async SetCheckStatus(
+    public async setCheckStatus(
         repoInfo: RepoInfo,
         pullRequestNumber: number,
         result: TitleEvaluationResult
@@ -81,6 +85,7 @@ export class Prace {
         const evaluation: TitleEvaluationResult = evaluateTitle(data);
 
         await this.githubApi.setCheckStatus(this.repoInfo, this.prData.number, evaluation);
+
         return evaluation.resultType === TitleResult.Correct ? CheckResult.CorrectTitle : CheckResult.HadError;
     }
 }

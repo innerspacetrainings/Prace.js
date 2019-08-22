@@ -1,4 +1,4 @@
-import { IConfig, ILogger, IRequest, DefaultRequestClient } from '.';
+import { DefaultRequestClient, IConfig, ILogger, IRequest } from '.';
 
 /** Default config which extracts it's values from env */
 export class DefaultConfig implements IConfig {
@@ -9,7 +9,7 @@ export class DefaultConfig implements IConfig {
     private readonly privateKey: string;
 
     /**
-     * Default config. Values can be send here if you don't wish to create your own object
+     * Default config. Values can be set here if you don't wish to create your own implementation
      * for the request object, `DefaultRequestClient` will be used
      * @param appId Id from the Github App. If undefined it will be obtained from the env `GITHUB_APP_ID`
      * @param privateKey Content of the private key. If undefined it will obtained from the env `GITHUB_PRIVATE_KEY`
@@ -19,7 +19,11 @@ export class DefaultConfig implements IConfig {
         this.gitHubAppId = appId ? appId : Number(process.env.GITHUB_APP_ID);
         this.logger = logger ? logger : console;
         const key = privateKey ? privateKey : process.env.GITHUB_PRIVATE_KEY;
-        if (key === undefined) throw TypeError('private key can not be undefined!');
+        if (isNaN(this.gitHubAppId) || this.gitHubAppId <= 0) {
+            throw TypeError('Github app id must have a valid number!');
+        } else if (key === undefined) {
+            throw TypeError('private key can not be undefined!');
+        }
         this.privateKey = key;
         this.request = new DefaultRequestClient(this.logger);
     }
