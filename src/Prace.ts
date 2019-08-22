@@ -11,7 +11,7 @@ export enum CheckResult {
     CorrectTitle = 'Correct Title'
 }
 
-/** Github App Entry point. This class manage the logic of the system */
+/** Github App Entry point. This class manages the logic of the system */
 export class Prace {
     /**
      * Builds the Prace app object. If data is null or closed, it returns a null object instead

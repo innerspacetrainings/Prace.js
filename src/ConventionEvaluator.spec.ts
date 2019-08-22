@@ -15,6 +15,11 @@ describe('Convention Evaluator test', () => {
         expect(evaluator.titleMatches()).to.be.false;
     });
 
+    it('Should return true to valid regex', () => {
+        const evaluator = new ConventionEvaluator('etc', '[ValidRegex|\ns\r]|Result');
+        expect(evaluator.isValidRegex()).to.be.true;
+    });
+
     it('Should return false to invalid regex', () => {
         const evaluator = new ConventionEvaluator('etc', ']Invalid regex[');
         expect(evaluator.isValidRegex()).to.be.false;
