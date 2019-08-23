@@ -25,8 +25,11 @@ export function evaluateTitle(result: PullRequestTitleAndRegex): TitleEvaluation
     const { title, regularExpression } = result;
     const evaluator = new ConventionEvaluator(title, regularExpression);
 
-    if (!evaluator.isValidRegex()) {
-        return { resultType: TitleResult.InvalidRegex, exampleMessage: 'Invalid Regex' };
+    const regexStatus = evaluator.isValidRegex();
+    if (!regexStatus.valid) {
+        const exampleMessage: string = regexStatus.errorMessage ? regexStatus.errorMessage : 'Invalid Regex';
+
+        return { resultType: TitleResult.InvalidRegex, exampleMessage };
     } else if (evaluator.titleMatches()) {
         return { resultType: TitleResult.Correct };
     }

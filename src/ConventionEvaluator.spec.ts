@@ -17,12 +17,21 @@ describe('Convention Evaluator test', () => {
 
     it('Should return true to valid regex', () => {
         const evaluator = new ConventionEvaluator('etc', '[ValidRegex|\ns\r]|Result');
-        expect(evaluator.isValidRegex()).to.be.true;
+        expect(evaluator.isValidRegex().valid).to.be.true;
     });
 
-    it('Should return false to invalid regex', () => {
-        const evaluator = new ConventionEvaluator('etc', ']Invalid regex[');
-        expect(evaluator.isValidRegex()).to.be.false;
+    it('Should return false without message to null regex', () => {
+        const evaluator = new ConventionEvaluator('etc', '');
+        const regexStatus = evaluator.isValidRegex();
+        expect(regexStatus.valid).to.be.false;
+        expect(regexStatus.errorMessage).to.be.undefined;
+    });
+
+    it('Should return invalid regex message to invalid regex', () => {
+        const evaluator = new ConventionEvaluator('etc', '[0-9]++');
+        const regexStatus = evaluator.isValidRegex();
+        expect(regexStatus.valid).to.be.false;
+        expect(regexStatus.errorMessage).to.contain('Invalid regular expression');
     });
 
     it('Should get correct ticket information', () => {

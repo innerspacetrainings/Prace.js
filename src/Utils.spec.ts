@@ -23,7 +23,7 @@ describe('Utils test', () => {
         const invalidTitle: string = 'etcetera';
         const titleEvaluated = evaluateTitle({ title: invalidTitle, regularExpression: '][' });
         expect(titleEvaluated.resultType).to.be.equal(TitleResult.InvalidRegex);
-        expect(titleEvaluated.exampleMessage).to.be.equal('Invalid Regex');
+        expect(titleEvaluated.exampleMessage).to.contain('Invalid regular expression:');
     });
 
     it('Should return message if it can extract ticket number', () => {

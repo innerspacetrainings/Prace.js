@@ -2,9 +2,9 @@
 export class ConventionEvaluator {
     constructor(private readonly title: string, private readonly regularExpression: string) {}
 
-    public isValidRegex(): boolean {
+    public isValidRegex(): RegexStatus {
         if (this.regularExpression === null || this.regularExpression.length === 0) {
-            return false;
+            return { valid: false };
         }
 
         const parts = this.regularExpression.split('/');
@@ -17,9 +17,9 @@ export class ConventionEvaluator {
         try {
             const newRegex: RegExp = new RegExp(regex, options);
 
-            return newRegex !== null;
+            return { valid: newRegex !== null };
         } catch (e) {
-            return false;
+            return { valid: false, errorMessage: e.message };
         }
     }
 
@@ -60,4 +60,9 @@ export class ConventionEvaluator {
 interface TicketInformation {
     ticketKey: string;
     ticketNumber: number;
+}
+
+interface RegexStatus {
+    valid: boolean;
+    errorMessage?: string;
 }
