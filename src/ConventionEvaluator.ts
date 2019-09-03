@@ -7,15 +7,8 @@ export class ConventionEvaluator {
             return { valid: false };
         }
 
-        const parts = this.regularExpression.split('/');
-        let regex = this.regularExpression,
-            options = '';
-        if (parts.length > 1) {
-            regex = parts[1];
-            options = parts[2];
-        }
         try {
-            const newRegex: RegExp = new RegExp(regex, options);
+            const newRegex: RegExp = new RegExp(this.regularExpression);
 
             return { valid: newRegex !== null };
         } catch (e) {

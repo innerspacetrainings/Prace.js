@@ -20,10 +20,11 @@ export class DefaultConfig implements IConfig {
         this.logger = logger ? logger : console;
         const key = privateKey ? privateKey : process.env.GITHUB_PRIVATE_KEY;
         if (isNaN(this.gitHubAppId) || this.gitHubAppId <= 0) {
-            throw TypeError('Github app id must have a valid number!');
+            throw TypeError('Github app id must be a valid number!');
         } else if (key === undefined) {
-            throw TypeError('private key can not be undefined!');
+            throw TypeError('Private key can not be undefined!');
         }
+
         this.privateKey = key;
         this.request = new DefaultRequestClient(this.logger);
     }
