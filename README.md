@@ -7,7 +7,7 @@ Pull Request Automated Convention Enforcer
 <!--img src="https://raw.githubusercontent.com/Bullrich/Prace.js/develop/media/prace-logo.png" width="250"  height="250"-->
 </p>
 
-Checks that the PR title complies with a given Regular expression.
+Checks that the PR title complies with a given regular expression.
 
 ## Repository configuration file
 
@@ -22,7 +22,7 @@ An example to keep the following convention: `[XX-123] Here goes a description` 
 
 ## Getting started
 
-If you wish to host your own instance you can do with ease.
+If you wish to host your own instance you can do that with ease.
 
 ### Prerequisites
 - Node >= 8
@@ -37,7 +37,7 @@ If you wish to host your own instance you can do with ease.
      - Path: `.prace`
    - Suscribe to events: 
      - [x] Pull request
- - Create a base project node project
+ - Create a base node project project
  - Run `npm install --save prace express`.
  - Add your [Github App id](https://developer.github.com/v3/apps/) to the environment variable: `GITHUB_APP_ID`
  - Add your [Github private key](https://developer.github.com/apps/building-github-apps/authenticating-with-github-apps/#generating-a-private-key) to the environment variable `GITHUB_PRIVATE_KEY`.
@@ -66,7 +66,7 @@ app.post('/', async (req, res) => {
 app.listen(port, () => console.log(`Example app listening on port ${port}!`));
 ```
 
- - Finally, set the [Webhook URL](https://developer.github.com/webhooks/) of your Github app to your server url.
+ - Finally, set the [Webhook URL](https://developer.github.com/webhooks/) of your GitHub app to your server url.
 
 #### More configurations
 
@@ -120,7 +120,7 @@ export interface IRequest {
 #### Object to send to prace
 
 By default Prace handles a json object with the pull request data. 
-It must be a [Github webhook payload for a Pull Request](https://developer.github.com/v3/activity/events/types/#pullrequestevent). 
+It must be a [GitHub webhook payload for a Pull Request](https://developer.github.com/v3/activity/events/types/#pullrequestevent). 
 
 Any other payload will throw an error as Prace won't be able to parse it.
 
