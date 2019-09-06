@@ -8,8 +8,21 @@
   "module": "build/module/index.js",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com:Bullrich/Prace.js.git"
+    "url": "git+https://github.com:innerspacetrainings/Prace.js.git"
   },
+  "bugs": {
+    "url": "https://github.com/innerspacetrainings/Prace.js/issues"
+  },
+  "author": {
+    "name": "Innerspace GmbH",
+    "url": "https://www.innerspace.eu/"
+  },
+  "maintainers": [
+    {
+      "name": "Javier Bullrich",
+      "email": "javier.bullrich@innerspace.eu"
+    }
+  ],
   "private": true,
   "scripts": {
     "describe": "npm-scripts-info",
@@ -56,7 +69,6 @@
     "title",
     "regex title"
   ],
-  "author": "Javier Bullrich <jbullrich@innerspace.eu>",
   "license": "MIT",
   "dependencies": {
     "@octokit/app": "^4.1.0",
