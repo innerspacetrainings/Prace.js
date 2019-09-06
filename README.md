@@ -37,7 +37,7 @@ If you wish to host your own instance you can do that with ease.
      - Path: `.prace`
    - Suscribe to events: 
      - [x] Pull request
- - Create a base node project project
+ - Create a base node project
  - Run `npm install --save prace express`.
  - Add your [Github App id](https://developer.github.com/v3/apps/) to the environment variable: `GITHUB_APP_ID`
  - Add your [Github private key](https://developer.github.com/apps/building-github-apps/authenticating-with-github-apps/#generating-a-private-key) to the environment variable `GITHUB_PRIVATE_KEY`.
