@@ -79,9 +79,9 @@ This is the interface for it:
 /** Interface with all the configurations for the project */
 interface IConfig {
     /** ID given by github to define the App id */
-    GitHubAppId: number;
+    gitHubAppId: number;
     /** Name of the status check. Appears on the status section of Github's Pull request */
-    CheckName: string;
+    checkName: string;
     /** Logger to which the app send messages. */
     logger: ILogger;
     /** Class in charge of requesting the github api for the .prace file through a https call */
