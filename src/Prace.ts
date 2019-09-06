@@ -1,5 +1,10 @@
 import { IConfig, TemplateResult } from './Config';
-import { evaluateTitle, PullRequestTitleAndRegex, TitleEvaluationResult, TitleResult } from './Utils';
+import {
+	evaluateTitle,
+	PullRequestTitleAndRegex,
+	TitleEvaluationResult,
+	TitleResult
+} from './Utils';
 import IGithubApi, { RepoInfo } from './Github/IGithubApi';
 import { GithubApi } from './Github/GithubApi';
 import { PullRequestData } from './PullRequestData';
@@ -34,9 +39,15 @@ export class Prace {
 	private readonly githubApi: IGithubApi;
 	private readonly repoInfo: RepoInfo;
 
-	private constructor(private readonly prData: PullRequestData, config: IConfig) {
+	private constructor(
+		private readonly prData: PullRequestData,
+		config: IConfig
+	) {
 		this.githubApi = new GithubApi(prData.installation.id, config);
-		this.repoInfo = { repo: prData.repository.name, owner: prData.repository.full_name.split('/')[0] };
+		this.repoInfo = {
+			repo: prData.repository.name,
+			owner: prData.repository.full_name.split('/')[0]
+		};
 	}
 
 	/**
@@ -50,7 +61,10 @@ export class Prace {
 			this.prData.pull_request.head.ref
 		);
 
-		if (templateResult.result === TemplateResult.Success && templateResult.regularExpression) {
+		if (
+			templateResult.result === TemplateResult.Success &&
+			templateResult.regularExpression
+		) {
 			return {
 				title: this.prData.pull_request.title,
 				regularExpression: templateResult.regularExpression
@@ -70,7 +84,11 @@ export class Prace {
 		pullRequestNumber: number,
 		result: TitleEvaluationResult
 	): Promise<void> {
-		await this.githubApi.setCheckStatus(repoInfo, pullRequestNumber, result);
+		await this.githubApi.setCheckStatus(
+			repoInfo,
+			pullRequestNumber,
+			result
+		);
 	}
 
 	/** Run automatic check to the pull request. Let Prace handle the config file and the result
@@ -84,8 +102,14 @@ export class Prace {
 
 		const evaluation: TitleEvaluationResult = evaluateTitle(data);
 
-		await this.githubApi.setCheckStatus(this.repoInfo, this.prData.number, evaluation);
+		await this.githubApi.setCheckStatus(
+			this.repoInfo,
+			this.prData.number,
+			evaluation
+		);
 
-		return evaluation.resultType === TitleResult.Correct ? CheckResult.CorrectTitle : CheckResult.HadError;
+		return evaluation.resultType === TitleResult.Correct
+			? CheckResult.CorrectTitle
+			: CheckResult.HadError;
 	}
 }

@@ -21,13 +21,17 @@ export interface PullRequestTitleAndRegex {
  * Parse the regex and the title and check if the title complies with the regex.
  * @param result Title and regex expression.
  */
-export function evaluateTitle(result: PullRequestTitleAndRegex): TitleEvaluationResult {
+export function evaluateTitle(
+	result: PullRequestTitleAndRegex
+): TitleEvaluationResult {
 	const { title, regularExpression } = result;
 	const evaluator = new ConventionEvaluator(title, regularExpression);
 
 	const regexStatus = evaluator.isValidRegex();
 	if (!regexStatus.valid) {
-		const exampleMessage: string = regexStatus.errorMessage ? regexStatus.errorMessage : 'Invalid Regex';
+		const exampleMessage: string = regexStatus.errorMessage
+			? regexStatus.errorMessage
+			: 'Invalid Regex';
 
 		return { resultType: TitleResult.InvalidRegex, exampleMessage };
 	} else if (evaluator.titleMatches()) {
@@ -38,8 +42,16 @@ export function evaluateTitle(result: PullRequestTitleAndRegex): TitleEvaluation
 	if (ticketInformation) {
 		const { ticketKey, ticketNumber } = ticketInformation;
 		const exampleTitle = `[${ticketKey}-${ticketNumber}] Description of the ticket`;
-		if (new ConventionEvaluator(exampleTitle, regularExpression).titleMatches()) {
-			return { resultType: TitleResult.Invalid, exampleMessage: `Example Title: ${exampleTitle}` };
+		if (
+			new ConventionEvaluator(
+				exampleTitle,
+				regularExpression
+			).titleMatches()
+		) {
+			return {
+				resultType: TitleResult.Invalid,
+				exampleMessage: `Example Title: ${exampleTitle}`
+			};
 		}
 	}
 

@@ -6,17 +6,26 @@ describe('Convention Evaluator test', () => {
 	const DefaultValidPattern: string = '\\[BLOB-\\d*\\]\\s[\\w\\s]*';
 
 	it('Should return true to valid title', () => {
-		const evaluator = new ConventionEvaluator('[BLOB-1234] This is a valid title', DefaultValidPattern);
+		const evaluator = new ConventionEvaluator(
+			'[BLOB-1234] This is a valid title',
+			DefaultValidPattern
+		);
 		expect(evaluator.titleMatches()).to.be.true;
 	});
 
 	it('Should return false to invalid title', () => {
-		const evaluator = new ConventionEvaluator('invalid title', DefaultValidPattern);
+		const evaluator = new ConventionEvaluator(
+			'invalid title',
+			DefaultValidPattern
+		);
 		expect(evaluator.titleMatches()).to.be.false;
 	});
 
 	it('Should return true to valid regex', () => {
-		const evaluator = new ConventionEvaluator('etc', '[ValidRegex|\ns\r]|Result');
+		const evaluator = new ConventionEvaluator(
+			'etc',
+			'[ValidRegex|\ns\r]|Result'
+		);
 		expect(evaluator.isValidRegex().valid).to.be.true;
 	});
 
@@ -31,11 +40,16 @@ describe('Convention Evaluator test', () => {
 		const evaluator = new ConventionEvaluator('etc', '[0-9]++');
 		const regexStatus = evaluator.isValidRegex();
 		expect(regexStatus.valid).to.be.false;
-		expect(regexStatus.errorMessage).to.contain('Invalid regular expression');
+		expect(regexStatus.errorMessage).to.contain(
+			'Invalid regular expression'
+		);
 	});
 
 	it('Should get correct ticket information', () => {
-		const evaluator = new ConventionEvaluator('feature/blob 123', DefaultValidPattern);
+		const evaluator = new ConventionEvaluator(
+			'feature/blob 123',
+			DefaultValidPattern
+		);
 		const ticketInformation = evaluator.getTicketInformation();
 		expect(ticketInformation).not.to.be.null;
 		if (ticketInformation) {
@@ -47,7 +61,10 @@ describe('Convention Evaluator test', () => {
 	});
 
 	it('Should return null when getting number from invalid non standard title', () => {
-		const evaluator = new ConventionEvaluator('Functionality without number', DefaultValidPattern);
+		const evaluator = new ConventionEvaluator(
+			'Functionality without number',
+			DefaultValidPattern
+		);
 		const ticketInformation = evaluator.getTicketInformation();
 		expect(ticketInformation).to.be.null;
 	});

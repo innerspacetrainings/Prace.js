@@ -10,7 +10,10 @@ export class GithubApi implements IGithubApi {
 
 	constructor(readonly installationId: number, readonly config: IConfig) {}
 
-	public async getTemplateConvention(repoInfo: RepoInfo, branchName: string): Promise<TemplateFetchResult> {
+	public async getTemplateConvention(
+		repoInfo: RepoInfo,
+		branchName: string
+	): Promise<TemplateFetchResult> {
 		const octokit = await this.getOctokit();
 		const { owner, repo } = repoInfo;
 		try {
@@ -54,7 +57,11 @@ export class GithubApi implements IGithubApi {
 		const octokit = await this.getOctokit();
 		const { owner, repo } = repoInfo;
 
-		const pullRequest = await octokit.pulls.get({ owner, repo, pull_number: pullRequestNumber });
+		const pullRequest = await octokit.pulls.get({
+			owner,
+			repo,
+			pull_number: pullRequestNumber
+		});
 
 		const checksCall = await octokit.checks.listForRef({
 			owner,
@@ -62,11 +69,19 @@ export class GithubApi implements IGithubApi {
 			ref: pullRequest.data.head.sha,
 			check_name: this.config.checkName
 		});
-		const lastCheck = checksCall.data.check_runs.find((ch) => ch.id === this.config.gitHubAppId);
+		const lastCheck = checksCall.data.check_runs.find(
+			(ch) => ch.id === this.config.gitHubAppId
+		);
 
-		const checkOutput = this.generateCheckRunOutput(repoInfo, result, pullRequest.data);
+		const checkOutput = this.generateCheckRunOutput(
+			repoInfo,
+			result,
+			pullRequest.data
+		);
 		if (lastCheck) {
-			await octokit.checks.update(Object.assign(checkOutput, { check_run_id: lastCheck.id }));
+			await octokit.checks.update(
+				Object.assign(checkOutput, { check_run_id: lastCheck.id })
+			);
 		} else {
 			await octokit.checks.create(checkOutput);
 		}
@@ -80,9 +95,11 @@ export class GithubApi implements IGithubApi {
 		const ppk = await this.config.getParsedPrivateKey();
 
 		const app = new App({ id: this.config.gitHubAppId, privateKey: ppk });
-		const installationAccessAccessToken = await app.getInstallationAccessToken({
-			installationId: this.installationId
-		});
+		const installationAccessAccessToken = await app.getInstallationAccessToken(
+			{
+				installationId: this.installationId
+			}
+		);
 		this.octokit = new Octokit({
 			async auth() {
 				return `token ${installationAccessAccessToken}`;
@@ -111,7 +128,8 @@ export class GithubApi implements IGithubApi {
 				break;
 			case TitleResult.InvalidRegex:
 				title = 'Invalid regex';
-				summary = 'Configuration file is invalid. Be sure to set the correct config file.';
+				summary =
+					'Configuration file is invalid. Be sure to set the correct config file.';
 				break;
 			default:
 				throw new Error('Invalid result type');
@@ -128,7 +146,10 @@ export class GithubApi implements IGithubApi {
 			head_sha: PR.head.sha,
 			status: 'completed',
 			started_at: now.toISOString(),
-			conclusion: result.resultType === TitleResult.Correct ? 'success' : 'failure',
+			conclusion:
+				result.resultType === TitleResult.Correct
+					? 'success'
+					: 'failure',
 			completed_at: now.toISOString(),
 			output: { title, summary }
 		};

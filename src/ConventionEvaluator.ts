@@ -1,9 +1,15 @@
 /** Logic that analyze a title and a regex to see if it complies */
 export class ConventionEvaluator {
-	constructor(private readonly title: string, private readonly regularExpression: string) {}
+	constructor(
+		private readonly title: string,
+		private readonly regularExpression: string
+	) {}
 
 	public isValidRegex(): RegexStatus {
-		if (this.regularExpression === null || this.regularExpression.length === 0) {
+		if (
+			this.regularExpression === null ||
+			this.regularExpression.length === 0
+		) {
 			return { valid: false };
 		}
 
@@ -37,7 +43,10 @@ export class ConventionEvaluator {
 				const currentValue: string | any = currentMatch;
 				if (Number(currentValue) > 0) {
 					ticketNumber = +currentValue;
-				} else if (typeof currentValue === 'string' && currentValue !== this.title) {
+				} else if (
+					typeof currentValue === 'string' &&
+					currentValue !== this.title
+				) {
 					ticketKey = currentValue.toUpperCase();
 				}
 			}
