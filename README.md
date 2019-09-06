@@ -1,4 +1,4 @@
-# PRACE
+# Prace.js
 
 Pull Request Automated Convention Enforcer
 

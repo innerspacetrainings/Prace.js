@@ -19,7 +19,7 @@
     ],
     "indent": [
       true,
-      "spaces",
+      "tabs",
       4
     ],
     "interface-name": false,
@@ -29,6 +29,7 @@
     "member-access": false,
     "variable-name": false,
     "newline-before-return": true,
-    "one-variable-per-declaration": false
+    "one-variable-per-declaration": false,
+    "jsdoc-format": false
   }
 }
