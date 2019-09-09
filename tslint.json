@@ -2,7 +2,8 @@
   "defaultSeverity": "warning",
   "extends": [
     "tslint:recommended",
-    "tslint-config-prettier"
+    "tslint-config-prettier",
+    "tslint-no-unused-expression-chai"
   ],
   "linterOptions": {
     "exclude": [
