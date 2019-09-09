@@ -124,7 +124,10 @@ export class GithubApi implements IGithubApi {
 				break;
 			case TitleResult.Invalid:
 				title = 'Incorrect title';
-				summary = `Title has incorrect form. Be sure to keep the required conventions\n${result.exampleMessage}`;
+				const exampleMessage = result.exampleMessage
+					? '\n' + result.exampleMessage
+					: '';
+				summary = `Title has incorrect form. Be sure to keep the required conventions${exampleMessage}`;
 				break;
 			case TitleResult.InvalidRegex:
 				title = 'Invalid regex';
