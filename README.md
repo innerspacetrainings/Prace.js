@@ -4,7 +4,7 @@ Pull Request Automated Convention Enforcer
 
 <p align="center"> 
 <img src="media/prace-logo.png" width="250"  height="250">
-<!--img src="https://raw.githubusercontent.com/Bullrich/Prace.js/develop/media/prace-logo.png" width="250"  height="250"-->
+<!--img src="https://raw.githubusercontent.com/innerspacetrainings/Prace.js/master/media/prace-logo.png" width="250"  height="250"-->
 </p>
 
 Checks that the PR title complies with a given regular expression.
@@ -22,7 +22,7 @@ An example to keep the following convention: `[XX-123] Here goes a description` 
 
 ## Getting started
 
-If you wish to host your own instance you can do that with ease.
+If you want to host your own instance you can include prace in express or other common JavaScript web frameworks.
 
 ### Prerequisites
 - Node >= 8

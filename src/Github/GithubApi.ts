@@ -24,7 +24,7 @@ export class GithubApi implements IGithubApi {
 				ref: branchName
 			});
 
-			if (configFile === null || configFile.data === null) {
+			if (!configFile || !configFile.data) {
 				this.config.logger.log('No .prace file found');
 
 				return { result: TemplateResult.NoPraceFile };

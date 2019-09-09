@@ -36,7 +36,7 @@ export class ConventionEvaluator {
 	 */
 	public getTicketInformation(): TicketInformation | null {
 		const match = this.title.match('\\w*\\/(\\w*)\\s(\\d*)');
-		if (match !== null && match.length > 1) {
+		if (match && match.length > 1) {
 			let ticketNumber: number = -1;
 			let ticketKey: null | string = null;
 			for (const currentMatch of match) {
