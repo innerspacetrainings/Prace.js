@@ -43,25 +43,38 @@ If you wish to host your own instance you can do that with ease.
  - Add your [Github private key](https://developer.github.com/apps/building-github-apps/authenticating-with-github-apps/#generating-a-private-key) to the environment variable `GITHUB_PRIVATE_KEY`.
  - Copy the following script and deploy it:
 
-```typescript
-import express from 'express';
-import {Prace, DefaultConfig} from "prace";
+```javascript
+const Prace = require('prace');
+const express = require('express');
+
+const prace = Prace.Prace;
+const defaultConfig = Prace.DefaultConfig;
 
 const app = express();
 const port = 3000;
 
+// IMPORTANT. GitHub sends the body in a json
 app.use(express.json());
+const config = new DefaultConfig();
 
-app.post('/', async (req, res) => {
-    const config = new DefaultConfig();
-    const praceApp = Prace.Build(req.body, config);
-    if (praceApp) {
-        const checkExecution = await praceApp.ExecuteCheck();
-        console.log('Executed app with result', checkExecution);
-    }
-    res.send('Received!')
-})
-;
+app.post('/', (req, res) => {
+  const praceApp = prace.Build(req.body, config);
+
+  if (praceApp) {
+    praceApp.executeCheck()
+      .then(result => {
+        console.log('Executed with result', result);
+        res.send('Received!');
+      })
+      .catch(err => {
+        console.warn('Failed with error', err);
+        res.send('Failed to execute');
+      });
+  } else {
+    console.warn('Could not instantiate prace app');
+    res.send('Nothing happened');
+  }
+});
 
 app.listen(port, () => console.log(`Example app listening on port ${port}!`));
 ```
@@ -88,7 +101,7 @@ interface IConfig {
     request: IRequest;
 
     /** The App private key. This method is awaited, so the file can be loaded from an external source */
-    GetParsedPrivateKey(): Promise<string>;
+    getParsedPrivateKey(): Promise<string>;
 }
 
 interface ILogger {
