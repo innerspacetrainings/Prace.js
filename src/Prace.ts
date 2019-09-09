@@ -25,15 +25,15 @@ export class Prace {
 	 * @constructor
 	 */
 	public static Build(pr: PullRequestData, config: IConfig): Prace | null {
-		if (pr === null || pr.pull_request === null) {
-			return null;
-		} else if (pr.action === 'closed') {
+		if (pr && pr.action === 'closed') {
 			config.logger.log(`Ignoring action ${pr.action}`);
-
-			return null;
+		} else if (pr && pr.pull_request) {
+			return new Prace(pr, config);
+		} else {
+			config.logger.error('pr or pr.pull_request is null!');
 		}
 
-		return new Prace(pr, config);
+		return null;
 	}
 
 	private readonly githubApi: IGithubApi;
