@@ -6,7 +6,6 @@ export interface PullRequestData {
 		title: string,
 		body: string,
 		head: {
-			label: string;
 			// branch name
 			ref: string;
 		},

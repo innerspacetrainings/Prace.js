@@ -1,4 +1,4 @@
-import { TitleEvaluationResult } from '../Utils';
+import { TitleEvaluationResult } from '../Evaluator/Utils';
 import { TemplateFetchResult } from '../Config';
 
 export default interface IGithubApi {

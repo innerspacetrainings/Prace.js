@@ -4,7 +4,7 @@ import {
 	PullRequestTitleAndRegex,
 	TitleEvaluationResult,
 	TitleResult
-} from './Utils';
+} from './Evaluator/Utils';
 import IGithubApi, { RepoInfo } from './Github/IGithubApi';
 import { GithubApi } from './Github/GithubApi';
 import { PullRequestData } from './PullRequestData';

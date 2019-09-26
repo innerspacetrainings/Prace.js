@@ -1,6 +1,6 @@
 import { App } from '@octokit/app';
 import Octokit, { ChecksCreateParamsOutput } from '@octokit/rest';
-import { TitleEvaluationResult, TitleResult } from '../Utils';
+import { TitleEvaluationResult, TitleResult } from '../Evaluator/Utils';
 import IGithubApi, { RepoInfo } from './IGithubApi';
 import { IConfig, TemplateFetchResult, TemplateResult } from '../Config';
 

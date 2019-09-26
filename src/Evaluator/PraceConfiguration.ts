@@ -12,7 +12,7 @@ export default interface PraceConfig {
 	labels: string[];
 }
 
-interface Pattern {
+export interface Pattern {
 	pattern: string,
 	error: string
 }
