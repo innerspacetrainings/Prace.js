@@ -1,8 +1,8 @@
 /** Configuration file structure */
 export default interface PraceConfig {
-	title: Pattern[];
-	body: Pattern[];
-	branch: Pattern[];
+	title: Pattern;
+	body: Pattern;
+	branch: Pattern;
 	reviewer: {
 		minimum: number;
 		users: string[];
@@ -13,6 +13,6 @@ export default interface PraceConfig {
 }
 
 export interface Pattern {
-	pattern: string,
+	patterns: string[],
 	error: string
 }
