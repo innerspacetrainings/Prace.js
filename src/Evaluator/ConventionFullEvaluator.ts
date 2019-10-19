@@ -9,22 +9,30 @@ export class ConventionFullEvaluator {
 	}
 
 	public runEvaluations(): CheckStatus[] {
-		const evaluations = [this.evaluateTitle.bind(this), this.evaluateBody.bind(this),
-			this.evaluateBranchName.bind(this), this.evaluateAdditions.bind(this),
-			this.evaluateReviewers.bind(this), this.evaluateLabels.bind(this)];
 
-		const patterns: string[] = [this.praceConfig.title, this.praceConfig.body, this.praceConfig.branch]
-			.map(pattern => pattern.patterns).flat(1);
-		const invalidExpressions: CheckStatus[] = this.evaluateRegularExpressions(patterns);
+		const filteredPatterns: Pattern[] = [this.praceConfig.title, this.praceConfig.body, this.praceConfig.branch]
+			.filter(p => p !== undefined) as Pattern[];
+		const invalidExpressions: CheckStatus[] = this.evaluateRegularExpressionFromPatterns(filteredPatterns);
 
 		if (invalidExpressions.length > 0) {
 			return invalidExpressions;
 		}
 
+		const evaluations = [this.evaluateTitle.bind(this), this.evaluateBody.bind(this),
+			this.evaluateBranchName.bind(this), this.evaluateAdditions.bind(this),
+			this.evaluateReviewers.bind(this), this.evaluateLabels.bind(this)];
+
 		return this.runArrayOfEvaluations(evaluations);
 	}
 
-	private runArrayOfEvaluations(callback: (() => CheckStatus)[]) {
+	private evaluateRegularExpressionFromPatterns(patterns: Pattern[]): CheckStatus[] {
+		const expressions: string[] = patterns.filter(p => ConventionFullEvaluator.isArrayValidAndNotEmpty(p.patterns))
+			.map(p => p.patterns).flat(1);
+
+		return this.evaluateRegularExpressions(expressions);
+	}
+
+	private runArrayOfEvaluations(callback: (() => CheckStatus)[]): CheckStatus[] {
 		const results: CheckStatus[] = [];
 		for (const call of callback) {
 			const result = call();
@@ -48,7 +56,8 @@ export class ConventionFullEvaluator {
 	}
 
 	public evaluateAdditions(): CheckStatus {
-		if (this.prData.pull_request.additions > this.praceConfig.additions) {
+		if (this.praceConfig.additions !== undefined &&
+			this.prData.pull_request.additions > this.praceConfig.additions) {
 			return {
 				valid: false,
 				errorMessage: `Exceeded additions limits. Maximum allowed additions are ${this.praceConfig.additions}`
@@ -69,8 +78,8 @@ export class ConventionFullEvaluator {
 			return { valid: false, errorMessage: `You have to assign at least ${reviewers.minimum} reviewers` };
 		}
 
-		const users = reviewers.users;
-		if (ConventionFullEvaluator.isArrayValidAndNotEmpty(users)) {
+		if (ConventionFullEvaluator.isArrayValidAndNotEmpty(reviewers.users)) {
+			const users: string[] = reviewers.users as string[];
 			const error: CheckStatus = {
 				valid: false,
 				errorMessage: `Must have, at least, one of the following users as reviewer: ${users.join(', ')}`
@@ -89,9 +98,10 @@ export class ConventionFullEvaluator {
 		}
 
 		if (ConventionFullEvaluator.isArrayValidAndNotEmpty(reviewers.teams)) {
+			const requiredTeams: string[] = reviewers.teams as string[];
 			const error: CheckStatus = {
 				valid: false,
-				errorMessage: `Must have, at least, one of the following teams as reviewer: ${reviewers.teams.join(', ')}`
+				errorMessage: `Must have, at least, one of the following teams as reviewer: ${requiredTeams.join(', ')}`
 			};
 			const prTeamsArray = this.prData.pull_request.requested_teams;
 			if (!ConventionFullEvaluator.isArrayValidAndNotEmpty(prTeamsArray)) {
@@ -101,7 +111,7 @@ export class ConventionFullEvaluator {
 			const prTeamsSlugs = prTeamsArray.map(t => t.slug);
 			const prTeamsNames = prTeamsArray.map(t => t.name);
 			const teams = prTeamsSlugs.concat(prTeamsNames);
-			if (!teams.some(t => reviewers.teams.includes(t))) {
+			if (!teams.some(t => requiredTeams.includes(t))) {
 				return error;
 			}
 		}
@@ -114,7 +124,9 @@ export class ConventionFullEvaluator {
 			return { valid: true };
 		}
 
-		const errorMessage: string = 'Must have, at least, one of the following labels' + this.praceConfig.labels.join(', ');
+		const requiredLabels: string[] = this.praceConfig.labels as string[];
+
+		const errorMessage: string = 'Must have, at least, one of the following labels ' + requiredLabels.join(', ');
 
 		if (!ConventionFullEvaluator.isArrayValidAndNotEmpty(this.prData.pull_request.labels)) {
 			return { valid: false, errorMessage };
@@ -122,7 +134,7 @@ export class ConventionFullEvaluator {
 
 		const labels = this.prData.pull_request.labels.map(l => l.name);
 
-		if (!labels.some(label => this.praceConfig.labels.includes(label))) {
+		if (!labels.some(label => requiredLabels.includes(label))) {
 			return { valid: false, errorMessage };
 		}
 
@@ -148,9 +160,12 @@ export class ConventionFullEvaluator {
 		return results;
 	}
 
-	private evaluateAgainstPattern(valueToTest: string, pattern: Pattern): CheckStatus {
+	private evaluateAgainstPattern(valueToTest: string, pattern?: Pattern): CheckStatus {
+		if (pattern === undefined) {
+			return { valid: true };
+		}
 
-		for (const expression in pattern.patterns) {
+		for (const expression  of pattern.patterns) {
 			const regexp = new RegExp(expression);
 
 			if (regexp.test(valueToTest)) {
@@ -175,8 +190,8 @@ export class ConventionFullEvaluator {
 		}
 	}
 
-	private static isArrayValidAndNotEmpty(array: any[]): boolean {
-		return array && array.length > 0;
+	private static isArrayValidAndNotEmpty(array: any[] | undefined): boolean {
+		return array !== undefined && array.length > 0;
 	}
 }
 

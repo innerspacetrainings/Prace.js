@@ -7,15 +7,12 @@ import { ConventionFullEvaluator } from './ConventionFullEvaluator';
 describe('Convention Evaluator Tests', () => {
 	const exampleConfiguration: PraceConfiguration = {
 		title:
-			[
-				{
-					pattern: '\\[BLOB-\\d*\\]\\s[\\w\\s]*',
-					error: 'It must include [BLOB-number]'
-				}
-			]
-		,
-		body: [],
-		branch: [],
+			{
+				patterns: ['\\[BLOB-\\d*\\]\\s[\\w\\s]*'],
+				error: 'It must include [BLOB-number]'
+			},
+		body: undefined,
+		branch: undefined,
 		reviewer: {
 			minimum: 2,
 			users: ['Juan', 'Tomas'],
@@ -64,6 +61,6 @@ describe('Convention Evaluator Tests', () => {
 	it('Should example be valid for example request', () => {
 		const convention = new ConventionFullEvaluator(exampleData as PullRequestData, exampleConfiguration);
 		const result = convention.runEvaluations();
-		expect(result.valid).to.be.true;
+		expect(result.length === 0).to.be.true;
 	});
 });

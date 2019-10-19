@@ -1,15 +1,15 @@
 /** Configuration file structure */
 export default interface PraceConfig {
-	title: Pattern;
-	body: Pattern;
-	branch: Pattern;
-	reviewer: {
+	title?: Pattern;
+	body?: Pattern;
+	branch?: Pattern;
+	reviewer?: {
 		minimum: number;
-		users: string[];
-		teams: string[];
+		users?: string[];
+		teams?: string[];
 	}
-	additions: number;
-	labels: string[];
+	additions?: number;
+	labels?: string[];
 }
 
 export interface Pattern {
