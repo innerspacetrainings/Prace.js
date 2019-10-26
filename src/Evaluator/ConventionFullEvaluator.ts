@@ -2,27 +2,46 @@ import { PullRequestData } from '../PullRequestData';
 import PraceConfiguration, { Pattern } from './PraceConfiguration';
 
 export class ConventionFullEvaluator {
+	public readonly isRegexValid: boolean;
+	public readonly regexResult: RegexResult;
+
 	constructor(
 		private readonly prData: PullRequestData,
 		private readonly praceConfig: PraceConfiguration
 	) {
+		const filteredPatterns: Pattern[] = [praceConfig.title, praceConfig.body, praceConfig.branch]
+			.filter(p => p !== undefined) as Pattern[];
+
+		const regexEvaluation = this.evaluateRegex(filteredPatterns);
+		this.regexResult = { results: regexEvaluation };
+		this.isRegexValid = regexEvaluation.length === 0;
 	}
 
-	public runEvaluations(): CheckStatus[] {
-
-		const filteredPatterns: Pattern[] = [this.praceConfig.title, this.praceConfig.body, this.praceConfig.branch]
-			.filter(p => p !== undefined) as Pattern[];
-		const invalidExpressions: CheckStatus[] = this.evaluateRegularExpressionFromPatterns(filteredPatterns);
+	private evaluateRegex(patterns: Pattern[]): CheckStatus[] {
+		const invalidExpressions: CheckStatus[] = this.evaluateRegularExpressionFromPatterns(patterns);
 
 		if (invalidExpressions.length > 0) {
 			return invalidExpressions;
 		}
 
-		const evaluations = [this.evaluateTitle.bind(this), this.evaluateBody.bind(this),
-			this.evaluateBranchName.bind(this), this.evaluateAdditions.bind(this),
-			this.evaluateReviewers.bind(this), this.evaluateLabels.bind(this)];
+		return [];
+	}
 
-		return this.runArrayOfEvaluations(evaluations);
+	public runEvaluations(): CheckResult {
+		if (!this.isRegexValid) {
+			throw Error('Regex is not valid. Check \'isRegexValid\' before evaluating');
+		}
+
+		const evaluation: CheckResult = {
+			title: this.evaluateTitle(),
+			body: this.evaluateBody(),
+			branch: this.evaluateBranchName(),
+			additions: this.evaluateAdditions(),
+			reviewers: this.evaluateReviewers(),
+			labels: this.evaluateLabels()
+		};
+
+		return evaluation;
 	}
 
 	private evaluateRegularExpressionFromPatterns(patterns: Pattern[]): CheckStatus[] {
@@ -30,17 +49,6 @@ export class ConventionFullEvaluator {
 			.map(p => p.patterns).flat(1);
 
 		return this.evaluateRegularExpressions(expressions);
-	}
-
-	private runArrayOfEvaluations(callback: (() => CheckStatus)[]): CheckStatus[] {
-		const results: CheckStatus[] = [];
-		for (const call of callback) {
-			const result = call();
-			if (!result.valid) {
-				results.push(result);
-			}
-		}
-		return results;
 	}
 
 	public evaluateTitle(): CheckStatus {
@@ -165,11 +173,13 @@ export class ConventionFullEvaluator {
 			return { valid: true };
 		}
 
-		for (const expression  of pattern.patterns) {
-			const regexp = new RegExp(expression);
+		if(valueToTest !== undefined) {
+			for (const expression of pattern.patterns) {
+				const regexp = new RegExp(expression);
 
-			if (regexp.test(valueToTest)) {
-				return { valid: true };
+				if (regexp.test(valueToTest)) {
+					return { valid: true };
+				}
 			}
 		}
 
@@ -198,4 +208,17 @@ export class ConventionFullEvaluator {
 interface CheckStatus {
 	valid: boolean;
 	errorMessage?: string;
+}
+
+interface CheckResult {
+	title: CheckStatus;
+	body: CheckStatus;
+	branch: CheckStatus;
+	reviewers: CheckStatus;
+	additions: CheckStatus;
+	labels: CheckStatus;
+}
+
+interface RegexResult {
+	results: CheckStatus[];
 }
