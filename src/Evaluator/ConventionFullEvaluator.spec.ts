@@ -5,8 +5,11 @@ import { PullRequestData } from '../PullRequestData';
 import { ConventionFullEvaluator } from './ConventionFullEvaluator';
 
 describe('Convention Evaluator Tests', () => {
-	function generateConfiguration(): PraceConfiguration {
-		return {
+	let configuration: PraceConfiguration;
+	let data: PullRequestData;
+
+	beforeEach(() => {
+		configuration = {
 			title:
 				{
 					patterns: ['\\[BLOB-\\d*\\]\\s[\\w\\s]*'],
@@ -22,10 +25,8 @@ describe('Convention Evaluator Tests', () => {
 			additions: 12,
 			labels: ['bug', 'feature']
 		};
-	};
 
-	function generateData(): PullRequestData {
-		return {
+		data = {
 			pull_request: {
 				title: '[BLOB-123] Commit',
 				body: 'Something',
@@ -61,10 +62,10 @@ describe('Convention Evaluator Tests', () => {
 					}]
 			}
 		} as PullRequestData;
-	}
+	});
 
 	it('should example be valid for example request', () => {
-		const convention = new ConventionFullEvaluator(generateData(), generateConfiguration());
+		const convention = new ConventionFullEvaluator(data, configuration);
 		const result = convention.runEvaluations();
 		expect(result.title.valid).to.be.true;
 		expect(result.body.valid).to.be.true;
@@ -75,14 +76,13 @@ describe('Convention Evaluator Tests', () => {
 	});
 
 	it('should succeed with empty configuration', () => {
-		const config = generateConfiguration();
 		// Delete all keys
-		delete config.title;
-		delete config.additions;
-		delete config.labels;
-		delete config.reviewer;
+		delete configuration.title;
+		delete configuration.additions;
+		delete configuration.labels;
+		delete configuration.reviewer;
 
-		const convention = new ConventionFullEvaluator(generateData(), config);
+		const convention = new ConventionFullEvaluator(data, configuration);
 		const result = convention.runEvaluations();
 
 		expect(result.title.valid).to.be.true;
@@ -95,8 +95,6 @@ describe('Convention Evaluator Tests', () => {
 
 	describe('Title', () => {
 		it('should succeed with valid title', () => {
-			const data = generateData();
-			const configuration = generateConfiguration();
 			data.pull_request.title = '[BLOB-123] Example';
 			const convention = new ConventionFullEvaluator(data, configuration);
 			const result = convention.runEvaluations();
@@ -104,8 +102,6 @@ describe('Convention Evaluator Tests', () => {
 		});
 
 		it('should fail with invalid title', () => {
-			const data = generateData();
-			const configuration = generateConfiguration();
 			data.pull_request.title = 'Wrong title';
 			const convention = new ConventionFullEvaluator(data, configuration);
 			const result = convention.runEvaluations();
@@ -117,9 +113,7 @@ describe('Convention Evaluator Tests', () => {
 
 	describe('Branch', () => {
 		it('should succeed with valid branch name', () => {
-			const data = generateData();
 			data.pull_request.head.ref = 'test/123';
-			const configuration = generateConfiguration() as PraceConfiguration;
 			configuration.branch = {
 				patterns: ['test\\/\\d+'],
 				error: 'Invalid branch name because reasons'
@@ -131,9 +125,7 @@ describe('Convention Evaluator Tests', () => {
 		});
 
 		it('should fail with invalid branch name', () => {
-			const data = generateData();
 			data.pull_request.head.ref = 'wrong';
-			const configuration = generateConfiguration();
 			configuration.branch = {
 				patterns: ['test\\/\\d+'],
 				error: 'Invalid branch name because reasons'
@@ -150,9 +142,7 @@ describe('Convention Evaluator Tests', () => {
 
 	describe('Body', () => {
 		it('should succeed with valid body', () => {
-			const data = generateData();
 			data.pull_request.head.ref = 'etcetera';
-			const configuration = generateConfiguration();
 			configuration.body = {
 				patterns: ['.+'],
 				error: 'You need to write at least something'
@@ -165,9 +155,7 @@ describe('Convention Evaluator Tests', () => {
 		});
 
 		it('should fail with invalid body', () => {
-			const data = generateData();
 			delete data.pull_request.body;
-			const configuration = generateConfiguration();
 			configuration.body = {
 				patterns: ['.+'],
 				error: 'You need to write at least something'
@@ -184,9 +172,7 @@ describe('Convention Evaluator Tests', () => {
 
 	describe('Additions', () => {
 		it('should succeed with valid additions', () => {
-			const data = generateData();
 			data.pull_request.additions = 99;
-			const configuration = generateConfiguration();
 			configuration.additions = 100;
 
 			const convention = new ConventionFullEvaluator(data, configuration);
@@ -196,9 +182,7 @@ describe('Convention Evaluator Tests', () => {
 		});
 
 		it('should fail with invalid additions', () => {
-			const data = generateData();
 			data.pull_request.additions = 150;
-			const configuration = generateConfiguration();
 			configuration.additions = 100;
 
 			const convention = new ConventionFullEvaluator(data, configuration);
@@ -215,35 +199,29 @@ describe('Convention Evaluator Tests', () => {
 		let dataWithNoReviewers: PullRequestData;
 
 		beforeEach(() => {
-			const data = generateData();
 			delete data.pull_request.requested_reviewers;
 			delete data.pull_request.requested_teams;
 			dataWithNoReviewers = data;
 		});
 
 		it('should succeed with valid reviewers', () => {
-			const data = dataWithNoReviewers;
-			data.pull_request.requested_reviewers = [{ login: 'John' }];
-			const configuration = generateConfiguration();
-			const reviewers = {
+			dataWithNoReviewers.pull_request.requested_reviewers = [{ login: 'John' }];
+			configuration.reviewer = {
 				minimum: 1
 			};
-			configuration.reviewer = reviewers;
 
-			const convention = new ConventionFullEvaluator(data, configuration);
+			const convention = new ConventionFullEvaluator(dataWithNoReviewers, configuration);
 			const result = convention.runEvaluations();
 			expect(result.reviewers.valid).to.be.true;
 		});
 
 		it('should fail with no reviewers', () => {
-			const data = dataWithNoReviewers;
-			const configuration = generateConfiguration();
 			const reviewers = {
 				minimum: 1
 			};
 			configuration.reviewer = reviewers;
 
-			const convention = new ConventionFullEvaluator(data, configuration);
+			const convention = new ConventionFullEvaluator(dataWithNoReviewers, configuration);
 			const result = convention.runEvaluations();
 			expect(result.reviewers.valid).to.be.false;
 			const errorMsg = `You have to assign at least ${reviewers.minimum} reviewers`;
@@ -251,16 +229,14 @@ describe('Convention Evaluator Tests', () => {
 		});
 
 		it('should fail with no correct reviewers', () => {
-			const data = dataWithNoReviewers;
-			data.pull_request.requested_reviewers = [{ login: 'John' }];
-			const configuration = generateConfiguration();
+			dataWithNoReviewers.pull_request.requested_reviewers = [{ login: 'John' }];
 			const requestedReviewer = 'Juan';
 			configuration.reviewer = {
 				minimum: 1,
 				users: [requestedReviewer]
 			};
 
-			const convention = new ConventionFullEvaluator(data, configuration);
+			const convention = new ConventionFullEvaluator(dataWithNoReviewers, configuration);
 			const result = convention.runEvaluations();
 			expect(result.reviewers.valid).to.be.false;
 			const errorMsg = `Must have, at least, one of the following users as reviewer: ${requestedReviewer}`;
@@ -268,31 +244,27 @@ describe('Convention Evaluator Tests', () => {
 		});
 
 		it('should succeed with correct reviewers', () => {
-			const data = dataWithNoReviewers;
-			data.pull_request.requested_reviewers = [{ login: 'Juan' }];
-			const configuration = generateConfiguration();
+			dataWithNoReviewers.pull_request.requested_reviewers = [{ login: 'Juan' }];
 			const requestedReviewer = 'Juan';
 			configuration.reviewer = {
 				minimum: 1,
 				users: [requestedReviewer]
 			};
 
-			const convention = new ConventionFullEvaluator(data, configuration);
+			const convention = new ConventionFullEvaluator(dataWithNoReviewers, configuration);
 			const result = convention.runEvaluations();
 			expect(result.reviewers.valid).to.be.true;
 		});
 
 		it('should fail with no teams', () => {
-			const data = dataWithNoReviewers;
-			data.pull_request.requested_reviewers = [{ login: 'etectera' }];
-			const configuration = generateConfiguration();
+			dataWithNoReviewers.pull_request.requested_reviewers = [{ login: 'etectera' }];
 			const requestedReviewer = 'Developers';
 			configuration.reviewer = {
 				minimum: 1,
 				teams: [requestedReviewer]
 			};
 
-			const convention = new ConventionFullEvaluator(data, configuration);
+			const convention = new ConventionFullEvaluator(dataWithNoReviewers, configuration);
 			const result = convention.runEvaluations();
 			expect(result.reviewers.valid).to.be.false;
 			const errorMsg = `Must have, at least, one of the following teams as reviewer: ${requestedReviewer}`;
@@ -300,16 +272,14 @@ describe('Convention Evaluator Tests', () => {
 		});
 
 		it('should fail with no correct team', () => {
-			const data = dataWithNoReviewers;
-			data.pull_request.requested_teams = [{ name: 'Artists', slug: 'arts' }];
-			const configuration = generateConfiguration();
+			dataWithNoReviewers.pull_request.requested_teams = [{ name: 'Artists', slug: 'arts' }];
 			const requestedReviewer = 'Developers';
 			configuration.reviewer = {
 				minimum: 1,
 				teams: [requestedReviewer]
 			};
 
-			const convention = new ConventionFullEvaluator(data, configuration);
+			const convention = new ConventionFullEvaluator(dataWithNoReviewers, configuration);
 			const result = convention.runEvaluations();
 			expect(result.reviewers.valid).to.be.false;
 			const errorMsg = `Must have, at least, one of the following teams as reviewer: ${requestedReviewer}`;
@@ -317,16 +287,14 @@ describe('Convention Evaluator Tests', () => {
 		});
 
 		it('should succeed with correct team', () => {
-			const data = dataWithNoReviewers;
-			data.pull_request.requested_teams = [{ name: 'Developers', slug: 'devs' }];
-			const configuration = generateConfiguration();
+			dataWithNoReviewers.pull_request.requested_teams = [{ name: 'Developers', slug: 'devs' }];
 			const requestedReviewer = 'Developers';
 			configuration.reviewer = {
 				minimum: 1,
 				teams: [requestedReviewer]
 			};
 
-			const convention = new ConventionFullEvaluator(data, configuration);
+			const convention = new ConventionFullEvaluator(dataWithNoReviewers, configuration);
 			const result = convention.runEvaluations();
 			expect(result.reviewers.valid).to.be.true;
 		});
@@ -335,25 +303,21 @@ describe('Convention Evaluator Tests', () => {
 
 	describe('Labels', () => {
 		it('should succeed with correct labels', () => {
-			const data = generateData();
 			const labelName = 'example';
 			data.pull_request.labels = [{ name: labelName, description: 'Etcetera', id: 99 }];
-			const config = generateConfiguration();
-			config.labels = [labelName];
+			configuration.labels = [labelName];
 
-			const convention = new ConventionFullEvaluator(data, config);
+			const convention = new ConventionFullEvaluator(data, configuration);
 			const result = convention.runEvaluations();
 			expect(result.labels.valid).to.be.true;
 		});
 
 		it('should fail with no labels', () => {
-			const data = generateData();
 			const labelName = 'example';
 			delete data.pull_request.labels;
-			const config = generateConfiguration();
-			config.labels = [labelName];
+			configuration.labels = [labelName];
 
-			const convention = new ConventionFullEvaluator(data, config);
+			const convention = new ConventionFullEvaluator(data, configuration);
 			const result = convention.runEvaluations();
 			expect(result.labels.valid).to.be.false;
 			const errorMsg = `Must have, at least, one of the following labels ${labelName}`;
@@ -361,13 +325,11 @@ describe('Convention Evaluator Tests', () => {
 		});
 
 		it('should fail with incorrect labels', () => {
-			const data = generateData();
 			const labelName = 'example';
 			data.pull_request.labels = [{ name: 'bug', description: 'Bug', id: 88 }];
-			const config = generateConfiguration();
-			config.labels = [labelName];
+			configuration.labels = [labelName];
 
-			const convention = new ConventionFullEvaluator(data, config);
+			const convention = new ConventionFullEvaluator(data, configuration);
 			const result = convention.runEvaluations();
 			expect(result.labels.valid).to.be.false;
 			const errorMsg = `Must have, at least, one of the following labels ${labelName}`;
