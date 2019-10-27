@@ -82,7 +82,13 @@ export class ConventionFullEvaluator {
 			return { valid: true };
 		}
 
-		if (reviewers.minimum > 0 && reviewers.minimum < this.prData.pull_request.requested_reviewers.length) {
+		const pullRequest = this.prData.pull_request;
+		const { requested_reviewers, requested_teams } = pullRequest;
+
+		const requestedReviewers: Number = (ConventionFullEvaluator.isArrayValidAndNotEmpty(requested_reviewers) ? requested_reviewers.length : 0) +
+			(ConventionFullEvaluator.isArrayValidAndNotEmpty(requested_teams) ? requested_teams.length : 0);
+
+		if (reviewers.minimum > 0 && reviewers.minimum > requestedReviewers) {
 			return { valid: false, errorMessage: `You have to assign at least ${reviewers.minimum} reviewers` };
 		}
 
@@ -93,8 +99,7 @@ export class ConventionFullEvaluator {
 				errorMessage: `Must have, at least, one of the following users as reviewer: ${users.join(', ')}`
 			};
 
-			const prReviewersArray = this.prData.pull_request.requested_reviewers;
-			if (!ConventionFullEvaluator.isArrayValidAndNotEmpty(prReviewersArray)) {
+			if (!ConventionFullEvaluator.isArrayValidAndNotEmpty(requested_reviewers)) {
 				return error;
 			}
 
@@ -111,13 +116,12 @@ export class ConventionFullEvaluator {
 				valid: false,
 				errorMessage: `Must have, at least, one of the following teams as reviewer: ${requiredTeams.join(', ')}`
 			};
-			const prTeamsArray = this.prData.pull_request.requested_teams;
-			if (!ConventionFullEvaluator.isArrayValidAndNotEmpty(prTeamsArray)) {
+			if (!ConventionFullEvaluator.isArrayValidAndNotEmpty(requested_teams)) {
 				return error;
 			}
 
-			const prTeamsSlugs = prTeamsArray.map(t => t.slug);
-			const prTeamsNames = prTeamsArray.map(t => t.name);
+			const prTeamsSlugs = requested_teams.map(t => t.slug);
+			const prTeamsNames = requested_teams.map(t => t.name);
 			const teams = prTeamsSlugs.concat(prTeamsNames);
 			if (!teams.some(t => requiredTeams.includes(t))) {
 				return error;
@@ -173,7 +177,7 @@ export class ConventionFullEvaluator {
 			return { valid: true };
 		}
 
-		if(valueToTest !== undefined) {
+		if (valueToTest !== undefined) {
 			for (const expression of pattern.patterns) {
 				const regexp = new RegExp(expression);
 
