@@ -45,7 +45,7 @@ export class ConventionFullEvaluator {
 	}
 
 	private evaluateRegularExpressionFromPatterns(patterns: Pattern[]): CheckStatus[] {
-		const expressions: string[] = patterns.filter(p => ConventionFullEvaluator.isArrayValidAndNotEmpty(p.patterns))
+		const expressions: string[] = patterns.filter(p => this.isArrayValidAndNotEmpty(p.patterns))
 			.map(p => p.patterns).flat(1);
 
 		return this.evaluateRegularExpressions(expressions);
@@ -85,21 +85,20 @@ export class ConventionFullEvaluator {
 		const pullRequest = this.prData.pull_request;
 		const { requested_reviewers, requested_teams } = pullRequest;
 
-		const requestedReviewers: Number = (ConventionFullEvaluator.isArrayValidAndNotEmpty(requested_reviewers) ? requested_reviewers.length : 0) +
-			(ConventionFullEvaluator.isArrayValidAndNotEmpty(requested_teams) ? requested_teams.length : 0);
+		const requestedReviewers: number = this.getUnkownArrayLength(requested_reviewers) + this.getUnkownArrayLength(requested_teams);
 
 		if (reviewers.minimum > 0 && reviewers.minimum > requestedReviewers) {
 			return { valid: false, errorMessage: `You have to assign at least ${reviewers.minimum} reviewers` };
 		}
 
-		if (ConventionFullEvaluator.isArrayValidAndNotEmpty(reviewers.users)) {
+		if (this.isArrayValidAndNotEmpty(reviewers.users)) {
 			const users: string[] = reviewers.users as string[];
 			const error: CheckStatus = {
 				valid: false,
 				errorMessage: `Must have, at least, one of the following users as reviewer: ${users.join(', ')}`
 			};
 
-			if (!ConventionFullEvaluator.isArrayValidAndNotEmpty(requested_reviewers)) {
+			if (!this.isArrayValidAndNotEmpty(requested_reviewers)) {
 				return error;
 			}
 
@@ -110,13 +109,13 @@ export class ConventionFullEvaluator {
 			}
 		}
 
-		if (ConventionFullEvaluator.isArrayValidAndNotEmpty(reviewers.teams)) {
+		if (this.isArrayValidAndNotEmpty(reviewers.teams)) {
 			const requiredTeams: string[] = reviewers.teams as string[];
 			const error: CheckStatus = {
 				valid: false,
 				errorMessage: `Must have, at least, one of the following teams as reviewer: ${requiredTeams.join(', ')}`
 			};
-			if (!ConventionFullEvaluator.isArrayValidAndNotEmpty(requested_teams)) {
+			if (!this.isArrayValidAndNotEmpty(requested_teams)) {
 				return error;
 			}
 
@@ -132,7 +131,7 @@ export class ConventionFullEvaluator {
 	}
 
 	public evaluateLabels(): CheckStatus {
-		if (!ConventionFullEvaluator.isArrayValidAndNotEmpty(this.praceConfig.labels)) {
+		if (!this.isArrayValidAndNotEmpty(this.praceConfig.labels)) {
 			return { valid: true };
 		}
 
@@ -140,7 +139,7 @@ export class ConventionFullEvaluator {
 
 		const errorMessage: string = 'Must have, at least, one of the following labels ' + requiredLabels.join(', ');
 
-		if (!ConventionFullEvaluator.isArrayValidAndNotEmpty(this.prData.pull_request.labels)) {
+		if (!this.isArrayValidAndNotEmpty(this.prData.pull_request.labels)) {
 			return { valid: false, errorMessage };
 		}
 
@@ -157,7 +156,7 @@ export class ConventionFullEvaluator {
 		const results: CheckStatus[] = [];
 
 		// If there are no expressions, let's just ignore it
-		if (!ConventionFullEvaluator.isArrayValidAndNotEmpty(expressions)) {
+		if (!this.isArrayValidAndNotEmpty(expressions)) {
 			return results;
 		}
 
@@ -204,8 +203,12 @@ export class ConventionFullEvaluator {
 		}
 	}
 
-	private static isArrayValidAndNotEmpty(array: any[] | undefined): boolean {
+	private isArrayValidAndNotEmpty(array: any[] | undefined): boolean {
 		return array !== undefined && array.length > 0;
+	}
+
+	private getUnkownArrayLength(array: any[] | undefined) {
+		return array !== undefined ? array.length : 0;
 	}
 }
 
