@@ -9,8 +9,11 @@ export class ConventionFullEvaluator {
 		private readonly prData: PullRequestData,
 		private readonly praceConfig: PraceConfiguration
 	) {
-		const filteredPatterns: Pattern[] = [praceConfig.title, praceConfig.body, praceConfig.branch]
-			.filter(p => p !== undefined) as Pattern[];
+		const filteredPatterns: Pattern[] = [
+			praceConfig.title,
+			praceConfig.body,
+			praceConfig.branch
+		].filter((p) => p !== undefined) as Pattern[];
 
 		const regexEvaluation = this.evaluateRegex(filteredPatterns);
 		this.regexResult = { results: regexEvaluation };
@@ -18,7 +21,9 @@ export class ConventionFullEvaluator {
 	}
 
 	private evaluateRegex(patterns: Pattern[]): CheckStatus[] {
-		const invalidExpressions: CheckStatus[] = this.evaluateRegularExpressionFromPatterns(patterns);
+		const invalidExpressions: CheckStatus[] = this.evaluateRegularExpressionFromPatterns(
+			patterns
+		);
 
 		if (invalidExpressions.length > 0) {
 			return invalidExpressions;
@@ -29,7 +34,9 @@ export class ConventionFullEvaluator {
 
 	public runEvaluations(): CheckResult {
 		if (!this.isRegexValid) {
-			throw Error('Regex is not valid. Check \'isRegexValid\' before evaluating');
+			throw Error(
+				"Regex is not valid. Check 'isRegexValid' before evaluating"
+			);
 		}
 
 		const evaluation: CheckResult = {
@@ -44,28 +51,43 @@ export class ConventionFullEvaluator {
 		return evaluation;
 	}
 
-	private evaluateRegularExpressionFromPatterns(patterns: Pattern[]): CheckStatus[] {
-		const expressions: string[] = patterns.filter(p => this.isArrayValidAndNotEmpty(p.patterns))
-			.map(p => p.patterns).flat(1);
+	private evaluateRegularExpressionFromPatterns(
+		patterns: Pattern[]
+	): CheckStatus[] {
+		const expressions: string[] = patterns
+			.filter((p) => this.isArrayValidAndNotEmpty(p.patterns))
+			.map((p) => p.patterns)
+			.flat(1);
 
 		return this.evaluateRegularExpressions(expressions);
 	}
 
 	public evaluateTitle(): CheckStatus {
-		return this.evaluateAgainstPattern(this.prData.pull_request.title, this.praceConfig.title);
+		return this.evaluateAgainstPattern(
+			this.prData.pull_request.title,
+			this.praceConfig.title
+		);
 	}
 
 	public evaluateBody(): CheckStatus {
-		return this.evaluateAgainstPattern(this.prData.pull_request.body, this.praceConfig.body);
+		return this.evaluateAgainstPattern(
+			this.prData.pull_request.body,
+			this.praceConfig.body
+		);
 	}
 
 	public evaluateBranchName(): CheckStatus {
-		return this.evaluateAgainstPattern(this.prData.pull_request.head.ref, this.praceConfig.branch);
+		return this.evaluateAgainstPattern(
+			this.prData.pull_request.head.ref,
+			this.praceConfig.branch
+		);
 	}
 
 	public evaluateAdditions(): CheckStatus {
-		if (this.praceConfig.additions !== undefined &&
-			this.prData.pull_request.additions > this.praceConfig.additions) {
+		if (
+			this.praceConfig.additions !== undefined &&
+			this.prData.pull_request.additions > this.praceConfig.additions
+		) {
 			return {
 				valid: false,
 				errorMessage: `Exceeded additions limits. Maximum allowed additions are ${this.praceConfig.additions}`
@@ -85,25 +107,36 @@ export class ConventionFullEvaluator {
 		const pullRequest = this.prData.pull_request;
 		const { requested_reviewers, requested_teams } = pullRequest;
 
-		const requestedReviewers: number = this.getUnkownArrayLength(requested_reviewers) + this.getUnkownArrayLength(requested_teams);
+		const requestedReviewers: number =
+			this.getUnkownArrayLength(requested_reviewers) +
+			this.getUnkownArrayLength(requested_teams);
 
 		if (reviewers.minimum > 0 && reviewers.minimum > requestedReviewers) {
-			return { valid: false, errorMessage: `You have to assign at least ${reviewers.minimum} reviewers` };
+			return {
+				valid: false,
+				errorMessage: `You have to assign at least ${reviewers.minimum} reviewers`
+			};
 		}
 
 		if (this.isArrayValidAndNotEmpty(reviewers.users)) {
 			const users: string[] = reviewers.users as string[];
+
+			const joinedUsers = users.join(', ');
 			const error: CheckStatus = {
 				valid: false,
-				errorMessage: `Must have, at least, one of the following users as reviewer: ${users.join(', ')}`
+				errorMessage: `Must have, at least, one of the following users as reviewer: ${joinedUsers}`
 			};
 
 			if (!this.isArrayValidAndNotEmpty(requested_reviewers)) {
 				return error;
 			}
 
-			const prReviewers = this.prData.pull_request.requested_reviewers.map(r => r.login);
-			const containReviewer = prReviewers.some(prR => users.includes(prR));
+			const prReviewers = this.prData.pull_request.requested_reviewers.map(
+				(r) => r.login
+			);
+			const containReviewer = prReviewers.some((prR) =>
+				users.includes(prR)
+			);
 			if (!containReviewer) {
 				return error;
 			}
@@ -111,18 +144,20 @@ export class ConventionFullEvaluator {
 
 		if (this.isArrayValidAndNotEmpty(reviewers.teams)) {
 			const requiredTeams: string[] = reviewers.teams as string[];
+
+			const joinedTeams = requiredTeams.join(', ');
 			const error: CheckStatus = {
 				valid: false,
-				errorMessage: `Must have, at least, one of the following teams as reviewer: ${requiredTeams.join(', ')}`
+				errorMessage: `Must have, at least, one of the following teams as reviewer: ${joinedTeams}`
 			};
 			if (!this.isArrayValidAndNotEmpty(requested_teams)) {
 				return error;
 			}
 
-			const prTeamsSlugs = requested_teams.map(t => t.slug);
-			const prTeamsNames = requested_teams.map(t => t.name);
+			const prTeamsSlugs = requested_teams.map((t) => t.slug);
+			const prTeamsNames = requested_teams.map((t) => t.name);
 			const teams = prTeamsSlugs.concat(prTeamsNames);
-			if (!teams.some(t => requiredTeams.includes(t))) {
+			if (!teams.some((t) => requiredTeams.includes(t))) {
 				return error;
 			}
 		}
@@ -137,15 +172,17 @@ export class ConventionFullEvaluator {
 
 		const requiredLabels: string[] = this.praceConfig.labels as string[];
 
-		const errorMessage: string = 'Must have, at least, one of the following labels ' + requiredLabels.join(', ');
+		const errorMessage: string =
+			'Must have, at least, one of the following labels ' +
+			requiredLabels.join(', ');
 
 		if (!this.isArrayValidAndNotEmpty(this.prData.pull_request.labels)) {
 			return { valid: false, errorMessage };
 		}
 
-		const labels = this.prData.pull_request.labels.map(l => l.name);
+		const labels = this.prData.pull_request.labels.map((l) => l.name);
 
-		if (!labels.some(label => requiredLabels.includes(label))) {
+		if (!labels.some((label) => requiredLabels.includes(label))) {
 			return { valid: false, errorMessage };
 		}
 
@@ -160,7 +197,6 @@ export class ConventionFullEvaluator {
 			return results;
 		}
 
-
 		for (const expression in expressions) {
 			const validRegex = this.isValidRegex(expression);
 			if (!validRegex.valid) {
@@ -171,7 +207,10 @@ export class ConventionFullEvaluator {
 		return results;
 	}
 
-	private evaluateAgainstPattern(valueToTest: string, pattern?: Pattern): CheckStatus {
+	private evaluateAgainstPattern(
+		valueToTest: string,
+		pattern?: Pattern
+	): CheckStatus {
 		if (pattern === undefined) {
 			return { valid: true };
 		}

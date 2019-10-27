@@ -7,12 +7,12 @@ export default interface PraceConfig {
 		minimum: number;
 		users?: string[];
 		teams?: string[];
-	}
+	};
 	additions?: number;
 	labels?: string[];
 }
 
 export interface Pattern {
-	patterns: string[],
-	error: string
+	patterns: string[];
+	error: string;
 }

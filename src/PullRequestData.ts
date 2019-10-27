@@ -3,27 +3,27 @@ export interface PullRequestData {
 	action: string;
 	number: number;
 	pull_request: {
-		title: string,
-		body: string,
+		title: string;
+		body: string;
 		head: {
 			// branch name
 			ref: string;
-		},
-		labels: Label[],
+		};
+		labels: Label[];
 		requested_reviewers: Reviewer[];
 		requested_teams: Team[];
 		additions: number;
 		deletions: number;
 		changed_files: number;
-	}
+	};
 	repository: {
 		id: number;
 		name: string;
 		full_name: string;
-	}
+	};
 	installation: {
 		id: number;
-	}
+	};
 }
 
 interface Label {
@@ -32,11 +32,11 @@ interface Label {
 	description: string;
 }
 
-interface Reviewer{
-	login:string;
+interface Reviewer {
+	login: string;
 }
 
 interface Team {
 	name: string;
-	slug:string;
+	slug: string;
 }
