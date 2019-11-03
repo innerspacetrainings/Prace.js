@@ -1,5 +1,10 @@
 import { PullRequestData } from '../PullRequestData';
 import PraceConfiguration, { Pattern } from './PraceConfiguration';
+import { EvaluationResult } from './EvaluationResult';
+import EvaluationAnalysis, {
+	CheckStatus,
+	RegexResult
+} from './EvaluationAnalysis';
 
 export class ConventionFullEvaluator {
 	public readonly isRegexValid: boolean;
@@ -20,26 +25,14 @@ export class ConventionFullEvaluator {
 		this.isRegexValid = regexEvaluation.length === 0;
 	}
 
-	private evaluateRegex(patterns: Pattern[]): CheckStatus[] {
-		const invalidExpressions: CheckStatus[] = this.evaluateRegularExpressionFromPatterns(
-			patterns
-		);
-
-		if (invalidExpressions.length > 0) {
-			return invalidExpressions;
-		}
-
-		return [];
-	}
-
-	public runEvaluations(): CheckResult {
+	public runEvaluations(): EvaluationResult {
 		if (!this.isRegexValid) {
 			throw Error(
 				"Regex is not valid. Check 'isRegexValid' before evaluating"
 			);
 		}
 
-		const evaluation: CheckResult = {
+		const evaluation: EvaluationAnalysis = {
 			title: this.evaluateTitle(),
 			body: this.evaluateBody(),
 			branch: this.evaluateBranchName(),
@@ -48,18 +41,7 @@ export class ConventionFullEvaluator {
 			labels: this.evaluateLabels()
 		};
 
-		return evaluation;
-	}
-
-	private evaluateRegularExpressionFromPatterns(
-		patterns: Pattern[]
-	): CheckStatus[] {
-		const expressions: string[] = patterns
-			.filter((p) => this.isArrayValidAndNotEmpty(p.patterns))
-			.map((p) => p.patterns)
-			.flat(1);
-
-		return this.evaluateRegularExpressions(expressions);
+		return EvaluationResult.BuildFromAnalysis(evaluation);
 	}
 
 	public evaluateTitle(): CheckStatus {
@@ -189,6 +171,43 @@ export class ConventionFullEvaluator {
 		return { valid: true };
 	}
 
+	public isValidRegex(expression: string): CheckStatus {
+		if (expression === null || expression.length === 0) {
+			return { valid: false };
+		}
+
+		try {
+			const newRegex: RegExp = new RegExp(expression);
+
+			return { valid: newRegex !== null };
+		} catch (e) {
+			return { valid: false, errorMessage: e.message };
+		}
+	}
+
+	private evaluateRegex(patterns: Pattern[]): CheckStatus[] {
+		const invalidExpressions: CheckStatus[] = this.evaluateRegularExpressionFromPatterns(
+			patterns
+		);
+
+		if (invalidExpressions.length > 0) {
+			return invalidExpressions;
+		}
+
+		return [];
+	}
+
+	private evaluateRegularExpressionFromPatterns(
+		patterns: Pattern[]
+	): CheckStatus[] {
+		const expressions: string[] = patterns
+			.filter((p) => this.isArrayValidAndNotEmpty(p.patterns))
+			.map((p) => p.patterns)
+			.flat(1);
+
+		return this.evaluateRegularExpressions(expressions);
+	}
+
 	private evaluateRegularExpressions(expressions: string[]): CheckStatus[] {
 		const results: CheckStatus[] = [];
 
@@ -197,7 +216,7 @@ export class ConventionFullEvaluator {
 			return results;
 		}
 
-		for (const expression in expressions) {
+		for (const expression of expressions) {
 			const validRegex = this.isValidRegex(expression);
 			if (!validRegex.valid) {
 				results.push(validRegex);
@@ -228,20 +247,6 @@ export class ConventionFullEvaluator {
 		return { valid: false, errorMessage: pattern.error };
 	}
 
-	public isValidRegex(expression: string): CheckStatus {
-		if (expression === null || expression.length === 0) {
-			return { valid: false };
-		}
-
-		try {
-			const newRegex: RegExp = new RegExp(expression);
-
-			return { valid: newRegex !== null };
-		} catch (e) {
-			return { valid: false, errorMessage: e.message };
-		}
-	}
-
 	private isArrayValidAndNotEmpty(array: any[] | undefined): boolean {
 		return array !== undefined && array.length > 0;
 	}
@@ -249,22 +254,4 @@ export class ConventionFullEvaluator {
 	private getUnkownArrayLength(array: any[] | undefined) {
 		return array !== undefined ? array.length : 0;
 	}
-}
-
-interface CheckStatus {
-	valid: boolean;
-	errorMessage?: string;
-}
-
-interface CheckResult {
-	title: CheckStatus;
-	body: CheckStatus;
-	branch: CheckStatus;
-	reviewers: CheckStatus;
-	additions: CheckStatus;
-	labels: CheckStatus;
-}
-
-interface RegexResult {
-	results: CheckStatus[];
 }

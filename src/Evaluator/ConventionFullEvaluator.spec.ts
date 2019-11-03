@@ -67,6 +67,7 @@ describe('Convention Evaluator Tests', () => {
 	it('should example be valid for example request', () => {
 		const convention = new ConventionFullEvaluator(data, configuration);
 		const result = convention.runEvaluations();
+		expect(result.failed).to.be.false;
 		expect(result.title.valid).to.be.true;
 		expect(result.body.valid).to.be.true;
 		expect(result.branch.valid).to.be.true;
@@ -85,12 +86,28 @@ describe('Convention Evaluator Tests', () => {
 		const convention = new ConventionFullEvaluator(data, configuration);
 		const result = convention.runEvaluations();
 
+		expect(result.failed).to.be.false;
 		expect(result.title.valid).to.be.true;
 		expect(result.body.valid).to.be.true;
 		expect(result.branch.valid).to.be.true;
 		expect(result.reviewers.valid).to.be.true;
 		expect(result.additions.valid).to.be.true;
 		expect(result.labels.valid).to.be.true;
+	});
+
+	describe('Regex', () => {
+		it('should fail with invalid regex', () => {
+			configuration.body = {
+				patterns: ['][', 'good'],
+				error: 'Bad case'
+			};
+			const convention = new ConventionFullEvaluator(data, configuration);
+			expect(convention.isRegexValid).to.be.false;
+			expect(convention.regexResult.results.length).to.be.greaterThan(0);
+			expect(convention.regexResult.results[0].errorMessage).to.contain(
+				'Invalid regular expression:'
+			);
+		});
 	});
 
 	describe('Title', () => {
