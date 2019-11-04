@@ -71,7 +71,7 @@
   "license": "MIT",
   "dependencies": {
     "@octokit/app": "^4.1.0",
-    "@octokit/rest": "^16.28.7",
+    "@octokit/rest": "^16.34.1",
     "express": "^4.17.1",
     "request": "^2.88.0",
     "request-promise": "^4.2.4"
