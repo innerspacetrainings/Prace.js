@@ -1,0 +1,35 @@
+version: 2.1
+jobs:
+  build:
+    working_directory: ~/prace
+    docker:
+      - image: circleci/node:8
+    steps:
+      - checkout
+      - run:
+          name: update-npm
+          command: 'sudo npm install -g npm@latest'
+      - restore_cache:
+          key: dependency-cache-{{ checksum "package-lock.json" }}
+      - run:
+          name: install libraries
+          command: npm install
+      - save_cache:
+          key: dependency-cache-{{ checksum "package-lock.json" }}
+          paths:
+            - ./node_modules
+      - run:
+          name: test
+          command: npm test
+      - run: # run coverage report
+          name: code-coverage
+          command: './node_modules/.bin/nyc report --reporter=text-lcov'
+          # Upload test summary for display in Artifacts: https://circleci.com/docs/2.0/artifacts/ 
+      - store_artifacts: # special step to save test results as as artifact
+          path: test-results.xml
+          prefix: tests
+      - store_artifacts: # for display in Artifacts: https://circleci.com/docs/2.0/artifacts/ 
+          path: coverage
+          prefix: coverage
+      - store_test_results: # for display in Test Summary: https://circleci.com/docs/2.0/collect-test-data/
+          path: test-results.xml
