@@ -27,47 +27,25 @@ jobs:
           name: Run tests
           command: >
             ./node_modules/.bin/nyc ./node_modules/.bin/mocha --reporter mocha-circleci-reporter 
-            -r ts-node/register src/**/*.spec.ts --reporter-options mochaFile=$CIRCLE_TEST_REPORTS/test-results.xml
+            -r ts-node/register src/**/*.spec.ts --reporter-options mochaFile=./reports/mocha/test-results.xml
           when: always
 
       # Run eslint
       - run:
-          name: eslint
-          command: ./node_modules/tslint/lib ./ --format junit --output-file ./reports/eslint/eslint.xml
+          name: tslint
+          command: ./node_modules/.bin/tslint --project . --format junit --out ./reports/linter/tslint.xml
           when: always
 
-      # Run coverage report for Code Climate
+      - store_artifacs:
+        path: ./reports/mocha/test-results.xml
+        prefix: tests
 
-    #   - run:
-    #       name: Setup Code Climate test-reporter
-    #       command: |
-    #           # download test reporter as a static binary
-    #           curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
-    #           chmod +x ./cc-test-reporter
-    #           ./cc-test-reporter before-build
-    #       when: always
+      - store_artifacs:
+        path: ./reports/linter/tslint.xml
 
-    #   - run:
-    #       name: code-coverage
-    #       command: |
-    #           mkdir -p coverage
-    #           # nyc report requires that nyc has already been run,
-    #           # which creates the .nyc_output folder containing necessary data
-    #           ./node_modules/.bin/nyc report --reporter=text-lcov > coverage/lcov.info
-    #           ./cc-test-reporter after-build -t lcov
-    #       when: always
+      - store_artifacts:
+        path: coverage
+        prefix: coverage
 
-    #   # Upload results
-
-    #   - store_test_results:
-    #       path: reports
-
-    #   - store_artifacts:
-    #       path: $CIRCLE_TEST_REPORTS/test-results.xml
-
-    #   - store_artifacts:
-    #       path: ./reports/eslint/eslint.xml
-
-    #   - store_artifacts: # upload test coverage as artifact
-    #       path: ./coverage/lcov.info
-    #       prefix: tests
+      - store_test_results:
+        path: ./reports/mocha/test-results.xml
