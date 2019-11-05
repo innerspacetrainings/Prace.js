@@ -1,6 +1,6 @@
 {
   "name": "prace",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Github status check app for parsing a PR title against a regular expression",
   "source": "dist/main/index.js",
   "main": "dist/main/index.js",
