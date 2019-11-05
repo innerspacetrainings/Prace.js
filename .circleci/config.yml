@@ -30,7 +30,7 @@ jobs:
             -r ts-node/register src/**/*.spec.ts --reporter-options mochaFile=./reports/mocha/test-results.xml
           when: always
 
-      # Run eslint
+      # Run tslint
       - run:
           name: tslint
           command: ./node_modules/.bin/tslint --project . --format junit --out ./reports/linter/tslint.xml
