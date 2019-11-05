@@ -33,19 +33,38 @@ jobs:
       # Run tslint
       - run:
           name: tslint
-          command: ./node_modules/.bin/tslint --project . --format junit --out ./reports/linter/tslint.xml
+          command: ./node_modules/.bin/tslint --project . --format junit --out ./reports/eslint/eslint.xml
           when: always
+
+      - run:
+          name: Setup Code Climate test-reporter
+          command: |
+              # download test reporter as a static binary
+              curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
+              chmod +x ./cc-test-reporter
+              ./cc-test-reporter before-build
+          when: always
+
+      - run:
+          name: code-coverage
+          command: |
+              mkdir coverage
+              # nyc report requires that nyc has already been run,
+              # which creates the .nyc_output folder containing necessary data
+              ./node_modules/.bin/nyc report --reporter=text-lcov > coverage/lcov.info
+              ./cc-test-reporter after-build -t lcov
+          when: always
+          
+      - store_test_results:
+          path: reports
 
       - store_artifacts:
           path: ./reports/mocha/test-results.xml
           prefix: tests
 
       - store_artifacts:
-          path: ./reports/linter/tslint.xml
+          path: ./reports/eslint/eslint.xm
 
-      - store_artifacts:
-          path: coverage
-          prefix: coverage
-
-      - store_test_results:
-          path: reports
+      - store_artifacts: # upload test coverage as artifact
+          path: ./coverage/lcov.info
+          prefix: test
