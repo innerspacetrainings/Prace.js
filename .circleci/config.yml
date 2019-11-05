@@ -36,16 +36,16 @@ jobs:
           command: ./node_modules/.bin/tslint --project . --format junit --out ./reports/linter/tslint.xml
           when: always
 
-      - store_artifacs:
-        path: ./reports/mocha/test-results.xml
-        prefix: tests
-
-      - store_artifacs:
-        path: ./reports/linter/tslint.xml
+      - store_artifacts:
+          path: ./reports/mocha/test-results.xml
+          prefix: tests
 
       - store_artifacts:
-        path: coverage
-        prefix: coverage
+          path: ./reports/linter/tslint.xml
+
+      - store_artifacts:
+          path: coverage
+          prefix: coverage
 
       - store_test_results:
-        path: ./reports/mocha/test-results.xml
+          path: ./reports/mocha/test-results.xml
