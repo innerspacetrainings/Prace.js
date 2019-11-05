@@ -48,4 +48,4 @@ jobs:
           prefix: coverage
 
       - store_test_results:
-          path: ./reports/mocha/test-results.xml
+          path: reports
