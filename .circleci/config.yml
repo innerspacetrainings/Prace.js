@@ -26,8 +26,7 @@ jobs:
       - run:
           name: test
           command: |
-              ./node_modules/.bin/nyc ./node_modules/.bin/mocha --reporter mocha-circleci-reporter -r ts-node/register src/**/*.spec.ts
-              if [[ -e test-results.xml ]]; then cp test-results.xml $CIRCLE_TEST_REPORTS/test-results.xml; fi
+              ./node_modules/.bin/nyc ./node_modules/.bin/mocha --reporter mocha-circleci-reporter -r ts-node/register src/**/*.spec.ts --reporter-options mochaFile=$CIRCLE_TEST_REPORTS/test-results.xml
           when: always
 
       # Run eslint
