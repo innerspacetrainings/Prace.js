@@ -44,7 +44,7 @@ export class ConventionEvaluator {
 				if (Number(currentValue) > 0) {
 					ticketNumber = +currentValue;
 				} else if (
-					typeof currentValue === "string" &&
+					typeof currentValue === 'string' &&
 					currentValue !== this.title
 				) {
 					ticketKey = currentValue.toUpperCase();
