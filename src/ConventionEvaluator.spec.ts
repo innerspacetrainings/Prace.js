@@ -18,7 +18,7 @@ describe('Convention Evaluator test', () => {
 			'invalid title',
 			DefaultValidPattern
 		);
-		expect(evaluator.titleMatches()).to.be.true;
+		expect(evaluator.titleMatches()).to.be.false;
 	});
 
 	it('Should return true to valid regex', () => {
