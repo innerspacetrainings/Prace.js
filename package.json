@@ -1,7 +1,7 @@
 {
   "name": "prace",
-  "version": "1.0.0",
-  "description": "Github status check app for parsing a PR title against a regex",
+  "version": "1.0.1",
+  "description": "Github status check app for parsing a PR title against a regular expression",
   "source": "dist/main/index.js",
   "main": "dist/main/index.js",
   "typings": "dist/main/index.d.ts",
@@ -71,35 +71,35 @@
   "license": "MIT",
   "dependencies": {
     "@octokit/app": "^4.1.0",
-    "@octokit/rest": "^16.28.7",
+    "@octokit/rest": "^16.34.1",
     "express": "^4.17.1",
     "request": "^2.88.0",
-    "request-promise": "^4.2.4"
+    "request-promise": "^4.2.5"
   },
   "devDependencies": {
     "@bitjson/npm-scripts-info": "^1.0.0",
-    "@types/chai": "^4.2.0",
-    "@types/express": "^4.17.0",
+    "@types/chai": "^4.2.4",
+    "@types/express": "^4.17.2",
     "@types/lru-cache": "^5.1.0",
     "@types/mocha": "^5.2.7",
-    "@types/node": "^12.7.1",
+    "@types/node": "^12.12.5",
     "@types/request-promise": "^4.1.44",
     "chai": "^4.2.0",
-    "codecov": "^3.5.0",
+    "codecov": "^3.6.1",
     "cz-conventional-changelog": "^3.0.2",
-    "mocha": "^6.2.0",
+    "mocha": "^6.2.2",
     "npm-run-all": "^4.1.5",
     "nyc": "^14.1.1",
     "open-cli": "^5.0.0",
     "prettier": "^1.18.2",
     "standard-version": "^7.0.0",
     "trash-cli": "^3.0.0",
-    "ts-node": "^8.3.0",
-    "tslint": "^5.18.0",
+    "ts-node": "^8.4.1",
+    "tslint": "^5.20.0",
     "tslint-config-prettier": "^1.18.0",
     "tslint-no-unused-expression-chai": "^0.1.4",
     "typedoc": "^0.15.0",
-    "typescript": "^3.5.3"
+    "typescript": "^3.6.4"
   },
   "nyc": {
     "extension": [

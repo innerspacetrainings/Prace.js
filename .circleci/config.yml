@@ -1,0 +1,52 @@
+version: 2.1
+jobs:
+  build:
+    working_directory: ~/prace
+    docker:
+      - image: circleci/node:8
+    steps:
+      - checkout
+
+      # Installation
+      - run:
+          name: update-npm
+          command: 'sudo npm install -g npm@latest'
+      - restore_cache:
+          key: dependency-cache-{{ checksum "package-lock.json" }}
+      - run: npm install
+      - run: 
+          name: Install Mocha CircleCI Reporter
+          command: npm install mocha-circleci-reporter
+      - save_cache:
+          key: dependency-cache-{{ checksum "package-lock.json" }}
+          paths:
+            - ./node_modules
+
+      # Run mocha
+      - run:
+          name: Run tests
+          command: >
+            ./node_modules/.bin/nyc ./node_modules/.bin/mocha --reporter mocha-circleci-reporter
+            -r ts-node/register src/**/*.spec.ts --reporter-options mochaFile=./reports/mocha/test-results.xml
+          when: always
+
+      # Run tslint
+      - run:
+          name: Run linter
+          command: ./node_modules/.bin/tslint --project . --format junit --out ./reports/eslint/eslint.xml
+          when: always
+
+      # Store results
+      - store_test_results:
+          path: reports
+
+      - store_artifacts:
+          path: ./reports/mocha/test-results.xml
+          prefix: tests
+
+      - store_artifacts:
+          path: ./reports/eslint/eslint.xm
+
+      - store_artifacts: # upload test coverage as artifact
+          path: ./coverage/lcov.info
+          prefix: test

@@ -9,6 +9,8 @@ Pull Request Automated Convention Enforcer
 
 Checks that the PR title complies with a given regular expression.
 
+[![CircleCI](https://circleci.com/gh/innerspacetrainings/Prace.js.svg?style=svg&circle-token=b65ff8f34c4b5bfd19e6a3ab17b3ece352e25b73)](https://circleci.com/gh/innerspacetrainings/Prace.js)
+
 ## Repository configuration file
 
 A file named `.prace` must be added to the project.
