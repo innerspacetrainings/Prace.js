@@ -1,17 +1,14 @@
-import { PullRequestData } from '../PullRequestData';
+import { PRData } from '../PullRequestData';
 import PraceConfiguration, { Pattern } from './PraceConfiguration';
 import { EvaluationResult } from './EvaluationResult';
-import EvaluationAnalysis, {
-	CheckStatus,
-	RegexResult
-} from './EvaluationAnalysis';
+import EvaluationAnalysis, { CheckStatus, RegexResult } from './EvaluationAnalysis';
 
 export class ConventionFullEvaluator {
 	public readonly isRegexValid: boolean;
 	public readonly regexResult: RegexResult;
 
 	constructor(
-		private readonly prData: PullRequestData,
+		private readonly prData: PRData,
 		private readonly praceConfig: PraceConfiguration
 	) {
 		const filteredPatterns: Pattern[] = [
@@ -46,21 +43,21 @@ export class ConventionFullEvaluator {
 
 	public evaluateTitle(): CheckStatus {
 		return this.evaluateAgainstPattern(
-			this.prData.pull_request.title,
+			this.prData.title,
 			this.praceConfig.title
 		);
 	}
 
 	public evaluateBody(): CheckStatus {
 		return this.evaluateAgainstPattern(
-			this.prData.pull_request.body,
+			this.prData.body,
 			this.praceConfig.body
 		);
 	}
 
 	public evaluateBranchName(): CheckStatus {
 		return this.evaluateAgainstPattern(
-			this.prData.pull_request.head.ref,
+			this.prData.head.ref,
 			this.praceConfig.branch
 		);
 	}
@@ -68,7 +65,7 @@ export class ConventionFullEvaluator {
 	public evaluateAdditions(): CheckStatus {
 		if (
 			this.praceConfig.additions !== undefined &&
-			this.prData.pull_request.additions > this.praceConfig.additions
+			this.prData.additions > this.praceConfig.additions
 		) {
 			return {
 				valid: false,
@@ -86,8 +83,7 @@ export class ConventionFullEvaluator {
 			return { valid: true };
 		}
 
-		const pullRequest = this.prData.pull_request;
-		const { requested_reviewers, requested_teams } = pullRequest;
+		const { requested_reviewers, requested_teams } = this.prData;
 
 		const requestedReviewers: number =
 			this.getUnkownArrayLength(requested_reviewers) +
@@ -113,7 +109,7 @@ export class ConventionFullEvaluator {
 				return error;
 			}
 
-			const prReviewers = this.prData.pull_request.requested_reviewers.map(
+			const prReviewers = this.prData.requested_reviewers.map(
 				(r) => r.login
 			);
 			const containReviewer = prReviewers.some((prR) =>
@@ -158,11 +154,11 @@ export class ConventionFullEvaluator {
 			'Must have, at least, one of the following labels ' +
 			requiredLabels.join(', ');
 
-		if (!this.isArrayValidAndNotEmpty(this.prData.pull_request.labels)) {
+		if (!this.isArrayValidAndNotEmpty(this.prData.labels)) {
 			return { valid: false, errorMessage };
 		}
 
-		const labels = this.prData.pull_request.labels.map((l) => l.name);
+		const labels = this.prData.labels.map((l) => l.name);
 
 		if (!labels.some((label) => requiredLabels.includes(label))) {
 			return { valid: false, errorMessage };

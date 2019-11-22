@@ -26,6 +26,21 @@ export interface PullRequestData {
 	};
 }
 
+export interface PRData {
+	title: string;
+	body: string;
+	head: {
+		// branch name
+		ref: string;
+	};
+	labels: Label[];
+	requested_reviewers: Reviewer[];
+	requested_teams: Team[];
+	additions: number;
+	deletions: number;
+	changed_files: number;
+}
+
 interface Label {
 	id: number;
 	name: string;

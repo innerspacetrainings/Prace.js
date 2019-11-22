@@ -14,6 +14,7 @@ export class EvaluationResult implements EvaluationAnalysis {
 		);
 	}
 	public readonly failed: boolean;
+	public readonly failedStatus : {check: string, error: string};
 
 	public constructor(
 		public readonly title: CheckStatus,
@@ -24,14 +25,16 @@ export class EvaluationResult implements EvaluationAnalysis {
 		public readonly additions: CheckStatus
 	) {
 		const results = [
-			title.valid,
-			body.valid,
-			branch.valid,
-			labels.valid,
-			reviewers.valid,
-			additions.valid
+			title,
+			body,
+			branch,
+			labels,
+			reviewers,
+			additions
 		];
 
-		this.failed = results.some((valid) => !valid);
+		this.failedStatus = results.filter(r => !r.valid);
+
+		this.failed = this.failedStatus.length > 0;
 	}
 }
