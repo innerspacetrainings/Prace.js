@@ -1,4 +1,4 @@
-import EvaluationAnalysis, {  PropertyCheck } from './EvaluationAnalysis';
+import EvaluationAnalysis, { PropertyCheck } from './EvaluationAnalysis';
 
 export class EvaluationResult implements EvaluationAnalysis {
 	public static BuildFromAnalysis(
@@ -25,23 +25,16 @@ export class EvaluationResult implements EvaluationAnalysis {
 		public readonly reviewers: PropertyCheck,
 		public readonly additions: PropertyCheck
 	) {
-		const results = [
-			title,
-			body,
-			branch,
-			labels,
-			reviewers,
-			additions
-		];
+		const results = [title, body, branch, labels, reviewers, additions];
 
-		this.failedStatus = results.filter(r => !r.valid);
+		this.failedStatus = results.filter((r) => !r.valid);
 
 		this.failed = this.failedStatus.length > 0;
 	}
 
-	public generateReport(): Array<{ name: string, message: string }> {
-		const report: { name: string, message: string }[] = [];
-		for (let check of this.failedStatus) {
+	public generateReport(): Array<{ name: string; message: string }> {
+		const report: Array<{ name: string; message: string }> = [];
+		for (const check of this.failedStatus) {
 			report.push({ name: check.name, message: check.errorMessage! });
 		}
 

@@ -27,9 +27,7 @@
   "scripts": {
     "describe": "npm-scripts-info",
     "lint": "./node_modules/.bin/tslint -p tsconfig.json",
-    "build": "run-s clean && run-p build:*",
-    "build:main": "tsc -p tsconfig.json",
-    "build:module": "tsc -p tsconfig.module.json",
+    "build": "run-s clean && ncc build src/index.ts -o dist",
     "fix": "run-s fix:*",
     "fix:prettier": "prettier \"src/**/*.ts\" --write",
     "fix:tslint": "tslint --fix --project .",
@@ -86,6 +84,7 @@
     "@types/mocha": "^5.2.7",
     "@types/node": "^12.12.12",
     "@types/request-promise": "^4.1.44",
+    "@zeit/ncc": "^0.20.5",
     "chai": "^4.2.0",
     "codecov": "^3.6.1",
     "cz-conventional-changelog": "^3.0.2",
