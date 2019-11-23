@@ -1,4 +1,4 @@
-import EvaluationAnalysis, { CheckStatus } from './EvaluationAnalysis';
+import EvaluationAnalysis, {  PropertyCheck } from './EvaluationAnalysis';
 
 export class EvaluationResult implements EvaluationAnalysis {
 	public static BuildFromAnalysis(
@@ -13,16 +13,17 @@ export class EvaluationResult implements EvaluationAnalysis {
 			analysis.additions
 		);
 	}
+
 	public readonly failed: boolean;
-	public readonly failedStatus : {check: string, error: string};
+	public readonly failedStatus: PropertyCheck[];
 
 	public constructor(
-		public readonly title: CheckStatus,
-		public readonly body: CheckStatus,
-		public readonly branch: CheckStatus,
-		public readonly labels: CheckStatus,
-		public readonly reviewers: CheckStatus,
-		public readonly additions: CheckStatus
+		public readonly title: PropertyCheck,
+		public readonly body: PropertyCheck,
+		public readonly branch: PropertyCheck,
+		public readonly labels: PropertyCheck,
+		public readonly reviewers: PropertyCheck,
+		public readonly additions: PropertyCheck
 	) {
 		const results = [
 			title,
@@ -36,5 +37,14 @@ export class EvaluationResult implements EvaluationAnalysis {
 		this.failedStatus = results.filter(r => !r.valid);
 
 		this.failed = this.failedStatus.length > 0;
+	}
+
+	public generateReport(): Array<{ name: string, message: string }> {
+		const report: { name: string, message: string }[] = [];
+		for (let check of this.failedStatus) {
+			report.push({ name: check.name, message: check.errorMessage! });
+		}
+
+		return report;
 	}
 }

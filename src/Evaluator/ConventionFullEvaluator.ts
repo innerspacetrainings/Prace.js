@@ -1,7 +1,7 @@
 import { PRData } from '../PullRequestData';
 import PraceConfiguration, { Pattern } from './PraceConfiguration';
 import { EvaluationResult } from './EvaluationResult';
-import EvaluationAnalysis, { CheckStatus, RegexResult } from './EvaluationAnalysis';
+import EvaluationAnalysis, { CheckStatus, PropertyCheck, RegexResult } from './EvaluationAnalysis';
 
 export class ConventionFullEvaluator {
 	public readonly isRegexValid: boolean;
@@ -41,46 +41,49 @@ export class ConventionFullEvaluator {
 		return EvaluationResult.BuildFromAnalysis(evaluation);
 	}
 
-	public evaluateTitle(): CheckStatus {
-		return this.evaluateAgainstPattern(
+	public evaluateTitle(): PropertyCheck {
+		return this.evaluateAgainstPattern("title",
 			this.prData.title,
 			this.praceConfig.title
 		);
 	}
 
-	public evaluateBody(): CheckStatus {
-		return this.evaluateAgainstPattern(
+	public evaluateBody(): PropertyCheck {
+		return this.evaluateAgainstPattern("body",
 			this.prData.body,
 			this.praceConfig.body
 		);
 	}
 
-	public evaluateBranchName(): CheckStatus {
-		return this.evaluateAgainstPattern(
+	public evaluateBranchName(): PropertyCheck {
+		return this.evaluateAgainstPattern("branch",
 			this.prData.head.ref,
 			this.praceConfig.branch
 		);
 	}
 
-	public evaluateAdditions(): CheckStatus {
+	public evaluateAdditions(): PropertyCheck {
+		const name = "additions";
 		if (
 			this.praceConfig.additions !== undefined &&
 			this.prData.additions > this.praceConfig.additions
 		) {
 			return {
+				name,
 				valid: false,
 				errorMessage: `Exceeded additions limits. Maximum allowed additions are ${this.praceConfig.additions}`
 			};
 		}
 
-		return { valid: true };
+		return { name, valid: true };
 	}
 
-	public evaluateReviewers(): CheckStatus {
+	public evaluateReviewers(): PropertyCheck {
 		const reviewers = this.praceConfig.reviewer;
+		const name = "reviewers";
 
 		if (!reviewers) {
-			return { valid: true };
+			return {name, valid: true };
 		}
 
 		const { requested_reviewers, requested_teams } = this.prData;
@@ -90,7 +93,7 @@ export class ConventionFullEvaluator {
 			this.getUnkownArrayLength(requested_teams);
 
 		if (reviewers.minimum > 0 && reviewers.minimum > requestedReviewers) {
-			return {
+			return { name,
 				valid: false,
 				errorMessage: `You have to assign at least ${reviewers.minimum} reviewers`
 			};
@@ -100,7 +103,8 @@ export class ConventionFullEvaluator {
 			const users: string[] = reviewers.users as string[];
 
 			const joinedUsers = users.join(', ');
-			const error: CheckStatus = {
+			const error: PropertyCheck = {
+				name,
 				valid: false,
 				errorMessage: `Must have, at least, one of the following users as reviewer: ${joinedUsers}`
 			};
@@ -124,7 +128,8 @@ export class ConventionFullEvaluator {
 			const requiredTeams: string[] = reviewers.teams as string[];
 
 			const joinedTeams = requiredTeams.join(', ');
-			const error: CheckStatus = {
+			const error: PropertyCheck = {
+				name,
 				valid: false,
 				errorMessage: `Must have, at least, one of the following teams as reviewer: ${joinedTeams}`
 			};
@@ -140,12 +145,13 @@ export class ConventionFullEvaluator {
 			}
 		}
 
-		return { valid: true };
+		return { name, valid: true };
 	}
 
-	public evaluateLabels(): CheckStatus {
+	public evaluateLabels(): PropertyCheck {
+		const name = "label";
 		if (!this.isArrayValidAndNotEmpty(this.praceConfig.labels)) {
-			return { valid: true };
+			return { name,valid: true };
 		}
 
 		const requiredLabels: string[] = this.praceConfig.labels as string[];
@@ -155,16 +161,16 @@ export class ConventionFullEvaluator {
 			requiredLabels.join(', ');
 
 		if (!this.isArrayValidAndNotEmpty(this.prData.labels)) {
-			return { valid: false, errorMessage };
+			return {name, valid: false, errorMessage };
 		}
 
 		const labels = this.prData.labels.map((l) => l.name);
 
 		if (!labels.some((label) => requiredLabels.includes(label))) {
-			return { valid: false, errorMessage };
+			return { name,valid: false, errorMessage };
 		}
 
-		return { valid: true };
+		return {name,valid: true };
 	}
 
 	public isValidRegex(expression: string): CheckStatus {
@@ -223,11 +229,12 @@ export class ConventionFullEvaluator {
 	}
 
 	private evaluateAgainstPattern(
+		name: string,
 		valueToTest: string,
 		pattern?: Pattern
-	): CheckStatus {
+	): PropertyCheck {
 		if (pattern === undefined) {
-			return { valid: true };
+			return { name, valid: true };
 		}
 
 		if (valueToTest !== undefined) {
@@ -235,12 +242,12 @@ export class ConventionFullEvaluator {
 				const regexp = new RegExp(expression);
 
 				if (regexp.test(valueToTest)) {
-					return { valid: true };
+					return { name, valid: true };
 				}
 			}
 		}
 
-		return { valid: false, errorMessage: pattern.error };
+		return { name, valid: false, errorMessage: pattern.error };
 	}
 
 	private isArrayValidAndNotEmpty(array: any[] | undefined): boolean {

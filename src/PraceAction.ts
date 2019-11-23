@@ -33,8 +33,12 @@ async function action() {
 
 	const results = evaluator.runEvaluations();
 	if(results.failed){
-		const failedMessage = "Failed on the following cases";
+		let failedMessage = "Failed on the following cases\n";
+		failedMessage += results.generateReport().map(r => `${r.name}: ${r.message}`).join("\n");
+
+		core.setFailed(failedMessage);
 	}
 }
 
 
+action();
