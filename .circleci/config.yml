@@ -3,7 +3,7 @@ jobs:
   build:
     working_directory: ~/prace
     docker:
-      - image: circleci/node:8
+      - image: circleci/node:12
     steps:
       - checkout
 
@@ -14,7 +14,7 @@ jobs:
       - restore_cache:
           key: dependency-cache-{{ checksum "package-lock.json" }}
       - run: npm install
-      - run: 
+      - run:
           name: Install Mocha CircleCI Reporter
           command: npm install mocha-circleci-reporter
       - save_cache:
