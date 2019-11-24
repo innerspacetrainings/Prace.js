@@ -37,7 +37,7 @@
     "cov": "run-s build test:unit cov:html && open-cli coverage/index.html",
     "cov:html": "nyc report --reporter=html",
     "cov:send": "nyc report --reporter=lcov && codecov",
-    "cov:check": "nyc report && nyc check-coverage --lines 100 --functions 100 --branches 100",
+    "cov:check": "nyc report && nyc check-coverage --lines 70 --functions 70 --branches 70",
     "doc": "run-s doc:html && open-cli docs/index.html",
     "doc:html": "typedoc src/ --exclude **/*.spec.ts --target ES6 --mode file --out docs",
     "doc:json": "typedoc src/ --exclude **/*.spec.ts --target ES6 --mode file --json docs/typedoc.json",
@@ -70,21 +70,16 @@
   "dependencies": {
     "@actions/core": "^1.2.0",
     "@actions/github": "^1.1.0",
-    "express": "^4.17.1",
-    "js-yaml": "^3.13.1",
-    "request": "^2.88.0",
-    "request-promise": "^4.2.5"
+    "js-yaml": "^3.13.1"
   },
   "devDependencies": {
     "@bitjson/npm-scripts-info": "^1.0.0",
     "@fluffy-spoon/substitute": "^1.104.0",
     "@types/chai": "^4.2.4",
-    "@types/express": "^4.17.2",
     "@types/js-yaml": "^3.12.1",
     "@types/lru-cache": "^5.1.0",
     "@types/mocha": "^5.2.7",
     "@types/node": "^12.12.12",
-    "@types/request-promise": "^4.1.44",
     "@zeit/ncc": "^0.20.5",
     "chai": "^4.2.0",
     "codecov": "^3.6.1",
@@ -119,6 +114,7 @@
     "reporter": [
       "html"
     ],
-    "all": true
+    "all": true,
+    "lines": 70
   }
 }
