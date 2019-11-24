@@ -19,9 +19,9 @@ async function action() {
 
 		if (!pullRequest) {
 			throw new Error(
-				'Payload doesn\'t contain `pull_request`. ' +
-				'Make sure this Action is being triggered by a pull_request event ' +
-				'(https://help.github.com/en/articles/events-that-trigger-workflows#pull-request-event-pull_request).'
+				"Payload doesn't contain `pull_request`. " +
+					'Make sure this Action is being triggered by a pull_request event ' +
+					'(https://help.github.com/en/articles/events-that-trigger-workflows#pull-request-event-pull_request).'
 			);
 		}
 

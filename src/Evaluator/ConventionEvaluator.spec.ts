@@ -341,7 +341,9 @@ describe('Convention Evaluator Tests', () => {
 
 		it('should succeed with uppercase fields', () => {
 			dataWithNoReviewers.requested_reviewers = [{ login: 'juan' }];
-			dataWithNoReviewers.requested_teams = [{ name: 'developers', slug: 'devs' }]
+			dataWithNoReviewers.requested_teams = [
+				{ name: 'developers', slug: 'devs' }
+			];
 			const requestedReviewer = 'JUAN';
 			configuration.reviewer = {
 				minimum: 1,

@@ -39,9 +39,9 @@ describe('Prace tests', () => {
 
 		(<any>evaluator).results.called();
 		const expectedMessage = `Expression example is invalid: etcetera`;
-		github
-			.received()
-			.reportFailed(Arg.is<string>((m) => m.includes(expectedMessage)));
+		github.received().reportFailed(
+			Arg.is<string>((m) => m.includes(expectedMessage))
+		);
 		expect(result).to.be.false;
 	});
 
@@ -69,8 +69,8 @@ describe('Prace tests', () => {
 		const result = await prace.execute(evaluator);
 		expect(result).to.be.false;
 		const expectedMessage = 'example: example message';
-		github
-			.received()
-			.reportFailed(Arg.is<string>((m) => m.includes(expectedMessage)));
+		github.received().reportFailed(
+			Arg.is<string>((m) => m.includes(expectedMessage))
+		);
 	});
 });
