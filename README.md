@@ -7,162 +7,95 @@ Pull Request Automated Convention Enforcer
 <!--img src="https://raw.githubusercontent.com/innerspacetrainings/Prace.js/master/media/prace-logo.png" width="250"  height="250"-->
 </p>
 
+A Github action that checks if a PR complies with a given configuration
 Checks that the PR title complies with a given regular expression.
 
 [![CircleCI](https://circleci.com/gh/innerspacetrainings/Prace.js.svg?style=svg&circle-token=b65ff8f34c4b5bfd19e6a3ab17b3ece352e25b73)](https://circleci.com/gh/innerspacetrainings/Prace.js)
 
-## Repository configuration file
+# Repository configuration
 
-A file named `.prace` must be added to the project.
+## Usage
 
-That file must only contain one line with a regular expression.
+Add `.github/workflows/prace.yml` with the following:
 
-An example to keep the following convention: `[XX-123] Here goes a description` is the following regular expression:
-```regexp
-\[XX-\d*\]\s[\w\s]*
+```yml
+name: Prace
+on:
+  pull_request:
+    types: ['opened', 'edited', 'reopened', 'synchronize']
+
+jobs:
+  prace:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: innerspacetrainings/Prace.js@master
+        with:
+          configuration-path: .github/prace.yml
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 ```
 
-## Getting started
+## Configuration file
 
-If you want to host your own instance you can include prace in express or other common JavaScript web frameworks.
+Configure Prace by creating a `.github/prace.yml` file.
 
-### Prerequisites
-- Node >= 8
+Example file:
 
-### Configuration
-
-#### Example project
- - Create a Github App with the permissions
-   - Checks: Read & write
-   - Pull requests: Read-only
-   - Single file: Read-only
-     - Path: `.prace`
-   - Suscribe to events: 
-     - [x] Pull request
- - Create a base node project
- - Run `npm install --save prace express`.
- - Add your [Github App id](https://developer.github.com/v3/apps/) to the environment variable: `GITHUB_APP_ID`
- - Add your [Github private key](https://developer.github.com/apps/building-github-apps/authenticating-with-github-apps/#generating-a-private-key) to the environment variable `GITHUB_PRIVATE_KEY`.
- - Copy the following script and deploy it:
-
-```javascript
-const Prace = require('prace');
-const express = require('express');
-
-const prace = Prace.Prace;
-const defaultConfig = Prace.DefaultConfig;
-
-const app = express();
-const port = 3000;
-
-// IMPORTANT. GitHub sends the body in a json
-app.use(express.json());
-const config = new DefaultConfig();
-
-app.post('/', (req, res) => {
-  const praceApp = prace.Build(req.body, config);
-
-  if (praceApp) {
-    praceApp.executeCheck()
-      .then(result => {
-        console.log('Executed with result', result);
-        res.send('Received!');
-      })
-      .catch(err => {
-        console.warn('Failed with error', err);
-        res.send('Failed to execute');
-      });
-  } else {
-    console.warn('Could not instantiate prace app');
-    res.send('Nothing happened');
-  }
-});
-
-app.listen(port, () => console.log(`Example app listening on port ${port}!`));
+```yml
+title:
+  patterns:
+    - '\[XX-\d*\]\s[\w\s]*'
+    - RELEASE\s\w*
+  error: 'You have to include [XX-123] or RELEASE into your title'
+body:
+  patterns:
+    - '[\w\s]*'
+  error: The body can not be emptry
+branch:
+  patterns:
+    - 'feat/[\w\s]**'
+  error: Branch must be called `feat/name`
+reviewer:
+  minimum: 1
+  users:
+    - Bullrich
+  teams:
+    - backend
+additions: 256
+labels:
+  - bug
+  - enhancement
 ```
 
- - Finally, set the [Webhook URL](https://developer.github.com/webhooks/) of your GitHub app to your server url.
+You can use the [config generator](https://innerspacetrainings.github.io/Prace.js/) instead of manually generating the file.
 
-#### More configurations
+## Configuration properties
 
-You can configure more of the functionalities of Prace or set up a more advanced configuration file instead of the default config.
+All of the configuration fields are optional, they can be removed and that particular check won't be done. 
+(An empty file will make all checks to be approved).
 
-That way you can use your own logger, request client or load the private key from a different source.
+### Title, body and branch
+- patterns `string[]`: The regex patterns against the attributes will be evaluated.
+- error `string`: The error to be displayed in case that the regex expression failed.
 
-This is the interface for it:
-```typescript
-/** Interface with all the configurations for the project */
-interface IConfig {
-    /** ID given by github to define the App id */
-    gitHubAppId: number;
-    /** Name of the status check. Appears on the status section of Github's Pull request */
-    checkName: string;
-    /** Logger to which the app send messages. */
-    logger: ILogger;
-    /** Class in charge of requesting the github api for the .prace file through a https call */
-    request: IRequest;
+In the case of having more than one pattern, the property will be evaluated to all of them to see if it complies with 
+**at least one pattern**. It doesn't need to comply with all of the patterns, just one.
 
-    /** The App private key. This method is awaited, so the file can be loaded from an external source */
-    getParsedPrivateKey(): Promise<string>;
-}
+### Reviewer
+- minimum `number`: The minimum amount of reviewers to have in the Pull Request.
+- users `string[]`: A list of required users. It requires **at least one** of the users in the array.
+- teams `string[]`: A list of required teams. It requires **at least one** of the users in the array. Can be the name or the slug.
 
-interface ILogger {
-    log(message: string, ...optionalParams: any[]): void;
+This fields are not case sensitive.
 
-    warn(message: string, ...optionalParams: any[]): void;
+### Additions `number`
 
-    error(message: string, error?: Error): void;
-}
+The max number of LOC added in the Pull Request.
 
-export enum TemplateResult {
-    Success = 'success',
-    NoPraceFile = 'noPraceFile',
-    InvalidFormat = 'invalidFormat',
-    UnknownError = 'unknownError'
-}
+### Labels `string[]`
+The labels required in the Pull Request. It requires **at least one** of the given labels to be in the Pull Request.
 
-export interface TemplateFetchResult {
-    regularExpression?: string;
-    result: TemplateResult
-}
-
-/** Class in charge of fetching the content of the .prace file inside the repo. */
-export interface IRequest {
-    request(options: { uri: string, headers: any }): Promise<TemplateFetchResult>;
-}
-```
-
-#### Object to send to prace
-
-By default Prace handles a json object with the pull request data. 
-It must be a [GitHub webhook payload for a Pull Request](https://developer.github.com/v3/activity/events/types/#pullrequestevent). 
-
-Any other payload will throw an error as Prace won't be able to parse it.
-
-The values used can be found in the interface `PullRequestData.ts`, so, 
-while you inject an object implementing that interface, Prace will be able to handle it.
-
-```typescript
-interface PullRequestData {
-    action: string;
-    number: number;
-    pull_request: {
-        title: string;
-        head: {
-            label: string;
-            ref: string;
-        };
-    };
-    repository: {
-        id: number;
-        name: string;
-        full_name: string;
-    };
-    installation: {
-        id: number;
-    };
-}
-```
+This field is not case sensitive.
 
 ---
 Happy hacking ❤
