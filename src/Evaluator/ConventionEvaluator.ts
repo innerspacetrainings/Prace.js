@@ -3,7 +3,6 @@ import PraceConfiguration, { Pattern } from './PraceConfiguration';
 import { EvaluationResult } from './EvaluationResult';
 import EvaluationAnalysis, {
 	CheckStatus,
-	PropertyCheck,
 	RegexResult
 } from './EvaluationAnalysis';
 
@@ -51,7 +50,7 @@ export class ConventionEvaluator {
 		return EvaluationResult.BuildFromAnalysis(evaluation);
 	}
 
-	public evaluateTitle(): PropertyCheck {
+	public evaluateTitle(): CheckStatus {
 		return this.evaluateAgainstPattern(
 			'title',
 			this.prData.title,
@@ -59,7 +58,7 @@ export class ConventionEvaluator {
 		);
 	}
 
-	public evaluateBody(): PropertyCheck {
+	public evaluateBody(): CheckStatus {
 		return this.evaluateAgainstPattern(
 			'body',
 			this.prData.body,
@@ -67,7 +66,7 @@ export class ConventionEvaluator {
 		);
 	}
 
-	public evaluateBranchName(): PropertyCheck {
+	public evaluateBranchName(): CheckStatus {
 		return this.evaluateAgainstPattern(
 			'branch',
 			this.prData.head.ref,
@@ -75,7 +74,7 @@ export class ConventionEvaluator {
 		);
 	}
 
-	public evaluateAdditions(): PropertyCheck {
+	public evaluateAdditions(): CheckStatus {
 		const name = 'additions';
 		if (
 			this.praceConfig.additions !== undefined &&
@@ -91,7 +90,7 @@ export class ConventionEvaluator {
 		return { name, valid: true };
 	}
 
-	public evaluateReviewers(): PropertyCheck {
+	public evaluateReviewers(): CheckStatus {
 		const reviewers = this.praceConfig.reviewer;
 		const name = 'reviewers';
 
@@ -117,7 +116,7 @@ export class ConventionEvaluator {
 			const users: string[] = reviewers.users as string[];
 
 			const joinedUsers = users.join(', ');
-			const error: PropertyCheck = {
+			const error: CheckStatus = {
 				name,
 				valid: false,
 				errorMessage: `Must have, at least, one of the following users as reviewer: ${joinedUsers}`
@@ -142,7 +141,7 @@ export class ConventionEvaluator {
 			const requiredTeams: string[] = reviewers.teams as string[];
 
 			const joinedTeams = requiredTeams.join(', ');
-			const error: PropertyCheck = {
+			const error: CheckStatus = {
 				name,
 				valid: false,
 				errorMessage: `Must have, at least, one of the following teams as reviewer: ${joinedTeams}`
@@ -162,7 +161,7 @@ export class ConventionEvaluator {
 		return { name, valid: true };
 	}
 
-	public evaluateLabels(): PropertyCheck {
+	public evaluateLabels(): CheckStatus {
 		const name = 'label';
 		if (!this.isArrayValidAndNotEmpty(this.praceConfig.labels)) {
 			return { name, valid: true };
@@ -189,15 +188,15 @@ export class ConventionEvaluator {
 
 	public isValidRegex(expression: string): CheckStatus {
 		if (expression === null || expression.length === 0) {
-			return { valid: false };
+			return { name: 'undefined', valid: false };
 		}
 
 		try {
 			const newRegex: RegExp = new RegExp(expression);
 
-			return { valid: newRegex !== null };
+			return { name: expression, valid: newRegex !== null };
 		} catch (e) {
-			return { valid: false, errorMessage: e.message };
+			return { name: expression, valid: false, errorMessage: e.message };
 		}
 	}
 
@@ -246,7 +245,7 @@ export class ConventionEvaluator {
 		name: string,
 		valueToTest: string,
 		pattern?: Pattern
-	): PropertyCheck {
+	): CheckStatus {
 		if (pattern === undefined) {
 			return { name, valid: true };
 		}

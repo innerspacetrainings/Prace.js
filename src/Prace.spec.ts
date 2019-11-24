@@ -1,71 +1,76 @@
-import { Prace } from './Prace';
+import Prace from './Prace';
 import { expect } from 'chai';
 import { describe, it } from 'mocha';
-import { DefaultConfig, IConfig, ILogger } from './Config';
 import { PullRequestData } from './PullRequestData';
+import { Arg, Substitute, SubstituteOf } from '@fluffy-spoon/substitute';
+import { ConventionEvaluator } from './Evaluator/ConventionEvaluator';
+import IGithubApi from './Github/IGithubApi';
+import { EvaluationResult } from './Evaluator/EvaluationResult';
 
 describe('Prace tests', () => {
-	const mockPr: PullRequestData = {
-		action: 'open',
-		number: 123,
-		pull_request: {
-			title: 'Example title',
-			head: {
-				label: 'example',
-				ref: 'branch-name'
+	let evaluator: SubstituteOf<ConventionEvaluator>;
+	let prData: SubstituteOf<PullRequestData>;
+	let github: SubstituteOf<IGithubApi>;
+	let prace: Prace;
+
+	beforeEach(() => {
+		evaluator = Substitute.for<ConventionEvaluator>();
+		prData = Substitute.for<PullRequestData>();
+		github = Substitute.for<IGithubApi>();
+
+		prace = new Prace(github, prData);
+	});
+
+	it('Should report error on invalid regex', async () => {
+		// Seems to work this way.
+		// https://github.com/ffMathy/FluffySpoon.JavaScript.Testing.Faking/issues/21#issuecomment-466015379
+		(<any>evaluator).isRegexValid.returns(false);
+		(<any>evaluator).regexResult.returns({
+			results: [
+				{
+					name: 'example',
+					valid: false,
+					errorMessage: 'etcetera'
+				}
+			]
+		});
+
+		const result = await prace.execute(evaluator);
+
+		(<any>evaluator).results.called();
+		const expectedMessage = `Expression example is invalid: etcetera`;
+		github
+			.received()
+			.reportFailed(Arg.is<string>((m) => m.includes(expectedMessage)));
+		expect(result).to.be.false;
+	});
+
+	it('Should succeed with correct evaluation', async () => {
+		(<any>evaluator).isRegexValid.returns(true);
+		const evResult = { failed: false };
+		evaluator
+			.runEvaluations()
+			.returns((evResult as unknown) as EvaluationResult);
+		const result = await prace.execute(evaluator);
+		expect(result).to.be.true;
+	});
+
+	it('Should correctly report failed cases', async () => {
+		(<any>evaluator).isRegexValid.returns(true);
+		const evResult = {
+			failed: true,
+			generateReport() {
+				return [{ name: 'example', message: 'example message' }];
 			}
-		},
-		repository: {
-			id: 123,
-			name: 'repo',
-			full_name: 'user/repo'
-		},
-		installation: {
-			id: 1234
-		}
-	};
-
-	class MockLogger implements ILogger {
-		public lastMessageReceived: string | undefined;
-
-		log(message: string): void {
-			this.lastMessageReceived = message;
-		}
-
-		warn(message: string): void {
-			this.lastMessageReceived = message;
-		}
-
-		error(message: string): void {
-			this.lastMessageReceived = message;
-		}
-	}
-
-	const mockLogger = new MockLogger();
-
-	const validConfig: IConfig = new DefaultConfig(1, 'a', mockLogger);
-
-	it('Should return valid prace with valid parameters', () => {
-		const prace = Prace.Build(mockPr, validConfig);
-		expect(prace).to.not.be.null;
-	});
-
-	it('Should return null with invalid body', () => {
-		const prace = Prace.Build({} as PullRequestData, validConfig);
-		expect(prace).to.be.null;
-		expect(mockLogger.lastMessageReceived).to.equal(
-			'pr or pr.pull_request is null!'
-		);
-	});
-
-	it('Should return null on closed pull request', () => {
-		const oldAction = mockPr.action;
-		mockPr.action = 'closed';
-		const prace = Prace.Build(mockPr, validConfig);
-		mockPr.action = oldAction;
-		expect(prace).to.be.null;
-		expect(mockLogger.lastMessageReceived).to.equal(
-			'Ignoring action closed'
-		);
+		};
+		evaluator
+			.runEvaluations()
+			.returns((evResult as unknown) as EvaluationResult);
+		const result = await prace.execute(evaluator);
+		expect(result).to.be.false;
+		const expectedMessage = 'example: example message';
+		github
+			.received()
+			.reportFailed(Arg.is<string>((m) => m.includes(expectedMessage)));
 	});
 });

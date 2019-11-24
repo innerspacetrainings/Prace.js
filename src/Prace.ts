@@ -1,30 +1,33 @@
 import { ConventionEvaluator } from './Evaluator/ConventionEvaluator';
 import { PullRequestData } from './PullRequestData';
-import GithubApi from './Github/GithubApi';
+import IGithubApi from './Github/IGithubApi';
 
 export default class Prace {
 	constructor(
-		private readonly github: GithubApi,
+		private readonly github: IGithubApi,
 		private readonly pullRequest: PullRequestData
 	) {}
 
 	/**
 	 * Run automatic check to the pull request
+	 * @param evaluator If we want to provide or mock one instead of the default
 	 * @returns true if the PR didn't have any linting error
 	 */
-	public async execute(): Promise<boolean> {
+	public async execute(evaluator?: ConventionEvaluator): Promise<boolean> {
 		const branch: string = this.pullRequest.head.ref;
 		const config = await this.github.getConfig(branch);
 
-		const evaluator: ConventionEvaluator = new ConventionEvaluator(
-			this.pullRequest,
-			config
-		);
+		if (evaluator === undefined) {
+			evaluator = new ConventionEvaluator(this.pullRequest, config);
+		}
 
 		if (!evaluator.isRegexValid) {
 			const invalids = evaluator.regexResult.results
-				.map(({ errorMessage }) => errorMessage)
-				.join(' - ');
+				.map(
+					(result) =>
+						`Expression ${result.name} is invalid: ${result.errorMessage}`
+				)
+				.join('\n');
 			this.github.reportFailed(`Regex ${invalids} is invalid!`);
 
 			return false;

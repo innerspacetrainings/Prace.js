@@ -1,4 +1,4 @@
-import EvaluationAnalysis, { PropertyCheck } from './EvaluationAnalysis';
+import EvaluationAnalysis, { CheckStatus } from './EvaluationAnalysis';
 
 export class EvaluationResult implements EvaluationAnalysis {
 	public static BuildFromAnalysis(
@@ -15,15 +15,15 @@ export class EvaluationResult implements EvaluationAnalysis {
 	}
 
 	public readonly failed: boolean;
-	public readonly failedStatus: PropertyCheck[];
+	public readonly failedStatus: CheckStatus[];
 
 	public constructor(
-		public readonly title: PropertyCheck,
-		public readonly body: PropertyCheck,
-		public readonly branch: PropertyCheck,
-		public readonly labels: PropertyCheck,
-		public readonly reviewers: PropertyCheck,
-		public readonly additions: PropertyCheck
+		public readonly title: CheckStatus,
+		public readonly body: CheckStatus,
+		public readonly branch: CheckStatus,
+		public readonly labels: CheckStatus,
+		public readonly reviewers: CheckStatus,
+		public readonly additions: CheckStatus
 	) {
 		const results = [title, body, branch, labels, reviewers, additions];
 

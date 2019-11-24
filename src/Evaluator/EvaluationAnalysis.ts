@@ -1,19 +1,16 @@
 export default interface EvaluationAnalysis {
-	title: PropertyCheck;
-	body: PropertyCheck;
-	branch: PropertyCheck;
-	reviewers: PropertyCheck;
-	additions: PropertyCheck;
-	labels: PropertyCheck;
+	title: CheckStatus;
+	body: CheckStatus;
+	branch: CheckStatus;
+	reviewers: CheckStatus;
+	additions: CheckStatus;
+	labels: CheckStatus;
 }
 
 export interface CheckStatus {
+	name: string;
 	valid: boolean;
 	errorMessage?: string;
-}
-
-export interface PropertyCheck extends CheckStatus {
-	name: string;
 }
 
 export interface RegexResult {
