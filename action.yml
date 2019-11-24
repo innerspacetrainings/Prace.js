@@ -1,0 +1,13 @@
+name: 'Prace'
+description: 'Pull Request complete linter'
+author: 'Innerspace GmbH'
+inputs:
+  configuration-path:
+    description: 'The path for the prace configuration file'
+    default: '.github/prace.yml'
+branding:
+  icon: 'edit'
+  color: 'orange'
+runs:
+  using: 'node12'
+  main: 'dist/index.js'
