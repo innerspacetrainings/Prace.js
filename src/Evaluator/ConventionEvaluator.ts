@@ -34,7 +34,7 @@ export class ConventionEvaluator {
 	public runEvaluations(): EvaluationResult {
 		if (!this.isRegexValid) {
 			throw Error(
-				"Regex is not valid. Check 'isRegexValid' before evaluating"
+				'Regex is not valid. Check \'isRegexValid\' before evaluating'
 			);
 		}
 
@@ -127,10 +127,10 @@ export class ConventionEvaluator {
 			}
 
 			const prReviewers = this.prData.requested_reviewers.map(
-				(r) => r.login
+				(r) => r.login.toLowerCase()
 			);
 			const containReviewer = prReviewers.some((prR) =>
-				users.includes(prR)
+				users.map(u => u.toLowerCase()).includes(prR)
 			);
 			if (!containReviewer) {
 				return error;
@@ -150,10 +150,10 @@ export class ConventionEvaluator {
 				return error;
 			}
 
-			const prTeamsSlugs = requested_teams.map((t) => t.slug);
-			const prTeamsNames = requested_teams.map((t) => t.name);
+			const prTeamsSlugs = requested_teams.map((t) => t.slug.toLowerCase());
+			const prTeamsNames = requested_teams.map((t) => t.name.toLowerCase());
 			const teams = prTeamsSlugs.concat(prTeamsNames);
-			if (!teams.some((t) => requiredTeams.includes(t))) {
+			if (!teams.some((t) => requiredTeams.map(rT => rT.toLowerCase()).includes(t))) {
 				return error;
 			}
 		}
@@ -177,9 +177,9 @@ export class ConventionEvaluator {
 			return { name, valid: false, errorMessage };
 		}
 
-		const labels = this.prData.labels.map((l) => l.name);
+		const labels = this.prData.labels.map((l) => l.name.toLowerCase());
 
-		if (!labels.some((label) => requiredLabels.includes(label))) {
+		if (!labels.some((label) => requiredLabels.map(l => l.toLowerCase()).includes(label))) {
 			return { name, valid: false, errorMessage };
 		}
 

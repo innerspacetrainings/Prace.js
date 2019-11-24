@@ -338,6 +338,24 @@ describe('Convention Evaluator Tests', () => {
 			const result = convention.runEvaluations();
 			expect(result.reviewers.valid).to.be.true;
 		});
+
+		it('should succeed with uppercase fields', () => {
+			dataWithNoReviewers.requested_reviewers = [{ login: 'juan' }];
+			dataWithNoReviewers.requested_teams = [{ name: 'developers', slug: 'devs' }]
+			const requestedReviewer = 'JUAN';
+			configuration.reviewer = {
+				minimum: 1,
+				users: [requestedReviewer],
+				teams: ['DEVELOPERS']
+			};
+
+			const convention = new ConventionEvaluator(
+				dataWithNoReviewers,
+				configuration
+			);
+			const result = convention.runEvaluations();
+			expect(result.reviewers.valid).to.be.true;
+		});
 	});
 
 	describe('Labels', () => {
@@ -375,6 +393,17 @@ describe('Convention Evaluator Tests', () => {
 			expect(result.labels.valid).to.be.false;
 			const errorMsg = `Must have, at least, one of the following labels ${labelName}`;
 			expect(result.labels.errorMessage).to.be.equal(errorMsg);
+		});
+
+		it('should succeed with uppercase label', () => {
+			data.labels = [
+				{ name: 'example', description: 'Etcetera', id: 99 }
+			];
+			configuration.labels = ['EXAMPLE'];
+
+			const convention = new ConventionEvaluator(data, configuration);
+			const result = convention.runEvaluations();
+			expect(result.labels.valid).to.be.true;
 		});
 	});
 });
