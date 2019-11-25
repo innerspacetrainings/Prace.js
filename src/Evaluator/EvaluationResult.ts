@@ -1,4 +1,4 @@
-import EvaluationAnalysis, { CheckStatus } from './EvaluationAnalysis';
+import { CheckStatus, EvaluationAnalysis } from './EvaluationAnalysis';
 
 export class EvaluationResult implements EvaluationAnalysis {
 	public static BuildFromAnalysis(

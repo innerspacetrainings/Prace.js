@@ -1,9 +1,9 @@
 import * as github from '@actions/github';
 import * as core from '@actions/core';
 import { context } from '@actions/github/lib/github';
-import GithubApi from './Github/GithubApi';
 import PraceAction from './Prace';
 import { PullRequestData } from './PullRequestData';
+import { GithubApi } from './Github/GithubApi';
 
 /**
  * Execute the github action

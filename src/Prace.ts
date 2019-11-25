@@ -1,6 +1,6 @@
 import { ConventionEvaluator } from './Evaluator/ConventionEvaluator';
 import { PullRequestData } from './PullRequestData';
-import IGithubApi from './Github/IGithubApi';
+import { IGithubApi } from './Github/IGithubApi';
 
 export default class Prace {
 	constructor(

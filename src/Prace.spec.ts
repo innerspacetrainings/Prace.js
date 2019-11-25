@@ -4,8 +4,8 @@ import { describe, it } from 'mocha';
 import { PullRequestData } from './PullRequestData';
 import { Arg, Substitute, SubstituteOf } from '@fluffy-spoon/substitute';
 import { ConventionEvaluator } from './Evaluator/ConventionEvaluator';
-import IGithubApi from './Github/IGithubApi';
 import { EvaluationResult } from './Evaluator/EvaluationResult';
+import { IGithubApi } from './Github/IGithubApi';
 
 describe('Prace tests', () => {
 	let evaluator: SubstituteOf<ConventionEvaluator>;

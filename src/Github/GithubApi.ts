@@ -1,11 +1,11 @@
-import IGithubApi from './IGithubApi';
 import { context } from '@actions/github/lib/github';
 import { GitHub } from '@actions/github';
-import PraceConfig from '../Evaluator/PraceConfiguration';
 import * as core from '@actions/core';
 import yaml from 'js-yaml';
+import { PraceConfig } from '../Evaluator/PraceConfiguration';
+import { IGithubApi } from './IGithubApi';
 
-export default class GithubApi implements IGithubApi {
+export class GithubApi implements IGithubApi {
 	private readonly pracePath: string = 'prace-file';
 
 	constructor(private readonly octokit: GitHub) {}

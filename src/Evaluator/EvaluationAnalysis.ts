@@ -1,4 +1,4 @@
-export default interface EvaluationAnalysis {
+export interface EvaluationAnalysis {
 	title: CheckStatus;
 	body: CheckStatus;
 	branch: CheckStatus;

@@ -1,5 +1,5 @@
 /** Configuration file structure */
-export default interface PraceConfig {
+export interface PraceConfig {
 	title?: Pattern;
 	body?: Pattern;
 	branch?: Pattern;

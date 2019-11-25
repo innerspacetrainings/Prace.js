@@ -1,11 +1,11 @@
 import { describe, it } from 'mocha';
 import { expect } from 'chai';
-import PraceConfiguration, { Pattern } from './PraceConfiguration';
+import { Pattern, PraceConfig } from './PraceConfiguration';
 import { PullRequestData } from '../PullRequestData';
 import { ConventionEvaluator } from './ConventionEvaluator';
 
 describe('Convention Evaluator Tests', () => {
-	let configuration: PraceConfiguration;
+	let configuration: PraceConfig;
 	let data: PullRequestData;
 
 	beforeEach(() => {

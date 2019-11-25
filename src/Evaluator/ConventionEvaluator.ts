@@ -1,7 +1,8 @@
 import { PullRequestData } from '../PullRequestData';
-import PraceConfiguration, { Pattern } from './PraceConfiguration';
+import { PraceConfig, Pattern } from './PraceConfiguration';
 import { EvaluationResult } from './EvaluationResult';
-import EvaluationAnalysis, {
+import {
+	EvaluationAnalysis,
 	CheckStatus,
 	RegexResult
 } from './EvaluationAnalysis';
@@ -14,7 +15,7 @@ export class ConventionEvaluator {
 
 	constructor(
 		private readonly prData: PullRequestData,
-		private readonly praceConfig: PraceConfiguration
+		private readonly praceConfig: PraceConfig
 	) {
 		const filteredPatterns: Pattern[] = [
 			praceConfig.title,
