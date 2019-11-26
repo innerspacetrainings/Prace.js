@@ -29,6 +29,8 @@ async function action() {
 
 		const githubApi = new GithubApi(octokit);
 
+		await githubApi.Test();
+
 		const prace = new PraceAction(githubApi, pullRequest);
 		await prace.execute();
 	} catch (error) {

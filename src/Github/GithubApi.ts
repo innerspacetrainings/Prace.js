@@ -8,7 +8,32 @@ import { IGithubApi } from './IGithubApi';
 export class GithubApi implements IGithubApi {
 	private readonly pracePath: string = 'configuration-path';
 
-	constructor(private readonly octokit: GitHub) {}
+	constructor(private readonly octokit: GitHub) {
+	}
+
+	public async Test(): Promise<void> {
+		const { owner, repo } = context.repo;
+
+		// const pull = await this.octokit.pulls.get({
+		// 	owner, repo, pull_number: context.payload.pull_request!.number});
+
+		console.log('Got pull!');
+
+		const result: CheckParams = {
+			owner,
+			repo,
+			name: 'prace',
+			head_sha: context.payload.pull_request!.head.sha,
+			status: 'completed',
+			started_at: new Date().toISOString(),
+			conclusion: 'failure',
+			completed_at: new Date().toISOString(),
+			output: { title: 'Failed', summary: 'Because we say so' }
+	}
+
+		await this.octokit.checks.create(result);
+		console.log('Made the system fail!');
+	}
 
 	public async getConfig(branch: string): Promise<PraceConfig> {
 		const configPath: string = core.getInput(this.pracePath, {
@@ -49,4 +74,17 @@ export class GithubApi implements IGithubApi {
 	private parseConfig(content: string): PraceConfig {
 		return yaml.safeLoad(Buffer.from(content, 'base64').toString()) || {};
 	}
+}
+
+interface CheckParams {
+	owner: string;
+	repo: string;
+	name: string;
+	head_sha: string;
+	details_url?: string;
+	status?: 'queued' | 'in_progress' | 'completed';
+	started_at?: string;
+	conclusion?: 'success' | 'failure';
+	completed_at?: string;
+	output?: { title: string, summary: string };
 }
