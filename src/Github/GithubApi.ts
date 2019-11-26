@@ -6,7 +6,7 @@ import { PraceConfig } from '../Evaluator/PraceConfiguration';
 import { IGithubApi } from './IGithubApi';
 
 export class GithubApi implements IGithubApi {
-	private readonly pracePath: string = 'prace-file';
+	private readonly pracePath: string = 'configuration-file';
 
 	constructor(private readonly octokit: GitHub) {}
 
