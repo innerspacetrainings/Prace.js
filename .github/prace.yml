@@ -1,7 +1,7 @@
 title:
   patterns:
     - '\[XX-\d*\]\s[\w\s]*'
-    - RELEASE\s\w*
+    - Testing\s.*
   error: 'You have to include [XX-123] or RELEASE into your title'
 body:
   patterns:
