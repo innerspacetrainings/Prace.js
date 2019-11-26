@@ -49,8 +49,13 @@ export class GithubApi implements IGithubApi {
 
 			console.log(JSON.stringify(checkCall.data));
 
+		const lastCheck = checkCall.data.check_runs.find((ch)=>ch.name === "prace");
 
-		// const lastCheck = checkCall.data.check_runs.find((ch)=>ch.id ===context.payload.id)
+
+			const suite = await this.octokit.checks.getSuite({owner, repo, check_suite_id: lastCheck!.id});
+
+		console.log(JSON.stringify(suite.data));
+
 
 		await this.octokit.checks.create(result);
 		console.log('Made the system fail!');
