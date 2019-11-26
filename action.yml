@@ -9,5 +9,5 @@ branding:
   icon: 'edit'
   color: 'orange'
 runs:
-  using: 'node12'
-  main: 'dist/index.js'
+  using: 'docker'
+  image: 'Dockerfile'
