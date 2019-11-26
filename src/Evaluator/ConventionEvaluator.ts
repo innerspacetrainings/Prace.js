@@ -91,7 +91,7 @@ export class ConventionEvaluator {
 	}
 
 	public evaluateReviewers(): CheckStatus {
-		const reviewers = this.praceConfig.reviewer;
+		const reviewers = this.praceConfig.reviewers;
 		const name = 'reviewers';
 
 		if (!reviewers) {

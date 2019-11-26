@@ -56,7 +56,7 @@ branch:
   patterns:
     - 'feat/[\w\s]**'
   error: Branch must be called `feat/name`
-reviewer:
+reviewers:
   minimum: 1
   users:
     - Bullrich
@@ -82,7 +82,7 @@ All of the configuration fields are optional, they can be removed and that parti
 In the case of having more than one pattern, the property will be evaluated to all of them to see if it complies with 
 **at least one pattern**. It doesn't need to comply with all of the patterns, just one.
 
-### Reviewer
+### Reviewers
 - minimum `number`: The minimum amount of reviewers to have in the Pull Request.
 - users `string[]`: A list of required users. It requires **at least one** of the users in the array.
 - teams `string[]`: A list of required teams. It requires **at least one** of the users in the array. Can be the name or the slug.

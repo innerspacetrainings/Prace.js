@@ -3,7 +3,7 @@ export interface PraceConfig {
 	title?: Pattern;
 	body?: Pattern;
 	branch?: Pattern;
-	reviewer?: {
+	reviewers?: {
 		minimum: number;
 		users?: string[];
 		teams?: string[];

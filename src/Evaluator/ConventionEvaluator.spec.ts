@@ -17,7 +17,7 @@ describe('Convention Evaluator Tests', () => {
 			},
 			body: undefined,
 			branch: undefined,
-			reviewer: {
+			reviewers: {
 				minimum: 2,
 				users: ['Juan', 'Tomas'],
 				teams: ['developers']
@@ -230,7 +230,7 @@ describe('Convention Evaluator Tests', () => {
 
 		it('should succeed with valid reviewers', () => {
 			dataWithNoReviewers.requested_reviewers = [{ login: 'John' }];
-			configuration.reviewer = {
+			configuration.reviewers = {
 				minimum: 1
 			};
 
@@ -246,7 +246,7 @@ describe('Convention Evaluator Tests', () => {
 			const reviewers = {
 				minimum: 1
 			};
-			configuration.reviewer = reviewers;
+			configuration.reviewers = reviewers;
 
 			const convention = new ConventionEvaluator(
 				dataWithNoReviewers,
@@ -261,7 +261,7 @@ describe('Convention Evaluator Tests', () => {
 		it('should fail with no correct reviewers', () => {
 			dataWithNoReviewers.requested_reviewers = [{ login: 'John' }];
 			const requestedReviewer = 'Juan';
-			configuration.reviewer = {
+			configuration.reviewers = {
 				minimum: 1,
 				users: [requestedReviewer]
 			};
@@ -281,7 +281,7 @@ describe('Convention Evaluator Tests', () => {
 		it('should succeed with correct reviewers', () => {
 			dataWithNoReviewers.requested_reviewers = [{ login: 'Juan' }];
 			const requestedReviewer = 'Juan';
-			configuration.reviewer = {
+			configuration.reviewers = {
 				minimum: 1,
 				users: [requestedReviewer]
 			};
@@ -296,7 +296,7 @@ describe('Convention Evaluator Tests', () => {
 
 		it('should fail with no teams', () => {
 			dataWithNoReviewers.requested_reviewers = [{ login: 'etectera' }];
-			configuration.reviewer = {
+			configuration.reviewers = {
 				minimum: 1,
 				teams: [requestedTeam]
 			};
@@ -315,7 +315,7 @@ describe('Convention Evaluator Tests', () => {
 			dataWithNoReviewers.requested_teams = [
 				{ name: 'Artists', slug: 'arts' }
 			];
-			configuration.reviewer = {
+			configuration.reviewers = {
 				minimum: 1,
 				teams: [requestedTeam]
 			};
@@ -334,7 +334,7 @@ describe('Convention Evaluator Tests', () => {
 			dataWithNoReviewers.requested_teams = [
 				{ name: 'Developers', slug: 'devs' }
 			];
-			configuration.reviewer = {
+			configuration.reviewers = {
 				minimum: 1,
 				teams: [requestedTeam]
 			};
@@ -353,7 +353,7 @@ describe('Convention Evaluator Tests', () => {
 				{ name: 'developers', slug: 'devs' }
 			];
 			const requestedReviewer = 'JUAN';
-			configuration.reviewer = {
+			configuration.reviewers = {
 				minimum: 1,
 				users: [requestedReviewer],
 				teams: ['DEVELOPERS']
