@@ -2,10 +2,9 @@
   "name": "prace",
   "version": "0.8.0",
   "description": "Github status check app for parsing a PR title against a regular expression",
-  "source": "dist/main/index.js",
-  "main": "dist/main/index.js",
-  "typings": "dist/main/index.d.ts",
-  "module": "build/module/index.js",
+  "source": "dist/index.js",
+  "main": "dist/index.js",
+  "typings": "dist/index.d.ts",
   "repository": {
     "type": "git",
     "url": "git+https://github.com:innerspacetrainings/Prace.js.git"
@@ -62,9 +61,11 @@
   },
   "keywords": [
     "prace",
-    "github app",
+    "github",
     "title",
-    "regex title"
+    "regex",
+    "lint",
+    "pull request"
   ],
   "license": "MIT",
   "dependencies": {
