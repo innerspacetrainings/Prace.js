@@ -42,13 +42,13 @@ export class GithubApi implements IGithubApi {
 		};
 
 		const checkCall = await this.octokit.checks.listForRef({
-			owner, repo, ref: context.payload.pull_request!.head.sha, check_name: checkName
+			owner, repo, ref: context.payload.pull_request!.head.sha
 		});
 
-		for(const ch of checkCall){
-			console.log(ch.id);
-		}
-		console.log(`my id is ${context.payload.installation!.id}`)
+		console.log(JSON.stringify(context.payload));
+
+			console.log(JSON.stringify(checkCall.data));
+
 
 		// const lastCheck = checkCall.data.check_runs.find((ch)=>ch.id ===context.payload.id)
 
