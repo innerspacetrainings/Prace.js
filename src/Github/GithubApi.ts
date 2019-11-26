@@ -19,16 +19,25 @@ export class GithubApi implements IGithubApi {
 
 		console.log('Got pull!');
 
-		const result: CheckParams = {
+		const result:CheckParams = {
 			owner,
 			repo,
-			name: 'prace',
+			name: 'Old check',
 			head_sha: context.payload.pull_request!.head.sha,
 			status: 'completed',
 			started_at: new Date().toISOString(),
 			conclusion: 'failure',
 			completed_at: new Date().toISOString(),
-			output: { title: 'Failed', summary: 'Because we say so' }
+			output: { title: 'Failed', summary: 'Because we say so' },
+			annotations:[{
+				path: '.github/prace.yml',
+				start_line: 1,
+				end_line:2,
+				annotation_level: 'failure',
+				message: 'This is the message that goes on the annotation',
+				title: 'This is the title'
+			}]
+
 	}
 
 		await this.octokit.checks.create(result);
@@ -87,4 +96,6 @@ interface CheckParams {
 	conclusion?: 'success' | 'failure';
 	completed_at?: string;
 	output?: { title: string, summary: string };
+	annotations?: object;
+	images?:{alt:string, image_url:string, caption?:string};
 }
