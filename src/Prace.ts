@@ -1,6 +1,7 @@
 import { ConventionEvaluator } from './Evaluator/ConventionEvaluator';
 import { PullRequestData } from './PullRequestData';
 import { IGithubApi } from './Github/IGithubApi';
+import { invalidExpression } from './Evaluator/ConventionErrors';
 
 export default class Prace {
 	constructor(
@@ -23,9 +24,11 @@ export default class Prace {
 
 		if (!evaluator.isRegexValid) {
 			const invalids = evaluator.regexResult.results
-				.map(
-					(result) =>
-						`Expression ${result.name} is invalid: ${result.errorMessage}`
+				.map((result) =>
+					invalidExpression(
+						result.name,
+						result.errorMessage as string
+					)
 				)
 				.join('\n');
 			this.github.reportFailed(`Regex ${invalids} is invalid!`);

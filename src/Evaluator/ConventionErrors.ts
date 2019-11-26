@@ -19,3 +19,6 @@ export const missingRequiredTeam = (teams: string[]): string =>
 
 export const missingLabel = (labels: string[]): string =>
 	`Must have at least one of the following labels ${labels.join(', ')}`;
+
+export const invalidExpression = (expression: string, errorMessage: string) =>
+	`Expression ${expression} is invalid: ${errorMessage}`;

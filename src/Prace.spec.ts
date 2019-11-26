@@ -6,6 +6,7 @@ import { Arg, Substitute, SubstituteOf } from '@fluffy-spoon/substitute';
 import { ConventionEvaluator } from './Evaluator/ConventionEvaluator';
 import { EvaluationResult } from './Evaluator/EvaluationResult';
 import { IGithubApi } from './Github/IGithubApi';
+import { invalidExpression } from './Evaluator/ConventionErrors';
 
 describe('Prace tests', () => {
 	let evaluator: SubstituteOf<ConventionEvaluator>;
@@ -38,7 +39,7 @@ describe('Prace tests', () => {
 		const result = await prace.execute(evaluator);
 
 		(<any>evaluator).results.called();
-		const expectedMessage = `Expression example is invalid: etcetera`;
+		const expectedMessage = invalidExpression('example', 'etcetera');
 		github.received().reportFailed(
 			Arg.is<string>((m) => m.includes(expectedMessage))
 		);
