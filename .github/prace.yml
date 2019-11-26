@@ -5,5 +5,5 @@ title:
   error: 'You have to include [XX-123] or RELEASE into your title'
 body:
   patterns:
-    - '[\w\s]*'
+    - '.+'
   error: The body can not be emptry
