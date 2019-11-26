@@ -14,9 +14,6 @@ export class GithubApi implements IGithubApi {
 	public async Test(): Promise<void> {
 		const { owner, repo } = context.repo;
 
-		// const pull = await this.octokit.pulls.get({
-		// 	owner, repo, pull_number: context.payload.pull_request!.number});
-
 		console.log('Got pull!');
 
 		const checkName = 'Old check';
@@ -30,30 +27,37 @@ export class GithubApi implements IGithubApi {
 			started_at: new Date().toISOString(),
 			conclusion: 'failure',
 			completed_at: new Date().toISOString(),
-			output: { title: 'Failed', summary: 'Because we say so' },
-			annotations: [{
-				path: '.github/prace.yml',
-				start_line: 1,
-				end_line: 2,
-				annotation_level: 'failure',
-				message: 'This is the message that goes on the annotation',
-				title: 'This is the title'
-			}]
+			output: { title: 'Failed', summary: 'Because we say so',
+				annotations: [{
+					path: '.github/prace.yml',
+					start_line: 1,
+					end_line: 2,
+					annotation_level: 'failure',
+					message: 'This is the message that goes on the annotation',
+					title: 'This is the title'
+				}]},
+
 		};
-
-		const checkCall = await this.octokit.checks.listForRef({
-			owner, repo, ref: context.payload.pull_request!.head.sha
-		});
-
-		console.log(JSON.stringify(context.payload));
-
-			console.log(JSON.stringify(checkCall.data));
-
-		// const lastCheck = checkCall.data.check_runs.find((ch)=>ch.name === "prace");
-
-		const suite = await this.octokit.checks.listSuitesForRef({owner, repo, ref: context.payload.pull_request!.head.sha});
-
-		console.log(JSON.stringify(suite.data));
+		//
+		// this.octokit.checks.listForSuite;
+		//
+		// const checkCall = await this.octokit.checks.listForRef({
+		// 	owner, repo, ref: context.payload.pull_request!.head.sha
+		// });
+		//
+		// console.log(JSON.stringify(context.payload));
+		//
+		// console.log(JSON.stringify(checkCall.data));
+		//
+		// // const lastCheck = checkCall.data.check_runs.find((ch)=>ch.name === "prace");
+		//
+		// const suite = await this.octokit.checks.listSuitesForRef({
+		// 	owner,
+		// 	repo,
+		// 	ref: context.payload.pull_request!.head.sha
+		// });
+		//
+		// console.log(JSON.stringify(suite.data));
 
 
 		await this.octokit.checks.create(result);
@@ -111,7 +115,9 @@ interface CheckParams {
 	started_at?: string;
 	conclusion?: 'success' | 'failure';
 	completed_at?: string;
-	output?: { title: string, summary: string };
-	annotations?: object;
-	images?: { alt: string, image_url: string, caption?: string };
+	output?: { title: string, summary: string, annotations?:
+			[{ path: string, start_line: number, end_line: number, annotation_level: 'notice' | 'warning' | 'failure', message: string, title?: string }];
+	images?: [{ alt: string, image_url: string, caption?: string }] };
+
+
 }
