@@ -10,6 +10,6 @@ COPY src/ ./src
 
 RUN npm run build
 
-RUN ls
+RUN pwd
 
-ENTRYPOINT ["node", "./prace/dist/index.js"]
+ENTRYPOINT ["node", "/prace/dist/index.js"]
