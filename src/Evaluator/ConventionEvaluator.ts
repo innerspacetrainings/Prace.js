@@ -8,10 +8,10 @@ import {
 } from './EvaluationAnalysis';
 import * as errors from './ConventionErrors';
 
-/** Logic that analyze the attributes with the configurations to see if they comply */
+/** Logic that analyzes the attributes of a pull request for compliance in relation to a given configuration */
 export class ConventionEvaluator {
 	public readonly isRegexValid: boolean;
-	/** Report of which regex expression failed and their error message **/
+	/** Report about failed regular expressions and their related error messages **/
 	public readonly regexResult: RegexResult;
 
 	constructor(
@@ -30,8 +30,8 @@ export class ConventionEvaluator {
 	}
 
 	/**
-	 * Run an evaluation to every property of the PR
-	 * @returns a report of which properties failed with the convention
+	 * Automatically evaluate every property of the PR
+	 * @returns a report of all the properties that did not comply with the conventions.
 	 */
 	public runEvaluations(): EvaluationResult {
 		if (!this.isRegexValid) {

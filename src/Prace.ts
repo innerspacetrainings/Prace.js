@@ -9,9 +9,9 @@ export default class Prace {
 	) {}
 
 	/**
-	 * Run automatic check to the pull request
-	 * @param evaluator If we want to provide or mock one instead of the default
-	 * @returns true if the PR didn't have any linting error
+	 * Run convention checks on the pull request.
+	 * @param evaluator Evaluator to override the default evaluator
+	 * @returns true if the pull request complies with the configured conventions
 	 */
 	public async execute(evaluator?: ConventionEvaluator): Promise<boolean> {
 		const branch: string = this.pullRequest.head.ref;
@@ -35,7 +35,7 @@ export default class Prace {
 
 		const results = evaluator.runEvaluations();
 		if (results.failed) {
-			let failedMessage = 'Failed on the following cases\n';
+			let failedMessage = 'The following convention checks failed:\n';
 			failedMessage += results
 				.generateReport()
 				.map((r) => `${r.name}: ${r.message}`)
