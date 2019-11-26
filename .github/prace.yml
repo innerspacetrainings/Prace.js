@@ -7,17 +7,3 @@ body:
   patterns:
     - '[\w\s]*'
   error: The body can not be emptry
-branch:
-  patterns:
-    - 'feat/[\w\s]**'
-  error: Branch must be called `feat/name`
-reviewers:
-  minimum: 1
-  users:
-    - Bullrich
-  teams:
-    - backend
-additions: 256
-labels:
-  - bug
-  - enhancement
