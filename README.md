@@ -7,7 +7,7 @@ Pull Request Automated Convention Enforcer
 <!--img src="https://raw.githubusercontent.com/innerspacetrainings/Prace.js/master/media/prace-logo.png" width="250"  height="250"-->
 </p>
 
-A Github action that checks if a PR complies with a given configuration
+A GitHub action that checks if a PR complies with a given configuration
 Checks that the PR title complies with a given regular expression.
 
 [![CodeFactor](https://www.codefactor.io/repository/github/innerspacetrainings/prace.js/badge?s=ae50225ee71c7357c4a6f7a48998b11f34683662)](https://www.codefactor.io/repository/github/innerspacetrainings/prace.js) 
@@ -87,7 +87,7 @@ In the case of having more than one pattern, the property will be evaluated to a
 - users `string[]`: A list of required users. It requires **at least one** of the users in the array.
 - teams `string[]`: A list of required teams. It requires **at least one** of the users in the array. Can be the name or the slug.
 
-This fields are not case sensitive.
+These fields are not case sensitive.
 
 ### Additions `number`
 

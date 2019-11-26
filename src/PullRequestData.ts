@@ -1,4 +1,4 @@
-/** Object sent by the PullRequest web hook. This values are mandatory." */
+/** Object sent by the PullRequest web hook. These values are mandatory." */
 export interface PullRequestData {
 	title: string;
 	body: string;
