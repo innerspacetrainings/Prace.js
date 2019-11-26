@@ -6,7 +6,7 @@ import { PraceConfig } from '../Evaluator/PraceConfiguration';
 import { IGithubApi } from './IGithubApi';
 
 export class GithubApi implements IGithubApi {
-	private readonly pracePath: string = 'configuration-file';
+	private readonly pracePath: string = 'configuration-path';
 
 	constructor(private readonly octokit: GitHub) {}
 
@@ -14,6 +14,7 @@ export class GithubApi implements IGithubApi {
 		const configPath: string = core.getInput(this.pracePath, {
 			required: true
 		});
+		console.log('Found config path at: ' + configPath);
 		const { owner, repo } = context.repo;
 
 		try {
