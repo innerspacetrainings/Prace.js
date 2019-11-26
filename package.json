@@ -26,7 +26,7 @@
   "scripts": {
     "describe": "npm-scripts-info",
     "lint": "./node_modules/.bin/tslint -p tsconfig.json",
-    "build": "run-s clean && ncc build src/index.ts -o dist",
+    "build": "run-s clean && tsc -p tsconfig.json",
     "fix": "run-s fix:*",
     "fix:prettier": "prettier \"src/**/*.ts\" --write",
     "fix:tslint": "tslint --fix --project .",
