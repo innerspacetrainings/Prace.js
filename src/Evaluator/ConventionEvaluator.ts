@@ -6,6 +6,7 @@ import {
 	CheckStatus,
 	RegexResult
 } from './EvaluationAnalysis';
+import * as errors from './ConventionErrors';
 
 /** Logic that analyze the attributes with the configurations to see if they comply */
 export class ConventionEvaluator {
@@ -34,9 +35,7 @@ export class ConventionEvaluator {
 	 */
 	public runEvaluations(): EvaluationResult {
 		if (!this.isRegexValid) {
-			throw Error(
-				"Regex is not valid. Check 'isRegexValid' before evaluating"
-			);
+			throw Error(errors.regexError);
 		}
 
 		const evaluation: EvaluationAnalysis = {
@@ -84,7 +83,7 @@ export class ConventionEvaluator {
 			return {
 				name,
 				valid: false,
-				errorMessage: `Exceeded additions limits. Maximum allowed additions are ${this.praceConfig.additions}`
+				errorMessage: errors.additionsError(this.praceConfig.additions)
 			};
 		}
 
@@ -109,18 +108,17 @@ export class ConventionEvaluator {
 			return {
 				name,
 				valid: false,
-				errorMessage: `You have to assign at least ${reviewers.minimum} reviewers`
+				errorMessage: errors.reviewersMinimum(reviewers.minimum)
 			};
 		}
 
 		if (this.isArrayValidAndNotEmpty(reviewers.users)) {
 			const users: string[] = reviewers.users as string[];
 
-			const joinedUsers = users.join(', ');
 			const error: CheckStatus = {
 				name,
 				valid: false,
-				errorMessage: `Must have, at least, one of the following users as reviewer: ${joinedUsers}`
+				errorMessage: errors.missingRequiredReviewer(users)
 			};
 
 			if (!this.isArrayValidAndNotEmpty(requested_reviewers)) {
@@ -141,11 +139,10 @@ export class ConventionEvaluator {
 		if (this.isArrayValidAndNotEmpty(reviewers.teams)) {
 			const requiredTeams: string[] = reviewers.teams as string[];
 
-			const joinedTeams = requiredTeams.join(', ');
 			const error: CheckStatus = {
 				name,
 				valid: false,
-				errorMessage: `Must have, at least, one of the following teams as reviewer: ${joinedTeams}`
+				errorMessage: errors.missingRequiredTeam(requiredTeams)
 			};
 			if (!this.isArrayValidAndNotEmpty(requested_teams)) {
 				return error;
@@ -178,9 +175,7 @@ export class ConventionEvaluator {
 
 		const requiredLabels: string[] = this.praceConfig.labels as string[];
 
-		const errorMessage: string =
-			'Must have, at least, one of the following labels ' +
-			requiredLabels.join(', ');
+		const errorMessage: string = errors.missingLabel(requiredLabels);
 
 		if (!this.isArrayValidAndNotEmpty(this.prData.labels)) {
 			return { name, valid: false, errorMessage };

@@ -3,6 +3,7 @@ import { expect } from 'chai';
 import { Pattern, PraceConfig } from './PraceConfiguration';
 import { PullRequestData } from '../PullRequestData';
 import { ConventionEvaluator } from './ConventionEvaluator';
+import * as errors from './ConventionErrors';
 
 describe('Convention Evaluator Tests', () => {
 	let configuration: PraceConfig;
@@ -62,7 +63,7 @@ describe('Convention Evaluator Tests', () => {
 		} as PullRequestData;
 	});
 
-	it('should example be valid for example request', () => {
+	it('should yield passing result for the example data', () => {
 		const convention = new ConventionEvaluator(data, configuration);
 		const result = convention.runEvaluations();
 		expect(result.failed).to.be.false;
@@ -75,13 +76,7 @@ describe('Convention Evaluator Tests', () => {
 	});
 
 	it('should succeed with empty configuration', () => {
-		// Delete all keys
-		delete configuration.title;
-		delete configuration.additions;
-		delete configuration.labels;
-		delete configuration.reviewer;
-
-		const convention = new ConventionEvaluator(data, configuration);
+		const convention = new ConventionEvaluator(data, {});
 		const result = convention.runEvaluations();
 
 		expect(result.failed).to.be.false;
@@ -105,6 +100,19 @@ describe('Convention Evaluator Tests', () => {
 			expect(convention.regexResult.results[0].errorMessage).to.contain(
 				'Invalid regular expression:'
 			);
+		});
+
+		it('should fail evaluating with invalid regex', () => {
+			configuration.body = {
+				patterns: ['][', 'good'],
+				error: 'Bad case'
+			};
+			const convention = new ConventionEvaluator(data, configuration);
+			try {
+				convention.runEvaluations();
+			} catch (e) {
+				expect(e.message).to.equal(errors.regexError);
+			}
 		});
 	});
 
@@ -205,13 +213,14 @@ describe('Convention Evaluator Tests', () => {
 
 			expect(result.additions.valid).to.be.false;
 
-			const errorMsg = `Exceeded additions limits. Maximum allowed additions are ${configuration.additions}`;
+			const errorMsg = errors.additionsError(configuration.additions);
 			expect(result.additions.errorMessage).to.be.equal(errorMsg);
 		});
 	});
 
 	describe('Reviewers', () => {
 		let dataWithNoReviewers: PullRequestData;
+		const requestedTeam = 'Developers';
 
 		beforeEach(() => {
 			delete data.requested_reviewers;
@@ -245,7 +254,7 @@ describe('Convention Evaluator Tests', () => {
 			);
 			const result = convention.runEvaluations();
 			expect(result.reviewers.valid).to.be.false;
-			const errorMsg = `You have to assign at least ${reviewers.minimum} reviewers`;
+			const errorMsg = errors.reviewersMinimum(reviewers.minimum);
 			expect(result.reviewers.errorMessage).to.be.equal(errorMsg);
 		});
 
@@ -263,7 +272,9 @@ describe('Convention Evaluator Tests', () => {
 			);
 			const result = convention.runEvaluations();
 			expect(result.reviewers.valid).to.be.false;
-			const errorMsg = `Must have, at least, one of the following users as reviewer: ${requestedReviewer}`;
+			const errorMsg = errors.missingRequiredReviewer([
+				requestedReviewer
+			]);
 			expect(result.reviewers.errorMessage).to.be.equal(errorMsg);
 		});
 
@@ -285,10 +296,9 @@ describe('Convention Evaluator Tests', () => {
 
 		it('should fail with no teams', () => {
 			dataWithNoReviewers.requested_reviewers = [{ login: 'etectera' }];
-			const requestedReviewer = 'Developers';
 			configuration.reviewer = {
 				minimum: 1,
-				teams: [requestedReviewer]
+				teams: [requestedTeam]
 			};
 
 			const convention = new ConventionEvaluator(
@@ -297,7 +307,7 @@ describe('Convention Evaluator Tests', () => {
 			);
 			const result = convention.runEvaluations();
 			expect(result.reviewers.valid).to.be.false;
-			const errorMsg = `Must have, at least, one of the following teams as reviewer: ${requestedReviewer}`;
+			const errorMsg = errors.missingRequiredTeam([requestedTeam]);
 			expect(result.reviewers.errorMessage).to.be.equal(errorMsg);
 		});
 
@@ -305,10 +315,9 @@ describe('Convention Evaluator Tests', () => {
 			dataWithNoReviewers.requested_teams = [
 				{ name: 'Artists', slug: 'arts' }
 			];
-			const requestedReviewer = 'Developers';
 			configuration.reviewer = {
 				minimum: 1,
-				teams: [requestedReviewer]
+				teams: [requestedTeam]
 			};
 
 			const convention = new ConventionEvaluator(
@@ -317,7 +326,7 @@ describe('Convention Evaluator Tests', () => {
 			);
 			const result = convention.runEvaluations();
 			expect(result.reviewers.valid).to.be.false;
-			const errorMsg = `Must have, at least, one of the following teams as reviewer: ${requestedReviewer}`;
+			const errorMsg = errors.missingRequiredTeam([requestedTeam]);
 			expect(result.reviewers.errorMessage).to.be.equal(errorMsg);
 		});
 
@@ -325,10 +334,9 @@ describe('Convention Evaluator Tests', () => {
 			dataWithNoReviewers.requested_teams = [
 				{ name: 'Developers', slug: 'devs' }
 			];
-			const requestedReviewer = 'Developers';
 			configuration.reviewer = {
 				minimum: 1,
-				teams: [requestedReviewer]
+				teams: [requestedTeam]
 			};
 
 			const convention = new ConventionEvaluator(
@@ -381,7 +389,7 @@ describe('Convention Evaluator Tests', () => {
 			const convention = new ConventionEvaluator(data, configuration);
 			const result = convention.runEvaluations();
 			expect(result.labels.valid).to.be.false;
-			const errorMsg = `Must have, at least, one of the following labels ${labelName}`;
+			const errorMsg = errors.missingLabel([labelName]);
 			expect(result.labels.errorMessage).to.be.equal(errorMsg);
 		});
 
@@ -393,7 +401,7 @@ describe('Convention Evaluator Tests', () => {
 			const convention = new ConventionEvaluator(data, configuration);
 			const result = convention.runEvaluations();
 			expect(result.labels.valid).to.be.false;
-			const errorMsg = `Must have, at least, one of the following labels ${labelName}`;
+			const errorMsg = errors.missingLabel([labelName]);
 			expect(result.labels.errorMessage).to.be.equal(errorMsg);
 		});
 
