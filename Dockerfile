@@ -10,6 +10,6 @@ COPY src/ ./src
 
 RUN npm run build
 
-RUN rm -rf node_modules
+RUN npm run test:unit
 
 ENTRYPOINT ["node", "./dist/index.js"]
