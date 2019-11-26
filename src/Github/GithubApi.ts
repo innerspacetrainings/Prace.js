@@ -19,26 +19,38 @@ export class GithubApi implements IGithubApi {
 
 		console.log('Got pull!');
 
-		const result:CheckParams = {
+		const checkName = 'Old check';
+
+		const result: CheckParams = {
 			owner,
 			repo,
-			name: 'Old check',
+			name: checkName,
 			head_sha: context.payload.pull_request!.head.sha,
 			status: 'completed',
 			started_at: new Date().toISOString(),
 			conclusion: 'failure',
 			completed_at: new Date().toISOString(),
 			output: { title: 'Failed', summary: 'Because we say so' },
-			annotations:[{
+			annotations: [{
 				path: '.github/prace.yml',
 				start_line: 1,
-				end_line:2,
+				end_line: 2,
 				annotation_level: 'failure',
 				message: 'This is the message that goes on the annotation',
 				title: 'This is the title'
 			}]
+		};
 
-	}
+		const checkCall = await this.octokit.checks.listForRef({
+			owner, repo, ref: context.payload.pull_request!.head.sha, check_name: checkName
+		});
+
+		for(const ch of checkCall){
+			console.log(ch.id);
+		}
+		console.log(`my id is ${context.payload.installation!.id}`)
+
+		// const lastCheck = checkCall.data.check_runs.find((ch)=>ch.id ===context.payload.id)
 
 		await this.octokit.checks.create(result);
 		console.log('Made the system fail!');
@@ -97,5 +109,5 @@ interface CheckParams {
 	completed_at?: string;
 	output?: { title: string, summary: string };
 	annotations?: object;
-	images?:{alt:string, image_url:string, caption?:string};
+	images?: { alt: string, image_url: string, caption?: string };
 }
