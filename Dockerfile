@@ -12,4 +12,6 @@ RUN npm run build
 
 RUN npm run test:unit
 
+RUN ls
+
 ENTRYPOINT ["node", "./dist/index.js"]
