@@ -13,7 +13,7 @@ async function action() {
 		const githubToken = process.env.GITHUB_TOKEN!;
 		const octokit = new github.GitHub(githubToken);
 
-		core.debug("Starting action!");
+		core.debug('Starting action!');
 
 		// Have to cast to unknown to then cast to the correct type
 		const pullRequest: PullRequestData = (context.payload
