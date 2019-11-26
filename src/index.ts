@@ -13,6 +13,8 @@ async function action() {
 		const githubToken = process.env.GITHUB_TOKEN!;
 		const octokit = new github.GitHub(githubToken);
 
+		core.debug("Starting action!");
+
 		// Have to cast to unknown to then cast to the correct type
 		const pullRequest: PullRequestData = (context.payload
 			.pull_request as unknown) as PullRequestData;
@@ -38,5 +40,7 @@ async function action() {
 		core.setFailed(error.message);
 	}
 }
+
+console.log('Starting index!');
 
 action();
