@@ -1,11 +1,10 @@
 {
   "name": "prace",
-  "version": "1.0.1",
+  "version": "0.8.0",
   "description": "Github status check app for parsing a PR title against a regular expression",
-  "source": "dist/main/index.js",
-  "main": "dist/main/index.js",
-  "typings": "dist/main/index.d.ts",
-  "module": "build/module/index.js",
+  "source": "dist/index.js",
+  "main": "dist/index.js",
+  "typings": "dist/index.d.ts",
   "repository": {
     "type": "git",
     "url": "git+https://github.com:innerspacetrainings/Prace.js.git"
@@ -27,19 +26,17 @@
   "scripts": {
     "describe": "npm-scripts-info",
     "lint": "./node_modules/.bin/tslint -p tsconfig.json",
-    "build": "run-s clean && run-p build:*",
-    "build:main": "tsc -p tsconfig.json",
-    "build:module": "tsc -p tsconfig.module.json",
+    "build": "run-s clean && ncc build src/index.ts -o dist",
     "fix": "run-s fix:*",
     "fix:prettier": "prettier \"src/**/*.ts\" --write",
     "fix:tslint": "tslint --fix --project .",
     "test": "run-s build test:*",
     "test:lint": "tslint --project . && prettier \"src/**/*.ts\" --list-different",
-    "test:unit": "nyc mocha -r ts-node/register src/**/*.spec.ts",
+    "test:unit": "nyc mocha -r ts-node/register 'src/**/*.spec.ts'",
     "cov": "run-s build test:unit cov:html && open-cli coverage/index.html",
     "cov:html": "nyc report --reporter=html",
     "cov:send": "nyc report --reporter=lcov && codecov",
-    "cov:check": "nyc report && nyc check-coverage --lines 100 --functions 100 --branches 100",
+    "cov:check": "nyc report && nyc check-coverage --lines 70 --functions 70 --branches 70",
     "doc": "run-s doc:html && open-cli docs/index.html",
     "doc:html": "typedoc src/ --exclude **/*.spec.ts --target ES6 --mode file --out docs",
     "doc:json": "typedoc src/ --exclude **/*.spec.ts --target ES6 --mode file --json docs/typedoc.json",
@@ -60,30 +57,31 @@
     "prepare-release": "One-step: clean, build, test, publish docs, and prep a release"
   },
   "engines": {
-    "node": ">=8"
+    "node": ">=12"
   },
   "keywords": [
     "prace",
-    "github app",
+    "github",
     "title",
-    "regex title"
+    "regex",
+    "lint",
+    "pull request"
   ],
   "license": "MIT",
   "dependencies": {
-    "@octokit/app": "^4.1.0",
-    "@octokit/rest": "^16.34.1",
-    "express": "^4.17.1",
-    "request": "^2.88.0",
-    "request-promise": "^4.2.5"
+    "@actions/core": "^1.2.0",
+    "@actions/github": "^1.1.0",
+    "js-yaml": "^3.13.1"
   },
   "devDependencies": {
     "@bitjson/npm-scripts-info": "^1.0.0",
+    "@fluffy-spoon/substitute": "^1.104.0",
     "@types/chai": "^4.2.4",
-    "@types/express": "^4.17.2",
+    "@types/js-yaml": "^3.12.1",
     "@types/lru-cache": "^5.1.0",
     "@types/mocha": "^5.2.7",
-    "@types/node": "^12.12.5",
-    "@types/request-promise": "^4.1.44",
+    "@types/node": "^12.12.12",
+    "@zeit/ncc": "^0.20.5",
     "chai": "^4.2.0",
     "codecov": "^3.6.1",
     "cz-conventional-changelog": "^3.0.2",
@@ -117,6 +115,7 @@
     "reporter": [
       "html"
     ],
-    "all": true
+    "all": true,
+    "lines": 70
   }
 }

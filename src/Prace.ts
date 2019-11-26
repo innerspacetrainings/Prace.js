@@ -1,115 +1,54 @@
-import { IConfig, TemplateResult } from './Config';
-import {
-	evaluateTitle,
-	PullRequestTitleAndRegex,
-	TitleEvaluationResult,
-	TitleResult
-} from './Utils';
-import IGithubApi, { RepoInfo } from './Github/IGithubApi';
-import { GithubApi } from './Github/GithubApi';
+import { ConventionEvaluator } from './Evaluator/ConventionEvaluator';
 import { PullRequestData } from './PullRequestData';
+import { IGithubApi } from './Github/IGithubApi';
+import { invalidExpression } from './Evaluator/ConventionErrors';
 
-/** Result of the check execution */
-export enum CheckResult {
-	NoValues = 'No values',
-	HadError = 'Had error',
-	CorrectTitle = 'Correct Title'
-}
-
-/** Github App Entry point. This class manages the logic of the system */
-export class Prace {
-	/**
-	 * Builds the Prace app object. If data is null or closed, it returns a null object instead
-	 * @param pr Pull request data that should be in the body of the github app post.
-	 * @param config Config file with the application information and keys
-	 * @constructor
-	 */
-	public static Build(pr: PullRequestData, config: IConfig): Prace | null {
-		if (pr && pr.action === 'closed') {
-			config.logger.log(`Ignoring action ${pr.action}`);
-		} else if (pr && pr.pull_request) {
-			return new Prace(pr, config);
-		} else {
-			config.logger.error('pr or pr.pull_request is null!');
-		}
-
-		return null;
-	}
-
-	private readonly githubApi: IGithubApi;
-	private readonly repoInfo: RepoInfo;
-
-	private constructor(
-		private readonly prData: PullRequestData,
-		config: IConfig
-	) {
-		this.githubApi = new GithubApi(prData.installation.id, config);
-		this.repoInfo = {
-			repo: prData.repository.name,
-			owner: prData.repository.full_name.split('/')[0]
-		};
-	}
+export default class Prace {
+	constructor(
+		private readonly github: IGithubApi,
+		private readonly pullRequest: PullRequestData
+	) {}
 
 	/**
-	 * Gets the request data.
-	 * @returns Object with the title of the pull request and the regular expresion.
-	 * Will be null if there is no configuration file in the project
+	 * Run convention checks on the pull request.
+	 * @param evaluator Evaluator to override the default evaluator
+	 * @returns true if the pull request complies with the configured conventions
 	 */
-	public async getPullRequestData(): Promise<PullRequestTitleAndRegex | null> {
-		const templateResult = await this.githubApi.getTemplateConvention(
-			this.repoInfo,
-			this.prData.pull_request.head.ref
-		);
+	public async execute(evaluator?: ConventionEvaluator): Promise<boolean> {
+		const branch: string = this.pullRequest.head.ref;
+		const config = await this.github.getConfig(branch);
 
-		if (
-			templateResult.result === TemplateResult.Success &&
-			templateResult.regularExpression
-		) {
-			return {
-				title: this.prData.pull_request.title,
-				regularExpression: templateResult.regularExpression
-			};
+		if (evaluator === undefined) {
+			evaluator = new ConventionEvaluator(this.pullRequest, config);
 		}
 
-		return null;
-	}
+		if (!evaluator.isRegexValid) {
+			const invalids = evaluator.regexResult.results
+				.map((result) =>
+					invalidExpression(
+						result.name,
+						result.errorMessage as string
+					)
+				)
+				.join('\n');
+			this.github.reportFailed(`Regex ${invalids} is invalid!`);
 
-	/**
-	 * Set the status of the check. Can be successful or incorrect with a example message
-	 * @param repoInfo Name and owner of the repo
-	 * @param result Type of result and example message for incorrect cases
-	 */
-	public async setCheckStatus(
-		repoInfo: RepoInfo,
-		pullRequestNumber: number,
-		result: TitleEvaluationResult
-	): Promise<void> {
-		await this.githubApi.setCheckStatus(
-			repoInfo,
-			pullRequestNumber,
-			result
-		);
-	}
-
-	/** Run automatic check to the pull request. Let Prace handle the config file and the result
-	 * @returns Enum with the kind of result that it had
-	 */
-	public async executeCheck(): Promise<CheckResult> {
-		const data = await this.getPullRequestData();
-		if (data === null) {
-			return CheckResult.NoValues;
+			return false;
 		}
 
-		const evaluation: TitleEvaluationResult = evaluateTitle(data);
+		const results = evaluator.runEvaluations();
+		if (results.failed) {
+			let failedMessage = 'The following convention checks failed:\n';
+			failedMessage += results
+				.generateReport()
+				.map((r) => `${r.name}: ${r.message}`)
+				.join('\n');
 
-		await this.githubApi.setCheckStatus(
-			this.repoInfo,
-			this.prData.number,
-			evaluation
-		);
+			this.github.reportFailed(failedMessage);
 
-		return evaluation.resultType === TitleResult.Correct
-			? CheckResult.CorrectTitle
-			: CheckResult.HadError;
+			return false;
+		}
+
+		return true;
 	}
 }

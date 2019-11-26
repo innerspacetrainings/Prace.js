@@ -1,23 +1,17 @@
-import { TitleEvaluationResult } from '../Utils';
-import { TemplateFetchResult } from '../Config';
+import { PraceConfig } from '../Evaluator/PraceConfiguration';
 
-export default interface IGithubApi {
-	/** Extract the content of the config file from the repo using octokit */
-	getTemplateConvention(
-		repoInfo: RepoInfo,
-		branchName: string
-	): Promise<TemplateFetchResult>;
+/** Action wrapper with all the github logic **/
+export interface IGithubApi {
+	/**
+	 * Returns the config file from the repository. If it doesn't exist it throws an exception
+	 * @param branch
+	 */
+	getConfig(branch: string): Promise<PraceConfig>;
 
-	/** Set a status check for the assigned pull request number */
-	setCheckStatus(
-		repoInfo: RepoInfo,
-		pullRequestNumber: number,
-		result: TitleEvaluationResult
-	): Promise<void>;
-}
+	/**
+	 * Sets the PR as failed with the given message
+	 */
+	reportFailed(message: string): void;
 
-export interface RepoInfo {
-	/** Repository name */
-	repo: string;
-	owner: string;
+	log(message: string): void;
 }

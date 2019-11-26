@@ -1,20 +1,30 @@
-/** Object sent by the PullRequest web hook. This are the values that this object must have */
+/** Object sent by the PullRequest web hook. These values are mandatory." */
 export interface PullRequestData {
-	action: string;
-	number: number;
-	pull_request: {
-		title: string;
-		head: {
-			label: string;
-			ref: string;
-		};
+	title: string;
+	body: string;
+	head: {
+		// branch name
+		ref: string;
 	};
-	repository: {
-		id: number;
-		name: string;
-		full_name: string;
-	};
-	installation: {
-		id: number;
-	};
+	labels: Label[];
+	requested_reviewers: Reviewer[];
+	requested_teams: Team[];
+	additions: number;
+	deletions: number;
+	changed_files: number;
+}
+
+interface Label {
+	id: number;
+	name: string;
+	description: string;
+}
+
+interface Reviewer {
+	login: string;
+}
+
+interface Team {
+	name: string;
+	slug: string;
 }
