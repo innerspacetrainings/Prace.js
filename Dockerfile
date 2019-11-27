@@ -10,6 +10,8 @@ COPY src/ ./src
 
 RUN npm run build
 
-RUN pwd
+FROM node:12-slim
+
+COPY --from=0 /prace/dist /prace/dist
 
 ENTRYPOINT ["node", "/prace/dist/index.js"]
