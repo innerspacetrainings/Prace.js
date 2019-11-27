@@ -1,4 +1,5 @@
 import { PraceConfig } from '../Evaluator/PraceConfiguration';
+import { CheckParameters } from './CheckParameters';
 
 /** Action wrapper with all the github logic **/
 export interface IGithubApi {
@@ -13,5 +14,15 @@ export interface IGithubApi {
 	 */
 	reportFailed(message: string): void;
 
+	setResult(check:CheckParameters):Promise<void>;
+
 	log(message: string): void;
+
+	getRepoInformation():RepoInformation;
+}
+
+export interface RepoInformation {
+	owner:string;
+	repo:string;
+	branch:string;
 }

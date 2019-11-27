@@ -1,4 +1,6 @@
-FROM node:12-slim
+FROM node:12-slim as Builder
+
+LABEL maintainer="javier.bullrich@innerspace.eu"
 
 WORKDIR prace
 
@@ -12,6 +14,6 @@ RUN npm run build
 
 FROM node:12-slim
 
-COPY --from=0 /prace/dist /prace/dist
+COPY --from=Builder /prace/dist /prace/dist
 
 ENTRYPOINT ["node", "/prace/dist/index.js"]

@@ -6,4 +6,4 @@ title:
 body:
   patterns:
     - '.+'
-  error: The body can not be emptry
+  error: The body can not be empty
