@@ -2,6 +2,7 @@ import { ConventionEvaluator } from './Evaluator/ConventionEvaluator';
 import { PullRequestData } from './PullRequestData';
 import { IGithubApi } from './Github/IGithubApi';
 import { invalidExpression } from './Evaluator/ConventionErrors';
+import { GithubApi } from './Github/GithubApi';
 
 export default class Prace {
 	constructor(
@@ -43,6 +44,8 @@ export default class Prace {
 				.generateReport()
 				.map((r) => `${r.name}: ${r.message}`)
 				.join('\n');
+
+			await (this.github as GithubApi).SetCheck(results.generateReport());
 
 			this.github.reportFailed(failedMessage);
 

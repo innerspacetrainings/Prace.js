@@ -11,12 +11,36 @@ export class GithubApi implements IGithubApi {
 	constructor(private readonly octokit: GitHub) {
 	}
 
-	public async Test(): Promise<void> {
+	public async SetCheck(failed: Array<{ name: string; message: string }>): Promise<void> {
+		const result = GithubApi.generateCheckResult(failed);
+		await this.octokit.checks.create(result);
+		console.log('Made the system fail!');
+	}
+
+	private static arrayJoinAsOxford(arr: string[], conjunction:string, ifEmpty:string){
+		const l = arr.length;
+		if (!l) return ifEmpty;
+		if (l<2) return arr[0];
+		if (l<3) return arr.join(` ${conjunction} `);
+		arr = arr.slice();
+		arr[l-1] = `${conjunction} ${arr[l-1]}`;
+
+		return arr.join(', ');
+	}
+
+	public static generateCheckResult(failed: Array<{ name: string; message: string }>) : CheckParams{
 		const { owner, repo } = context.repo;
 
-		console.log('Got pull!');
+		const checkName = 'Linting';
 
-		const checkName = 'Old check';
+		const title:string = `Failed on ${failed.length} cases!`;
+		const failedNames = failed.map(f => f.name);
+		const message: string = '# Linting failed'+
+			`Failed on ${this.arrayJoinAsOxford(failedNames, 'and', 'empty')}`;
+		let body:string = `# Failed cases:\n`;
+		for(const fail of failed){
+			body += `\n- ${fail.name}: ${fail.message}`;
+		}
 
 		const result: CheckParams = {
 			owner,
@@ -27,45 +51,14 @@ export class GithubApi implements IGithubApi {
 			started_at: new Date().toISOString(),
 			conclusion: 'failure',
 			completed_at: new Date().toISOString(),
-			output: { title: 'The test was forced to fail', summary: 'Because we say so',
-				text: 'This is a nice formmated text that I can show',
-				annotations: [{
-					path: '.github/prace.yml',
-					start_line: 1,
-					end_line: 2,
-					annotation_level: 'failure',
-					message: 'This is the message that goes on the annotation',
-					title: 'This is the title'
-				}],
-			images:[
-				{image_url: "https://picsum.photos/500", alt: 'Random image'}
-			]},
-
+			output: { title, summary: message,
+				text: body,
+				images:[
+					{image_url: "https://picsum.photos/500", alt: 'Random image'}
+				]},
 		};
-		//
-		// this.octokit.checks.listForSuite;
-		//
-		// const checkCall = await this.octokit.checks.listForRef({
-		// 	owner, repo, ref: context.payload.pull_request!.head.sha
-		// });
-		//
-		// console.log(JSON.stringify(context.payload));
-		//
-		// console.log(JSON.stringify(checkCall.data));
-		//
-		// // const lastCheck = checkCall.data.check_runs.find((ch)=>ch.name === "prace");
-		//
-		// const suite = await this.octokit.checks.listSuitesForRef({
-		// 	owner,
-		// 	repo,
-		// 	ref: context.payload.pull_request!.head.sha
-		// });
-		//
-		// console.log(JSON.stringify(suite.data));
 
-
-		await this.octokit.checks.create(result);
-		console.log('Made the system fail!');
+		return result;
 	}
 
 	public async getConfig(branch: string): Promise<PraceConfig> {
