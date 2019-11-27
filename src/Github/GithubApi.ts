@@ -34,12 +34,12 @@ export class GithubApi implements IGithubApi {
 		const checkName = 'Linting';
 
 		const title:string = `Failed on ${failed.length} cases!`;
-		const failedNames = failed.map(f => f.name);
-		const message: string = '# Linting failed'+
+		const failedNames = failed.map(f => `\`${f.name}\``);
+		const message: string = '### Linting failed\n'+
 			`Failed on ${this.arrayJoinAsOxford(failedNames, 'and', 'empty')}`;
-		let body:string = `# Failed cases:\n`;
+		let body:string = `## Failed cases\n`;
 		for(const fail of failed){
-			body += `\n- ${fail.name}: ${fail.message}`;
+			body += `\n- \`${fail.name.toUpperCase()}\`: ${fail.message}`;
 		}
 
 		const result: CheckParams = {
@@ -51,11 +51,10 @@ export class GithubApi implements IGithubApi {
 			started_at: new Date().toISOString(),
 			conclusion: 'failure',
 			completed_at: new Date().toISOString(),
-			output: { title, summary: message,
-				text: body,
-				images:[
-					{image_url: "https://picsum.photos/500", alt: 'Random image'}
-				]},
+			output: {
+				title, summary: message,
+				text: body
+			}
 		};
 
 		return result;
