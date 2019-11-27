@@ -27,7 +27,8 @@ export class GithubApi implements IGithubApi {
 			started_at: new Date().toISOString(),
 			conclusion: 'failure',
 			completed_at: new Date().toISOString(),
-			output: { title: 'Failed', summary: 'Because we say so',
+			output: { title: 'The test was forced to fail', summary: 'Because we say so',
+				text: 'This is a nice formmated text that I can show',
 				annotations: [{
 					path: '.github/prace.yml',
 					start_line: 1,
@@ -35,7 +36,10 @@ export class GithubApi implements IGithubApi {
 					annotation_level: 'failure',
 					message: 'This is the message that goes on the annotation',
 					title: 'This is the title'
-				}]},
+				}],
+			images:[
+				{image_url: "https://picsum.photos/500", alt: 'Random image'}
+			]},
 
 		};
 		//
@@ -115,7 +119,7 @@ interface CheckParams {
 	started_at?: string;
 	conclusion?: 'success' | 'failure';
 	completed_at?: string;
-	output?: { title: string, summary: string, annotations?:
+	output?: { title: string, summary: string, text?:string, annotations?:
 			[{ path: string, start_line: number, end_line: number, annotation_level: 'notice' | 'warning' | 'failure', message: string, title?: string }];
 	images?: [{ alt: string, image_url: string, caption?: string }] };
 

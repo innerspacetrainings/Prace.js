@@ -4,7 +4,7 @@ on:
     types: ['opened', 'edited', 'reopened', 'synchronize']
 
 jobs:
-  prace:
+  setup:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
