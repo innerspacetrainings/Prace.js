@@ -16,10 +16,10 @@ Attach your prace.yml and workflow/prace.yml here
 ```
 
 **Expected behaviour**
-A clear and concise description of what you expected to happen.
+<!--- A clear and concise description of what you expected to happen. -->
 
 **Logs**
-If applicable, add logs to help explain your problem.
+<!--- If applicable, add logs to help explain your problem. -->
 
 **Additional context**
-Add any other context about the problem here.
+<!--- Add any other context about the problem here. -->
