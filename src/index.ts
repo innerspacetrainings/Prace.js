@@ -31,7 +31,7 @@ async function action() {
 
 		const prace = new PraceAction(githubApi, pullRequest);
 		const result = await prace.execute();
-		core.info(`Finished evaluating and found ${result ? 'no' : ''} problems`);
+		core.info(`Finished evaluating and found${result ? ' no ' : ' '}problems`);
 	} catch (error) {
 		if (process.env.NODE_ENV === 'test') {
 			throw error;
