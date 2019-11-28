@@ -5,8 +5,9 @@ import { PullRequestData } from './PullRequestData';
 import { Arg, Substitute, SubstituteOf } from '@fluffy-spoon/substitute';
 import { ConventionEvaluator } from './Evaluator/ConventionEvaluator';
 import { EvaluationResult } from './Evaluator/EvaluationResult';
-import { IGithubApi } from './Github/IGithubApi';
+import { IGithubApi, RepoInformation } from './Github/IGithubApi';
 import { invalidExpression } from './Evaluator/ConventionErrors';
+import { CheckParameters, Output } from './Github/CheckParameters';
 
 describe('Prace tests', () => {
 	let evaluator: SubstituteOf<ConventionEvaluator>;
@@ -14,10 +15,16 @@ describe('Prace tests', () => {
 	let github: SubstituteOf<IGithubApi>;
 	let prace: Prace;
 
+	const mockRepo: RepoInformation = {
+		repo: 'repository', branch: 'branch', owner: 'owner'
+	};
+
 	beforeEach(() => {
 		evaluator = Substitute.for<ConventionEvaluator>();
 		prData = Substitute.for<PullRequestData>();
 		github = Substitute.for<IGithubApi>();
+
+		github.getRepoInformation().returns(mockRepo);
 
 		prace = new Prace(github, prData);
 	});
@@ -25,8 +32,8 @@ describe('Prace tests', () => {
 	it('Should report error on invalid regex', async () => {
 		// Seems to work this way.
 		// https://github.com/ffMathy/FluffySpoon.JavaScript.Testing.Faking/issues/21#issuecomment-466015379
-		(<any>evaluator).isRegexValid.returns(false);
-		(<any>evaluator).regexResult.returns({
+		(evaluator as any).isRegexValid.returns(false);
+		(evaluator as any).regexResult.returns({
 			results: [
 				{
 					name: 'example',
@@ -38,7 +45,7 @@ describe('Prace tests', () => {
 
 		const result = await prace.execute(evaluator);
 
-		(<any>evaluator).results.called();
+		(evaluator as any).results.called();
 		const expectedMessage = invalidExpression('example', 'etcetera');
 		github.received().reportFailed(
 			Arg.is<string>((m) => m.includes(expectedMessage))
@@ -47,31 +54,89 @@ describe('Prace tests', () => {
 	});
 
 	it('Should succeed with correct evaluation', async () => {
-		(<any>evaluator).isRegexValid.returns(true);
+		(evaluator as any).isRegexValid.returns(true);
 		const evResult = { failed: false };
 		evaluator
 			.runEvaluations()
 			.returns((evResult as unknown) as EvaluationResult);
 		const result = await prace.execute(evaluator);
 		expect(result).to.be.true;
+		github.didNotReceive().reportFailed(Arg.any());
+
+		// We don't really care for the output message. Just for it to be successful
+		const expectedOutput: Output = {
+			title: '',
+			summary: ''
+		};
+
+		const expected = generateResult(true, expectedOutput);
+
+		github.received().setResult(Arg.is<CheckParameters>((check) => compareResult(expected, check)));
 	});
 
 	it('Should correctly report failed cases', async () => {
-		(<any>evaluator).isRegexValid.returns(true);
+		(evaluator as any).isRegexValid.returns(true);
+		const failed = { name: 'example', message: 'example message' };
 		const evResult = {
 			failed: true,
 			generateReport() {
-				return [{ name: 'example', message: 'example message' }];
+				return [failed];
 			}
 		};
 		evaluator
 			.runEvaluations()
 			.returns((evResult as unknown) as EvaluationResult);
+
 		const result = await prace.execute(evaluator);
 		expect(result).to.be.false;
-		const expectedMessage = 'example: example message';
-		github.received().reportFailed(
-			Arg.is<string>((m) => m.includes(expectedMessage))
-		);
+		github.didNotReceive().reportFailed(Arg.any());
+
+		const expectedOutput: Output = {
+			title: '1',
+			summary: failed.name,
+			text: failed.message
+		};
+
+		const expectedResult = generateResult(false, expectedOutput);
+
+		github.received().setResult(Arg.is<CheckParameters>((check) => compareResult(expectedResult, check)));
 	});
+
+	function generateResult(success: boolean, output: Output) {
+		const now = new Date().toISOString();
+
+		const expectedResult: CheckParameters = {
+			owner: mockRepo.owner,
+			repo: mockRepo.repo,
+			head_sha: mockRepo.branch,
+			name: 'Linting',
+			conclusion: success ? 'success' : 'failure',
+			started_at: now,
+			completed_at: now,
+			output
+		};
+
+		return expectedResult;
+	}
+
+	function compareResult(expected: CheckParameters, received: any): boolean {
+		const receivedCheck = received as CheckParameters;
+
+		expect(receivedCheck.owner).to.be.equal(expected.owner);
+		expect(receivedCheck.repo).to.be.equal(expected.repo);
+		expect(receivedCheck.head_sha).to.be.equal(expected.head_sha);
+		expect(receivedCheck.conclusion).to.be.equal(expected.conclusion);
+		expect(receivedCheck.started_at).to.be.equal(expected.started_at);
+		expect(receivedCheck.completed_at).to.be.equal(expected.completed_at);
+
+
+		const expectedOutput = expected.output!, receivedOutput = receivedCheck.output!;
+		expect(receivedOutput.title).to.include(expectedOutput.title);
+		expect(receivedOutput.summary).to.include(expectedOutput.summary);
+		if (expectedOutput.text) {
+			expect(receivedOutput.text).to.include(expectedOutput.text);
+		}
+
+		return true;
+	}
 });

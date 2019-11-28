@@ -110,8 +110,8 @@ export default class Prace {
 			head_sha: branch,
 			status: 'completed',
 			started_at: now,
-			conclusion: success ? 'success' : 'failure',
 			completed_at: now,
+			conclusion: success ? 'success' : 'failure',
 			output
 		};
 
