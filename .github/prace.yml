@@ -1,9 +1,13 @@
 title:
   patterns:
-    - '\[XX-\d*\]\s[\w\s]*'
-    - Testing\s.*
-  error: 'You have to include [XX-123] or RELEASE into your title'
+    - '^.{0,54}$'
+  error: 'The title must be 54 characters or shorter'
 body:
   patterns:
     - '.+'
   error: The body can not be empty
+reviewers:
+  minimum: 1
+labels:
+  - bug
+  - enhancement
