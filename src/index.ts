@@ -21,9 +21,9 @@ async function action() {
 
 		if (!pullRequest) {
 			throw new Error(
-				'Payload doesn\'t contain `pull_request`. ' +
-				'Make sure you followed the instructions to configure your repository ' +
-				'(https://github.com/innerspacetrainings/Prace.js/blob/master/README.md).'
+				"Payload doesn't contain `pull_request`. " +
+					'Make sure you followed the instructions to configure your repository ' +
+					'(https://github.com/innerspacetrainings/Prace.js/blob/master/README.md).'
 			);
 		}
 
@@ -31,7 +31,9 @@ async function action() {
 
 		const prace = new PraceAction(githubApi, pullRequest);
 		const result = await prace.execute();
-		core.info(`Finished evaluating and found${result ? ' no ' : ' '}problems`);
+		core.info(
+			`Finished evaluating and found${result ? ' no ' : ' '}problems`
+		);
 	} catch (error) {
 		if (process.env.NODE_ENV === 'test') {
 			throw error;

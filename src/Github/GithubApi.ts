@@ -9,8 +9,7 @@ import { CheckParameters } from './CheckParameters';
 export class GithubApi implements IGithubApi {
 	private readonly pracePath: string = 'configuration-path';
 
-	constructor(private readonly octokit: GitHub) {
-	}
+	constructor(private readonly octokit: GitHub) {}
 
 	public getRepoInformation(): RepoInformation {
 		const { owner, repo } = context.repo;
@@ -68,5 +67,3 @@ export class GithubApi implements IGithubApi {
 		return yaml.safeLoad(Buffer.from(content, 'base64').toString()) || {};
 	}
 }
-
-

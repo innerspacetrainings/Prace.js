@@ -16,7 +16,9 @@ describe('Prace tests', () => {
 	let prace: Prace;
 
 	const mockRepo: RepoInformation = {
-		repo: 'repository', branch: 'branch', owner: 'owner'
+		repo: 'repository',
+		branch: 'branch',
+		owner: 'owner'
 	};
 
 	beforeEach(() => {
@@ -71,7 +73,9 @@ describe('Prace tests', () => {
 
 		const expected = generateResult(true, expectedOutput);
 
-		github.received().setResult(Arg.is<CheckParameters>((check) => compareResult(expected, check)));
+		github.received().setResult(
+			Arg.is<CheckParameters>((check) => compareResult(expected, check))
+		);
 	});
 
 	it('Should correctly report failed cases', async () => {
@@ -99,7 +103,11 @@ describe('Prace tests', () => {
 
 		const expectedResult = generateResult(false, expectedOutput);
 
-		github.received().setResult(Arg.is<CheckParameters>((check) => compareResult(expectedResult, check)));
+		github.received().setResult(
+			Arg.is<CheckParameters>((check) =>
+				compareResult(expectedResult, check)
+			)
+		);
 	});
 
 	function generateResult(success: boolean, output: Output) {
@@ -129,8 +137,8 @@ describe('Prace tests', () => {
 		expect(receivedCheck.started_at).to.be.equal(expected.started_at);
 		expect(receivedCheck.completed_at).to.be.equal(expected.completed_at);
 
-
-		const expectedOutput = expected.output!, receivedOutput = receivedCheck.output!;
+		const expectedOutput = expected.output!,
+			receivedOutput = receivedCheck.output!;
 		expect(receivedOutput.title).to.include(expectedOutput.title);
 		expect(receivedOutput.summary).to.include(expectedOutput.summary);
 		if (expectedOutput.text) {

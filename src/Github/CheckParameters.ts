@@ -8,14 +8,22 @@ export interface CheckParameters {
 	started_at?: string;
 	conclusion?: 'success' | 'failure';
 	completed_at?: string;
-	output?: Output
+	output?: Output;
 }
 
 export interface Output {
-	title: string,
-	summary: string,
-	text?: string,
-	annotations?:
-		[{ path: string, start_line: number, end_line: number, annotation_level: 'notice' | 'warning' | 'failure', message: string, title?: string }];
-	images?: [{ alt: string, image_url: string, caption?: string }]
+	title: string;
+	summary: string;
+	text?: string;
+	annotations?: [
+		{
+			path: string;
+			start_line: number;
+			end_line: number;
+			annotation_level: 'notice' | 'warning' | 'failure';
+			message: string;
+			title?: string;
+		}
+	];
+	images?: [{ alt: string; image_url: string; caption?: string }];
 }

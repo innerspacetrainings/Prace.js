@@ -5,11 +5,31 @@ import { invalidExpression } from './Evaluator/ConventionErrors';
 import { CheckParameters, Output } from './Github/CheckParameters';
 
 export default class Prace {
+
+	private static arrayJoinAsOxford(
+		arr: string[],
+		conjunction: string,
+		ifEmpty: string
+	) {
+		const l = arr.length;
+		if (!l) {
+			return ifEmpty;
+		}
+		if (l < 2) {
+			return arr[0];
+		}
+		if (l < 3) {
+			return arr.join(` ${conjunction} `);
+		}
+		arr = arr.slice();
+		arr[l - 1] = `${conjunction} ${arr[l - 1]}`;
+
+		return arr.join(', ');
+	}
 	constructor(
 		private readonly github: IGithubApi,
 		private readonly pullRequest: PullRequestData
-	) {
-	}
+	) {}
 
 	/**
 	 * Run convention checks on the pull request.
@@ -45,7 +65,9 @@ export default class Prace {
 		if (!results.failed) {
 			statusCheck = this.generateSuccessCheckResult();
 		} else {
-			statusCheck = this.generateFailedCheckResult(results.generateReport());
+			statusCheck = this.generateFailedCheckResult(
+				results.generateReport()
+			);
 		}
 
 		await this.github.setResult(statusCheck);
@@ -53,35 +75,27 @@ export default class Prace {
 		return !results.failed;
 	}
 
-	private static arrayJoinAsOxford(arr: string[], conjunction: string, ifEmpty: string) {
-		const l = arr.length;
-		if (!l) {
-			return ifEmpty;
-		}
-		if (l < 2) {
-			return arr[0];
-		}
-		if (l < 3) {
-			return arr.join(` ${conjunction} `);
-		}
-		arr = arr.slice();
-		arr[l - 1] = `${conjunction} ${arr[l - 1]}`;
-
-		return arr.join(', ');
-	}
-
-	public generateFailedCheckResult(failed: Array<{ name: string; message: string }>): CheckParameters {
+	public generateFailedCheckResult(
+		failed: Array<{ name: string; message: string }>
+	): CheckParameters {
 		const title: string = `Failed on ${failed.length} checks!`;
-		const failedNames = failed.map(f => `\`${f.name}\``);
-		const message: string = '### Linting failed\n' +
-			`The following convention checks failed: ${Prace.arrayJoinAsOxford(failedNames, 'and', 'empty')}`;
+		const failedNames = failed.map((f) => `\`${f.name}\``);
+		const message: string =
+			'### Linting failed\n' +
+			`The following convention checks failed: ${Prace.arrayJoinAsOxford(
+				failedNames,
+				'and',
+				'empty'
+			)}`;
 		let body: string = `## Failed conventions\n`;
 		for (const fail of failed) {
 			body += `\n- \`${fail.name.toUpperCase()}\`: ${fail.message}`;
 		}
 
 		const output: Output = {
-			title, summary: message, text: body
+			title,
+			summary: message,
+			text: body
 		};
 
 		return this.generateStatusCheck(false, output);
@@ -90,13 +104,16 @@ export default class Prace {
 	public generateSuccessCheckResult(): CheckParameters {
 		const output: Output = {
 			title: 'No issues found',
-			summary: 'Didn\'t found any issue while scanning the Pull Request'
+			summary: "Didn't found any issue while scanning the Pull Request"
 		};
 
 		return this.generateStatusCheck(true, output);
 	}
 
-	public generateStatusCheck(success: boolean, output: Output): CheckParameters {
+	public generateStatusCheck(
+		success: boolean,
+		output: Output
+	): CheckParameters {
 		const { owner, repo, branch } = this.github.getRepoInformation();
 
 		const checkName = 'linting';
