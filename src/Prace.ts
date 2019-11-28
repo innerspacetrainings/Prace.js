@@ -99,7 +99,7 @@ export default class Prace {
 	public generateStatusCheck(success: boolean, output: Output): CheckParameters {
 		const { owner, repo, branch } = this.github.getRepoInformation();
 
-		const checkName = 'Linting';
+		const checkName = 'linting';
 
 		const now = new Date().toISOString();
 

@@ -109,7 +109,7 @@ describe('Prace tests', () => {
 			owner: mockRepo.owner,
 			repo: mockRepo.repo,
 			head_sha: mockRepo.branch,
-			name: 'Linting',
+			name: 'linting',
 			conclusion: success ? 'success' : 'failure',
 			started_at: now,
 			completed_at: now,
