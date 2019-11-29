@@ -5,7 +5,6 @@ import { invalidExpression } from './Evaluator/ConventionErrors';
 import { CheckParameters, Output } from './Github/CheckParameters';
 
 export default class Prace {
-
 	private static arrayJoinAsOxford(
 		arr: string[],
 		conjunction: string,
