@@ -1,0 +1,29 @@
+<script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.0.5/handlebars.min.js"></script>
+<link type="text/css" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css" rel="stylesheet" />
+
+<!-- alpaca -->
+<link type="text/css" href="//cdn.jsdelivr.net/npm/alpaca@1.5.27/dist/alpaca/bootstrap/alpaca.min.css"
+  rel="stylesheet" />
+<script type="text/javascript" src="//cdn.jsdelivr.net/npm/alpaca@1.5.27/dist/alpaca/bootstrap/alpaca.min.js"></script>
+
+
+<div class="row" style="padding-top: 60px">
+  <div class="col col-sm-6">
+    <div id="generated-result" hidden>
+      <h2>Generated configuration:</h3>
+        <h3>Save this config inside <code>.github/prace.yml</code></h3>
+        <pre class="prettyprint lang-js" id="config-result"></pre>
+    </div>
+    <div id="instructions">
+      {{ content }}
+    </div>
+  </div>
+  <div class="col col-sm-6">
+    <div id="config-form"></div>
+  </div>
+</div>
+
+<script type="text/javascript"
+  src="https://cdn.jsdelivr.net/gh/google/code-prettify@master/loader/run_prettify.js?autorun=false&amp;skin=desert"></script>
+<script type="text/javascript" src="scripts/js-yaml.js"></script>
+<script defer type="text/javascript" src="scripts/form-generator.js"></script>

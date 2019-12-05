@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html id='prace'>
+
+<head>
+  <title>{{ page.title }}</title>
+  {% include meta.html %}
+
+</head>
+
+<body>
+  <section class="container">
+    {% include title.html %}
+  </section>
+  <hr>
+  <div class="container" id="generator">
+    <h1>Generate your configuration file</h1>
+    <div class="form-generator">
+      {% include alpaca-form.html %}
+    </div>
+  </div>
+
+  {% include footer.html %}
+</body>
+
+</html>

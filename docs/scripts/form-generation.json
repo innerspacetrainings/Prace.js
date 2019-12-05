@@ -1,0 +1,108 @@
+{
+  "schema": {
+    "description": "Prace configuration file",
+    "title": "Prace configuration",
+    "type": "object",
+    "definitions": {
+      "regex": {
+        "type": "object",
+        "properties": {
+          "patterns": {
+            "type": "array",
+            "items": {
+              "title": "Regular Expression",
+              "type": "string",
+              "required": true
+            }
+          },
+          "error": {
+            "title": "Error message",
+            "description": "Error message in case this expression is false",
+            "type": "string",
+            "required": true
+          }
+        },
+        "dependencies": {
+          "error": [
+            "patterns"
+          ]
+        }
+      }
+    },
+    "properties": {
+      "title": {
+        "title": "Pull Request Title",
+        "$ref": "#/definitions/regex"
+      },
+      "body": {
+        "title": "Pull Request Body",
+        "$ref": "#/definitions/regex"
+      },
+      "branch": {
+        "title": "Branch name",
+        "$ref": "#/definitions/regex"
+      },
+      "reviewers": {
+        "type": "object",
+        "title": "Reviewers",
+        "properties": {
+          "minimum": {
+            "title": "Minimum Reviewers",
+            "type": "number",
+            "minimum": 0
+          },
+          "users": {
+            "title": "Required Reviewers",
+            "type": "array",
+            "items": {
+              "title": "Username",
+              "type": "string",
+              "required": true
+            }
+          },
+          "teams": {
+            "title": "Required Teams",
+            "type": "array",
+            "items": {
+              "title": "Team ID",
+              "type": "string",
+              "required": true
+            }
+          }
+        }
+      },
+      "additions": {
+        "title": "Max additions",
+        "type": "number",
+        "minimum": 0
+      },
+      "labels": {
+        "title": "Required labels",
+        "type": "array",
+        "items": {
+          "title": "Label name",
+          "type": "string",
+          "required": true
+        }
+      }
+    }
+  },
+  "data": {
+    "title": {
+      "patterns": [
+        "\\[XX-\\d*\\]\\s[\\w\\s]*",
+        "RELEASE\\s\\w*"
+      ],
+      "error": "You have to include [XX-123] or RELEASE into your title"
+    },
+    "body": {
+      "patterns": [
+        "[\\w\\s]*"
+      ],
+      "error": "The body can not be emptry"
+    },
+    "reviewers": {
+      "minimum": 1
+    }
+  }
+}
