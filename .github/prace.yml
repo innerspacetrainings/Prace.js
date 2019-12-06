@@ -6,7 +6,7 @@ title:
 body:
   patterns:
     - '.+'
-  error: The body can not be empty
+  error: The body cannot be empty
 reviewers:
   minimum: 1
 labels:

@@ -30,7 +30,7 @@ export class GithubApi implements IGithubApi {
 			required: true
 		});
 
-		core.debug('Found config path at: ' + configPath);
+		core.debug(`Found config path at: ${configPath}`);
 
 		const { owner, repo } = context.repo;
 

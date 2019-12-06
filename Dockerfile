@@ -6,7 +6,7 @@ WORKDIR prace
 
 COPY package.json package-lock.json tsconfig.json ./
 
-RUN npm install --silent
+RUN npm ci
 
 COPY src/ ./src
 
