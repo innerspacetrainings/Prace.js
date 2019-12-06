@@ -16,14 +16,9 @@
 *                 text=auto
 
 # Source code
-*.bash            text eol=lf
-*.bat             text eol=crlf
-*.cmd             text eol=crlf
-*.coffee          text
 *.css             text
 *.htm             text diff=html
 *.html            text diff=html
-*.ini             text
 *.js              text
 *.json            text
 *.jsx             text
@@ -78,10 +73,6 @@ package-lock.json text -diff
 *.yaml            text
 *.yml             text
 
-# Heroku
-Procfile          text
-.slugignore       text
-
 # Graphics
 *.ai              binary
 *.bmp             binary
@@ -106,14 +97,6 @@ Procfile          text
 *.tiff            binary
 *.wbmp            binary
 *.webp            binary
-
-# Archives
-*.7z              binary
-*.gz              binary
-*.jar             binary
-*.rar             binary
-*.tar             binary
-*.zip             binary
 
 # Fonts
 *.ttf             binary
