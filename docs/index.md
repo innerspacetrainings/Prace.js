@@ -10,13 +10,13 @@ For the Pull Request titles, body and branch name, you can use regular expressio
 
 If you don't know regex, there are a lot of [good tutorials](https://regexone.com/) out there.
 
-You can set how many assignes a review requires, and even specify which users or teams have to be assigned. If at least one of those users or teams is assigned, that check will pass.
+You can set how many assignees a review requires, and even specify which users or teams have to be assigned. If at least one of those users or teams is assigned, that check will pass.
 
-For labels you can also write your label name if you require one.
+For labels you can write any amount you want. If there field is not empty, it will require at least one of the given labels to be in the Pull Request.
 
 The reviewers and the labels are not case sensitive.
 
 You can limit how many additions a Pull Request can have.
 
 All of the configuration fields are optional, they can be removed and that particular check won't be done. 
-(An empty file will make all checks to be approved).
+(An empty file will make all checks pass).

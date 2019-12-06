@@ -23,7 +23,6 @@ class FormGenerator {
     var getConfig = this.getUrl();
 
     var schema = data.schema;
-    // var options = data.options;
     var data = getConfig ? getConfig : data.data;
 
     var configGenerator = new GenerateConfig(getConfig);

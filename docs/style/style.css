@@ -9,12 +9,6 @@ ul {
   background: #f6f8f8;
 }
 
-/* #prace a {
-  color:#aaa;
-  text-decoration: none; 
-  background-color: none;
-} */
-
 /* Title */
 
 section .title {
@@ -150,19 +144,6 @@ section.features .feature .featureText p {
   box-shadow: 0px 0px 21px rgba(0, 0, 0, 0.15);
   border-radius: 6px;
 }
-
-/* #header .nav .nav-link {
-  color: #999;
-  font-size: 1em;
-  text-decoration: none;
-  font-weight: 500;
-  border: none;
-  padding: 0;
-  margin: 0;
-  background: none;
-  display: flex;
-  outline: none;
-} */
 
 .center {
   text-align: center;
