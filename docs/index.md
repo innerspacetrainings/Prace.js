@@ -23,7 +23,7 @@ You can set how many assignees a review requires, and even specify which users o
 
 #### Labels
 
-For labels you can write any amount you want. If there field is not empty, it will require at least one of the given labels to be in the Pull Request.
+For labels you can write any amount you want. If the field is not empty, it will require at least one of the given labels to be in the Pull Request.
 
 The *reviewers* and the *labels* are **not** case sensitive.
 
