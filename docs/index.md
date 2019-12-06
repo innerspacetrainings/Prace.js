@@ -15,7 +15,7 @@ Use this form to generate your configuration file.
 You can use regular expressions for the pull requests title, body and branch name. If you add more than one condition to a section, Prace will check that **at least one condition** is met. 
 If you want a title to comply with all your conditions, you'll have to write one regex that encapsulates all of them.
 
-If you don't know regex, there are a lot of [good tutorials](https://regexone.com/) out there.
+If you don't know regex, there are a lot of [good tutorials](https://regexone.com/) out there. You can also test your expressions using an [online tool](https://regex101.com/).
 
 #### Reviewers
 
