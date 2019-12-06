@@ -85,7 +85,6 @@ class GenerateConfig {
       var ymlData = jsyaml.dump(parsedData);
       $("#config-result").text(ymlData);
       configValue.removeAttr("hidden");
-      $("#instructions").remove();
       PR.prettyPrint();
       document.getElementById('generator').scrollIntoView();
     } else {
