@@ -99,7 +99,7 @@
       "patterns": [
         "[\\w\\s]*"
       ],
-      "error": "The body can not be emptry"
+      "error": "The body can not be empty"
     },
     "reviewers": {
       "minimum": 1
