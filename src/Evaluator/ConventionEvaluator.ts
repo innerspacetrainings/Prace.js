@@ -54,7 +54,6 @@ export class ConventionEvaluator {
 				this.prData,
 				reviews
 			);
-			console.log('total reviewers', JSON.stringify(this.totalReviewers));
 		} else {
 			this.totalReviewers = [];
 		}

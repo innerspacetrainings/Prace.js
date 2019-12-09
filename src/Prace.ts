@@ -42,7 +42,6 @@ export default class Prace {
 
 		if (evaluator === undefined) {
 			const reviews = await this.github.getReviewers();
-			console.log(JSON.stringify(reviews));
 			evaluator = new ConventionEvaluator(
 				this.pullRequest,
 				config,
