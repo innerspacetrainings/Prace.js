@@ -134,10 +134,8 @@ describe('Prace tests', () => {
 		expect(receivedCheck.repo).to.be.equal(expected.repo);
 		expect(receivedCheck.head_sha).to.be.equal(expected.head_sha);
 		expect(receivedCheck.conclusion).to.be.equal(expected.conclusion);
-		expect(receivedCheck.started_at!.slice(0, -3)).to.be.equal(
-			expected.started_at!.slice(0, -3)
-		);
-		expect(receivedCheck.completed_at).to.be.equal(expected.completed_at);
+		compareDates(receivedCheck.started_at, expected.started_at);
+		compareDates(receivedCheck.completed_at, expected.completed_at);
 
 		const expectedOutput = expected.output!,
 			receivedOutput = receivedCheck.output!;
@@ -148,5 +146,11 @@ describe('Prace tests', () => {
 		}
 
 		return true;
+	}
+
+	function compareDates(received?: string, expected?: string) {
+		if (expected) {
+			expect(expected.slice(0, -3)).to.be.equal(received!.slice(0, -3));
+		}
 	}
 });
