@@ -97,7 +97,7 @@
     },
     "body": {
       "patterns": [
-        "[\\w\\s]*"
+        "[\\w\\s]+"
       ],
       "error": "The body can not be empty"
     },
