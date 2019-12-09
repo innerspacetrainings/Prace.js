@@ -1,5 +1,6 @@
 import { PraceConfig } from '../Evaluator/PraceConfiguration';
 import { CheckParameters } from './CheckParameters';
+import { Reviewer } from './Reviewer';
 
 /** Action wrapper with all the github logic **/
 export interface IGithubApi {
@@ -13,6 +14,9 @@ export interface IGithubApi {
 	 * Sets the PR as failed with the given message
 	 */
 	reportFailed(message: string): void;
+
+	/** Fetch the given reviews in the repo */
+	getReviewers(): Promise<Reviewer[]>;
 
 	setResult(check: CheckParameters): Promise<void>;
 

@@ -25,6 +25,7 @@ export default class Prace {
 
 		return arr.join(', ');
 	}
+
 	constructor(
 		private readonly github: IGithubApi,
 		private readonly pullRequest: PullRequestData
@@ -40,7 +41,12 @@ export default class Prace {
 		const config = await this.github.getConfig(branch);
 
 		if (evaluator === undefined) {
-			evaluator = new ConventionEvaluator(this.pullRequest, config);
+			const reviews = await this.github.getReviewers();
+			evaluator = new ConventionEvaluator(
+				this.pullRequest,
+				config,
+				reviews
+			);
 		}
 
 		if (!evaluator.isRegexValid) {
