@@ -1,0 +1,14 @@
+title:
+  patterns:
+    - '^.{0,54}$'
+    - 'Bump\s\@*\w+[\/\w-]*\sfrom\s[\d\.]+\sto\s[\d\.]+'
+  error: 'The title must be 54 characters or shorter'
+body:
+  patterns:
+    - '.+'
+  error: The body cannot be empty
+reviewers:
+  minimum: 1
+labels:
+  - bug
+  - enhancement

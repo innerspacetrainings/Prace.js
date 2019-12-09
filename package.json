@@ -76,11 +76,11 @@
   "devDependencies": {
     "@bitjson/npm-scripts-info": "^1.0.0",
     "@fluffy-spoon/substitute": "^1.104.0",
-    "@types/chai": "^4.2.4",
+    "@types/chai": "^4.2.6",
     "@types/js-yaml": "^3.12.1",
     "@types/lru-cache": "^5.1.0",
     "@types/mocha": "^5.2.7",
-    "@types/node": "^12.12.12",
+    "@types/node": "^12.12.14",
     "@zeit/ncc": "^0.20.5",
     "chai": "^4.2.0",
     "codecov": "^3.6.1",
@@ -92,12 +92,12 @@
     "prettier": "^1.18.2",
     "standard-version": "^7.0.0",
     "trash-cli": "^3.0.0",
-    "ts-node": "^8.4.1",
+    "ts-node": "^8.5.4",
     "tslint": "^5.20.0",
     "tslint-config-prettier": "^1.18.0",
     "tslint-no-unused-expression-chai": "^0.1.4",
     "typedoc": "^0.15.0",
-    "typescript": "^3.7.2"
+    "typescript": "^3.7.3"
   },
   "nyc": {
     "extension": [

@@ -2,8 +2,30 @@ import { ConventionEvaluator } from './Evaluator/ConventionEvaluator';
 import { PullRequestData } from './PullRequestData';
 import { IGithubApi } from './Github/IGithubApi';
 import { invalidExpression } from './Evaluator/ConventionErrors';
+import { CheckParameters, Output } from './Github/CheckParameters';
 
 export default class Prace {
+	private static arrayJoinAsOxford(
+		arr: string[],
+		conjunction: string,
+		ifEmpty: string
+	) {
+		const l = arr.length;
+		if (!l) {
+			return ifEmpty;
+		}
+		if (l < 2) {
+			return arr[0];
+		}
+		if (l < 3) {
+			return arr.join(` ${conjunction} `);
+		}
+		arr = arr.slice();
+		arr[l - 1] = `${conjunction} ${arr[l - 1]}`;
+
+		return arr.join(', ');
+	}
+
 	constructor(
 		private readonly github: IGithubApi,
 		private readonly pullRequest: PullRequestData
@@ -19,7 +41,12 @@ export default class Prace {
 		const config = await this.github.getConfig(branch);
 
 		if (evaluator === undefined) {
-			evaluator = new ConventionEvaluator(this.pullRequest, config);
+			const reviews = await this.github.getReviewers();
+			evaluator = new ConventionEvaluator(
+				this.pullRequest,
+				config,
+				reviews
+			);
 		}
 
 		if (!evaluator.isRegexValid) {
@@ -37,18 +64,79 @@ export default class Prace {
 		}
 
 		const results = evaluator.runEvaluations();
-		if (results.failed) {
-			let failedMessage = 'The following convention checks failed:\n';
-			failedMessage += results
-				.generateReport()
-				.map((r) => `${r.name}: ${r.message}`)
-				.join('\n');
 
-			this.github.reportFailed(failedMessage);
+		let statusCheck: CheckParameters;
 
-			return false;
+		if (!results.failed) {
+			statusCheck = this.generateSuccessCheckResult();
+		} else {
+			statusCheck = this.generateFailedCheckResult(
+				results.generateReport()
+			);
 		}
 
-		return true;
+		await this.github.setResult(statusCheck);
+
+		return !results.failed;
+	}
+
+	public generateFailedCheckResult(
+		failed: Array<{ name: string; message: string }>
+	): CheckParameters {
+		const title: string = `Failed on ${failed.length} checks!`;
+		const failedNames = failed.map((f) => `\`${f.name}\``);
+		const message: string =
+			'### Linting failed\n' +
+			`The following convention checks failed: ${Prace.arrayJoinAsOxford(
+				failedNames,
+				'and',
+				'empty'
+			)}`;
+		let body: string = `## Failed conventions\n`;
+		for (const fail of failed) {
+			body += `\n- \`${fail.name.toUpperCase()}\`: ${fail.message}`;
+		}
+
+		const output: Output = {
+			title,
+			summary: message,
+			text: body
+		};
+
+		return this.generateStatusCheck(false, output);
+	}
+
+	public generateSuccessCheckResult(): CheckParameters {
+		const output: Output = {
+			title: 'No issues found',
+			summary: "Didn't found any issue while scanning the Pull Request"
+		};
+
+		return this.generateStatusCheck(true, output);
+	}
+
+	public generateStatusCheck(
+		success: boolean,
+		output: Output
+	): CheckParameters {
+		const { owner, repo, branch } = this.github.getRepoInformation();
+
+		const checkName = 'linting';
+
+		const now = new Date().toISOString();
+
+		const result: CheckParameters = {
+			owner,
+			repo,
+			name: checkName,
+			head_sha: branch,
+			status: 'completed',
+			started_at: now,
+			completed_at: now,
+			conclusion: success ? 'success' : 'failure',
+			output
+		};
+
+		return result;
 	}
 }

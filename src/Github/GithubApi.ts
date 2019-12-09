@@ -3,17 +3,54 @@ import { GitHub } from '@actions/github';
 import * as core from '@actions/core';
 import yaml from 'js-yaml';
 import { PraceConfig } from '../Evaluator/PraceConfiguration';
-import { IGithubApi } from './IGithubApi';
+import { IGithubApi, RepoInformation } from './IGithubApi';
+import { CheckParameters } from './CheckParameters';
+import { filterReviewers, Reviewer } from './Reviewer';
+import { PullsListReviewsResponse, Response } from '@octokit/rest';
+import { WebhookPayload } from '@actions/github/lib/interfaces';
 
 export class GithubApi implements IGithubApi {
-	private readonly pracePath: string = 'prace-file';
+	private readonly pracePath: string = 'configuration-path';
 
 	constructor(private readonly octokit: GitHub) {}
+
+	public getRepoInformation(): RepoInformation {
+		const { owner, repo } = context.repo;
+
+		return {
+			owner,
+			repo,
+			branch: context.payload.pull_request!.head.sha
+		};
+	}
+
+	public async setResult(check: CheckParameters): Promise<void> {
+		await this.octokit.checks.create(check);
+	}
+
+	public async getReviewers(): Promise<Reviewer[]> {
+		const { owner, repo } = context.repo;
+		const response: Response<PullsListReviewsResponse> = await this.octokit.pulls.listReviews(
+			{
+				owner,
+				repo,
+				pull_number: context.payload.pull_request!.number
+			}
+		);
+
+		return filterReviewers(
+			response.data,
+			context.payload as WebhookPayload
+		);
+	}
 
 	public async getConfig(branch: string): Promise<PraceConfig> {
 		const configPath: string = core.getInput(this.pracePath, {
 			required: true
 		});
+
+		core.debug(`Found config path at: ${configPath}`);
+
 		const { owner, repo } = context.repo;
 
 		try {

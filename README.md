@@ -51,7 +51,7 @@ title:
 body:
   patterns:
     - '[\w\s]*'
-  error: The body can not be emptry
+  error: The body can not be empty
 branch:
   patterns:
     - 'feat/[\w\s]**'
