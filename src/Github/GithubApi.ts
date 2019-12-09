@@ -5,6 +5,9 @@ import yaml from 'js-yaml';
 import { PraceConfig } from '../Evaluator/PraceConfiguration';
 import { IGithubApi, RepoInformation } from './IGithubApi';
 import { CheckParameters } from './CheckParameters';
+import { filterReviewers, Reviewer } from './Reviewer';
+import { PullsListReviewsResponse, Response } from '@octokit/rest';
+import { WebhookPayload } from '@actions/github/lib/interfaces';
 
 export class GithubApi implements IGithubApi {
 	private readonly pracePath: string = 'configuration-path';
@@ -25,13 +28,20 @@ export class GithubApi implements IGithubApi {
 		await this.octokit.checks.create(check);
 	}
 
-	public async getReviewers():Promise<void>{
+	public async getReviewers(): Promise<Reviewer[]> {
 		const { owner, repo } = context.repo;
-		const reviewers = await this.octokit.pulls.listReviews({
-			owner, repo, pull_number: context.payload.pull_request!.number
-		});
+		const response: Response<PullsListReviewsResponse> = await this.octokit.pulls.listReviews(
+			{
+				owner,
+				repo,
+				pull_number: context.payload.pull_request!.number
+			}
+		);
 
-		console.log(JSON.stringify(reviewers));
+		return filterReviewers(
+			response.data,
+			context.payload as WebhookPayload
+		);
 	}
 
 	public async getConfig(branch: string): Promise<PraceConfig> {

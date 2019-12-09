@@ -7,11 +7,12 @@ export interface PullRequestData {
 		ref: string;
 	};
 	labels: Label[];
-	requested_reviewers: Reviewer[];
+	requested_reviewers: User[];
 	requested_teams: Team[];
 	additions: number;
 	deletions: number;
 	changed_files: number;
+	user: User;
 }
 
 interface Label {
@@ -20,8 +21,9 @@ interface Label {
 	description: string;
 }
 
-interface Reviewer {
+interface User {
 	login: string;
+	id: number;
 }
 
 interface Team {
