@@ -1,270 +1,270 @@
 html {
-  scroll-behavior: smooth;
+	scroll-behavior: smooth;
 }
 
 ul {
-  padding-left: 0;
+	padding-left: 0;
 }
 #prace body {
-  background: #f6f8f8;
+	background: #f6f8f8;
 }
 
 /* Title */
 
 section .title {
-  margin-top: 3em;
+	margin-top: 3em;
 }
 
 section .title img {
-  width: 100%;
+	width: 100%;
 }
 
 section .title svg {
-  width: 100%;
+	width: 100%;
 }
 
 section .title .title-interaction {
-  margin-left: 1em;
-  margin-bottom: 4em;
+	margin-left: 1em;
+	margin-bottom: 4em;
 }
 
 section .title .title-text h1 {
-  font-size: 2.75em;
-  font-weight: 700;
+	font-size: 2.75em;
+	font-weight: 700;
 }
 
 section .title .title-text h2 {
-  font-size: 2.5em;
-  font-weight: 600;
+	font-size: 2.5em;
+	font-weight: 600;
 }
 
 section .title .title-text h3 {
-  font-size: 2em;
-  font-weight: 500;
+	font-size: 2em;
+	font-weight: 500;
 }
 
 section .title .title-img img {
-  transform-origin: bottom;
-  transform: scale(1.075);
+	transform-origin: bottom;
+	transform: scale(1.075);
 }
 
 button.github-button {
-  color: #fff;
-  background-color: #28a745;
-  background-image: linear-gradient(-180deg, #34d058, #28a745 90%);
-  border: 1px solid rgba(27, 31, 35, 0.2);
-  margin-left: 5px;
+	color: #fff;
+	background-color: #28a745;
+	background-image: linear-gradient(-180deg, #34d058, #28a745 90%);
+	border: 1px solid rgba(27, 31, 35, 0.2);
+	margin-left: 5px;
 }
 
 button.github-button:hover {
-  color: #fafafa;
-  background-color: #269f42;
-  background-image: linear-gradient(-180deg, #2fcb53, #269f42 90%);
-  background-position: -0.5em;
-  border-color: rgba(27, 31, 35, 0.5);
+	color: #fafafa;
+	background-color: #269f42;
+	background-image: linear-gradient(-180deg, #2fcb53, #269f42 90%);
+	background-position: -0.5em;
+	border-color: rgba(27, 31, 35, 0.5);
 }
 
 button.github-button img {
-  max-height: 15px;
+	max-height: 15px;
 }
 
 button.github-button .github-icon {
-  background-image: url(../images/icons/mark-github.svg);
-  background-size: cover;
-  display: inline-block;
-  height: 15px;
-  width: 15px;
-  margin-right: 10px;
-  fill: white;
-  stroke: white;
+	background-image: url(../images/icons/mark-github.svg);
+	background-size: cover;
+	display: inline-block;
+	height: 15px;
+	width: 15px;
+	margin-right: 10px;
+	fill: white;
+	stroke: white;
 }
 
 .flex {
-  display: flex;
-  align-items: center;
-  justify-content: center;
+	display: flex;
+	align-items: center;
+	justify-content: center;
 }
 
 body {
-  font-family: Lato, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
-    Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
-  font-size: 100%;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+	font-family: Lato, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
+		Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+	font-size: 100%;
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
 }
 
 .logo-container {
-  vertical-align: middle;
+	vertical-align: middle;
 }
 
 .logo-container h3 {
-  font-weight: 700;
-  font-size: 25px;
-  line-height: 2;
-  display: inline;
+	font-weight: 700;
+	font-size: 25px;
+	line-height: 2;
+	display: inline;
 }
 
 section.features .container {
-  max-width: 64em;
+	max-width: 64em;
 }
 
 section .feature {
-  margin-bottom: 3em;
+	margin-bottom: 3em;
 }
 
 section.features {
-  margin-top: 6em;
+	margin-top: 6em;
 }
 
 section .center h2 {
-  margin: 60px 0px;
+	margin: 60px 0px;
 }
 
 section.features .feature .featureText h3 {
-  margin-bottom: 1em;
-  font-size: 1.75em;
-  font-weight: 500;
+	margin-bottom: 1em;
+	font-size: 1.75em;
+	font-weight: 500;
 }
 
 section.features .feature .featureText {
-  padding-right: 3em;
-  padding-top: 2em;
+	padding-right: 3em;
+	padding-top: 2em;
 }
 
 section.features .feature .featureText p {
-  font-size: 1.25em;
-  color: #555;
+	font-size: 1.25em;
+	color: #555;
 }
 
 .feature img {
-  width: 100%;
+	width: 100%;
 }
 
 .feature .feature-shadow img {
-  box-shadow: 0px 0px 21px rgba(0, 0, 0, 0.15);
-  border-radius: 6px;
+	box-shadow: 0px 0px 21px rgba(0, 0, 0, 0.15);
+	border-radius: 6px;
 }
 
 .center {
-  text-align: center;
+	text-align: center;
 }
 
 section.usage li {
-  color: black;
-  background: none;
-  border: 0px;
+	color: black;
+	background: none;
+	border: 0px;
 }
 
 a {
-  transition: color 0.25s ease-out;
+	transition: color 0.25s ease-out;
 }
 
 span.step {
-  background: #333;
-  border-radius: 0.8em;
-  -moz-border-radius: 0.8em;
-  -webkit-border-radius: 0.8em;
-  color: #ffffff;
-  display: inline-block;
-  font-weight: bold;
-  line-height: 1.3em;
-  margin-right: 3px;
-  text-align: center;
-  width: 1.3em;
+	background: #333;
+	border-radius: 0.8em;
+	-moz-border-radius: 0.8em;
+	-webkit-border-radius: 0.8em;
+	color: #ffffff;
+	display: inline-block;
+	font-weight: bold;
+	line-height: 1.3em;
+	margin-right: 3px;
+	text-align: center;
+	width: 1.3em;
 }
 
 /* Footer */
 
 .footerLists {
-  padding: 3em;
+	padding: 3em;
 }
 
 footer .footerLists li {
-  color: black;
-  background: none;
-  border: 0px;
-  background-color: #fafafa;
+	color: black;
+	background: none;
+	border: 0px;
+	background-color: #fafafa;
 }
 
 footer .footerLists .col h3 {
-  color: #999;
-  font-weight: 500;
-  font-size: 1em;
+	color: #999;
+	font-weight: 500;
+	font-size: 1em;
 }
 
 footer .footerLists .col {
-  padding: 0px 30px;
+	padding: 0px 30px;
 }
 
 footer .footerLists .col ul {
-  list-style-type: none;
+	list-style-type: none;
 }
 
 #prace footer .footerLists .col a:hover {
-  color: #999;
+	color: #999;
 }
 
 #prace footer .footerLists .col a {
-  color: #444;
-  font-size: 0.95em;
-  text-decoration: none;
+	color: #444;
+	font-size: 0.95em;
+	text-decoration: none;
 }
 
 footer {
-  background: #fafafa;
-  border-top: 1px solid #eaeaea;
+	background: #fafafa;
+	border-top: 1px solid #eaeaea;
 }
 
 /* Blog entries */
 
 .blog {
-  background: white;
-  margin: 50px auto;
-  padding: 30px 30px;
-  box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 3px 1px -2px rgba(0, 0, 0, 0.2),
-    0 1px 5px 0 rgba(0, 0, 0, 0.12);
-  max-width: 45rem;
+	background: white;
+	margin: 50px auto;
+	padding: 30px 30px;
+	box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14),
+		0 3px 1px -2px rgba(0, 0, 0, 0.2), 0 1px 5px 0 rgba(0, 0, 0, 0.12);
+	max-width: 45rem;
 }
 
 .blog table {
-  width: 100%;
-  border-collapse: separate;
-  border-spacing: 0;
-  margin: 18px;
+	width: 100%;
+	border-collapse: separate;
+	border-spacing: 0;
+	margin: 18px;
 }
 
 .blog table thead tr th {
-  font-weight: 500;
-  font-size: 13px;
-  color: #939da3;
-  text-transform: uppercase;
+	font-weight: 500;
+	font-size: 13px;
+	color: #939da3;
+	text-transform: uppercase;
 }
 
 .blog ul {
-  list-style-type: none;
+	list-style-type: none;
 }
 
 /* Form generator */
 
 .form-generator {
-  padding-bottom: 40px;
+	padding-bottom: 40px;
 }
 
 .action-icon {
-  background-color: #f66a0a;
-  min-width: 96px;
-  width: 100%;
-  height: 100%;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 0 1px 15px rgba(27, 31, 35, 0.15) !important;
-  max-width: 256px;
-  max-height: 256px;
-  align-content: center;
+	background-color: #f66a0a;
+	min-width: 96px;
+	width: 100%;
+	height: 100%;
+	border-radius: 50%;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	box-shadow: 0 1px 15px rgba(27, 31, 35, 0.15) !important;
+	max-width: 256px;
+	max-height: 256px;
+	align-content: center;
 
-  margin-left: auto;
+	margin-left: auto;
 
-  margin-right: auto;
+	margin-right: auto;
 }
