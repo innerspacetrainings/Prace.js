@@ -20,7 +20,7 @@ export class ConventionEvaluator {
 		if (reviews !== undefined && reviews.length > 0) {
 			for (const review of reviews) {
 				// add users who aren't already in the listed users
-				if (totalReviews.some((u) => u.id !== review.user.id)) {
+				if (!totalReviews.some((u) => u.id === review.user.id)) {
 					totalReviews.push(review.user);
 				}
 			}

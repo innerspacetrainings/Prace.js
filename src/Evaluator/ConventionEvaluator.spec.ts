@@ -409,6 +409,7 @@ describe('Convention Evaluator Tests', () => {
 		});
 
 		it('should succeed when all reviewers gave their review', () => {
+			dataWithNoReviewers.requested_reviewers = [];
 			dataWithNoReviewers.requested_teams = [
 				{ name: 'developers', slug: 'devs' }
 			];
