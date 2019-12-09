@@ -1,3 +1,4 @@
+version: 1
 title:
   patterns:
     - '^.{0,54}$'
