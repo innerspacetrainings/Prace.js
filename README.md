@@ -8,7 +8,6 @@ Pull Request Automated Convention Enforcer
 </p>
 
 A GitHub action that checks if a PR complies with a given configuration
-Checks that the PR title complies with a given regular expression.
 
 [![CodeFactor](https://www.codefactor.io/repository/github/innerspacetrainings/prace.js/badge?s=ae50225ee71c7357c4a6f7a48998b11f34683662)](https://www.codefactor.io/repository/github/innerspacetrainings/prace.js) 
 [![CircleCI](https://circleci.com/gh/innerspacetrainings/Prace.js.svg?style=svg&circle-token=b65ff8f34c4b5bfd19e6a3ab17b3ece352e25b73)](https://circleci.com/gh/innerspacetrainings/Prace.js)
