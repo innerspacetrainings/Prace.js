@@ -7,10 +7,7 @@ jobs:
   setup:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v1
-      - name: Prace
-        uses: ./ # Uses an action in the root directory
+      - uses: innerspacetrainings/Prace.js@master
         with:
           configuration-path: .github/prace.yml
         env:

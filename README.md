@@ -20,13 +20,13 @@ Checks that the PR title complies with a given regular expression.
 Add `.github/workflows/prace.yml` with the following:
 
 ```yml
-name: Prace
+name: Prace.js
 on:
   pull_request:
     types: ['opened', 'edited', 'reopened', 'synchronize']
 
 jobs:
-  prace:
+  setup:
     runs-on: ubuntu-latest
     steps:
       - uses: innerspacetrainings/Prace.js@master
