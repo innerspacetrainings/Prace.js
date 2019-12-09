@@ -150,7 +150,7 @@ describe('Prace tests', () => {
 
 	function compareDates(received?: string, expected?: string) {
 		if (expected) {
-			expect(expected.slice(0, -3)).to.be.equal(received!.slice(0, -3));
+			expect(received!.slice(0, -3)).to.be.equal(expected.slice(0, -3));
 		}
 	}
 });
