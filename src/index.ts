@@ -20,6 +20,8 @@ async function action() {
 
 	core.info(JSON.stringify(pullRequest));
 
+
+
 	if (!pullRequest) {
 		throw new Error(
 			'Payload doesn\'t contain `pull_request`. ' +
@@ -29,6 +31,8 @@ async function action() {
 	}
 
 	const githubApi = new GithubApi(octokit);
+	core.info("Getting reviewers");
+	await githubApi.getReviewers();
 
 	const prace = new PraceAction(githubApi, pullRequest);
 	const result = await prace.execute();

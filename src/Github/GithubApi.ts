@@ -25,6 +25,15 @@ export class GithubApi implements IGithubApi {
 		await this.octokit.checks.create(check);
 	}
 
+	public async getReviewers():Promise<void>{
+		const { owner, repo } = context.repo;
+		const reviewers = await this.octokit.pulls.listReviews({
+			owner, repo, pull_number: context.payload.pull_request!.number
+		});
+
+		console.log(JSON.stringify(reviewers));
+	}
+
 	public async getConfig(branch: string): Promise<PraceConfig> {
 		const configPath: string = core.getInput(this.pracePath, {
 			required: true
