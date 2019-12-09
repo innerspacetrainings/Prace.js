@@ -15,7 +15,8 @@ export class ConventionEvaluator {
 		{ requested_reviewers }: PullRequestData,
 		reviews: Reviewer[] = []
 	): Array<{ login: string; id: number }> {
-		const totalReviews = requested_reviewers;
+		// If requested_reviewers is null, use the reviews given instead
+		const totalReviews = requested_reviewers ?? reviews.map((r) => r.user);
 		if (reviews !== undefined && reviews.length > 0) {
 			for (const review of reviews) {
 				// add users who aren't already in the listed users
@@ -154,7 +155,7 @@ export class ConventionEvaluator {
 				return error;
 			}
 
-			const prReviewers = this.prData.requested_reviewers.map((r) =>
+			const prReviewers = this.totalReviewers.map((r) =>
 				r.login.toLowerCase()
 			);
 			const containReviewer = prReviewers.some((prR) =>

@@ -4,6 +4,7 @@ import { Pattern, PraceConfig } from './PraceConfiguration';
 import { PullRequestData } from '../PullRequestData';
 import { ConventionEvaluator } from './ConventionEvaluator';
 import * as errors from './ConventionErrors';
+import { Reviewer } from '../Github/Reviewer';
 
 describe('Convention Evaluator Tests', () => {
 	let configuration: PraceConfig;
@@ -229,7 +230,9 @@ describe('Convention Evaluator Tests', () => {
 		});
 
 		it('should succeed with valid reviewers', () => {
-			dataWithNoReviewers.requested_reviewers = [{ login: 'John' }];
+			dataWithNoReviewers.requested_reviewers = [
+				{ login: 'John', id: 0 }
+			];
 			configuration.reviewers = {
 				minimum: 1
 			};
@@ -259,7 +262,9 @@ describe('Convention Evaluator Tests', () => {
 		});
 
 		it('should fail with no correct reviewers', () => {
-			dataWithNoReviewers.requested_reviewers = [{ login: 'John' }];
+			dataWithNoReviewers.requested_reviewers = [
+				{ login: 'John', id: 0 }
+			];
 			const requestedReviewer = 'Juan';
 			configuration.reviewers = {
 				minimum: 1,
@@ -279,7 +284,9 @@ describe('Convention Evaluator Tests', () => {
 		});
 
 		it('should succeed with correct reviewers', () => {
-			dataWithNoReviewers.requested_reviewers = [{ login: 'Juan' }];
+			dataWithNoReviewers.requested_reviewers = [
+				{ login: 'Juan', id: 0 }
+			];
 			const requestedReviewer = 'Juan';
 			configuration.reviewers = {
 				minimum: 1,
@@ -295,7 +302,9 @@ describe('Convention Evaluator Tests', () => {
 		});
 
 		it('should fail with no teams', () => {
-			dataWithNoReviewers.requested_reviewers = [{ login: 'etectera' }];
+			dataWithNoReviewers.requested_reviewers = [
+				{ login: 'etectera', id: 0 }
+			];
 			configuration.reviewers = {
 				minimum: 1,
 				teams: [requestedTeam]
@@ -348,7 +357,9 @@ describe('Convention Evaluator Tests', () => {
 		});
 
 		it('should succeed with uppercase fields', () => {
-			dataWithNoReviewers.requested_reviewers = [{ login: 'juan' }];
+			dataWithNoReviewers.requested_reviewers = [
+				{ login: 'juan', id: 0 }
+			];
 			dataWithNoReviewers.requested_teams = [
 				{ name: 'developers', slug: 'devs' }
 			];
@@ -362,6 +373,64 @@ describe('Convention Evaluator Tests', () => {
 			const convention = new ConventionEvaluator(
 				dataWithNoReviewers,
 				configuration
+			);
+			const result = convention.runEvaluations();
+			expect(result.reviewers.valid).to.be.true;
+		});
+
+		it('should succeed with already existing reviewers', () => {
+			dataWithNoReviewers.requested_reviewers = [
+				{ login: 'juan', id: 0 }
+			];
+			dataWithNoReviewers.requested_teams = [
+				{ name: 'developers', slug: 'devs' }
+			];
+			const requestedReviewer = 'JUAN';
+			configuration.reviewers = {
+				minimum: 2,
+				users: [requestedReviewer],
+				teams: ['DEVELOPERS']
+			};
+
+			const existingReviews: Reviewer[] = [
+				{
+					state: 'CHANGES_REQUESTED',
+					user: { id: 12, login: 'Thomas' }
+				}
+			];
+
+			const convention = new ConventionEvaluator(
+				dataWithNoReviewers,
+				configuration,
+				existingReviews
+			);
+			const result = convention.runEvaluations();
+			expect(result.reviewers.valid).to.be.true;
+		});
+
+		it('should succeed when all reviewers gave their review', () => {
+			dataWithNoReviewers.requested_teams = [
+				{ name: 'developers', slug: 'devs' }
+			];
+			const requestedReviewer = 'JUAN';
+			configuration.reviewers = {
+				minimum: 2,
+				users: [requestedReviewer],
+				teams: ['DEVELOPERS']
+			};
+
+			const existingReviews: Reviewer[] = [
+				{
+					state: 'CHANGES_REQUESTED',
+					user: { id: 12, login: 'Thomas' }
+				},
+				{ state: 'APPROVED', user: { login: 'Juan', id: 123 } }
+			];
+
+			const convention = new ConventionEvaluator(
+				dataWithNoReviewers,
+				configuration,
+				existingReviews
 			);
 			const result = convention.runEvaluations();
 			expect(result.reviewers.valid).to.be.true;

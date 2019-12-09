@@ -134,7 +134,9 @@ describe('Prace tests', () => {
 		expect(receivedCheck.repo).to.be.equal(expected.repo);
 		expect(receivedCheck.head_sha).to.be.equal(expected.head_sha);
 		expect(receivedCheck.conclusion).to.be.equal(expected.conclusion);
-		expect(receivedCheck.started_at).to.be.equal(expected.started_at);
+		expect(receivedCheck.started_at!.slice(0, -3)).to.be.equal(
+			expected.started_at!.slice(0, -3)
+		);
 		expect(receivedCheck.completed_at).to.be.equal(expected.completed_at);
 
 		const expectedOutput = expected.output!,
