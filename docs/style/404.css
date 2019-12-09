@@ -1,0 +1,32 @@
+body {
+	padding: 0;
+	margin: 0;
+}
+
+.notfound-container {
+	position: relative;
+	height: 100vh;
+	background: #f6f6f6;
+}
+
+.notfound {
+	max-width: 767px;
+	width: 100%;
+	line-height: 1.4;
+	padding: 110px 40px;
+	text-align: center;
+	background: #fff;
+	-webkit-box-shadow: 0 15px 15px -10px rgba(0, 0, 0, 0.1);
+	box-shadow: 0 15px 15px -10px rgba(0, 0, 0, 0.1);
+	padding: 60px 0px;
+	margin: 10px, 40px;
+}
+
+.notfound-middle {
+	position: absolute;
+	left: 50%;
+	top: 50%;
+	-webkit-transform: translate(-50%, -50%);
+	-ms-transform: translate(-50%, -50%);
+	transform: translate(-50%, -50%);
+}

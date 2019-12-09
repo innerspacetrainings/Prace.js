@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html id='prace'>
+
+<head>
+    <title>{{ page.title }}</title>
+    {% include meta.html %}
+    <link rel="stylesheet" href="style/404.css" crossorigin="anonymous">
+</head>
+
+<body>
+    <div class="notfound-container">
+        <div class="jumbotron notfound notfound-middle">
+            <h1 class="display-4">Page not found</h1>
+            <p class="lead">{{ content }}</p>
+            <hr class="my-4">
+            <a class="btn btn-primary btn-lg" href="index.html" role="button">Go back</a>
+        </div>
+    </div>
+
+    {% include footer.html %}
+</body>
+
+</html>
