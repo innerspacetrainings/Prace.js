@@ -43,6 +43,7 @@ Configure Prace by creating a `.github/prace.yml` file.
 Example file:
 
 ```yml
+version: 1
 title:
   patterns:
     - '\[XX-\d*\]\s[\w\s]*'

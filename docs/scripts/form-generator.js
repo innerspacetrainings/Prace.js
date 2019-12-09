@@ -62,6 +62,7 @@ class FormSubmited {
 
 		var value = this.formData;
 		cleanObj(value);
+		value['version'] = 1;
 		var toUri = this.jsonToURI(JSON.stringify(value));
 		window.location = window.location + '?config=' + toUri;
 	}
