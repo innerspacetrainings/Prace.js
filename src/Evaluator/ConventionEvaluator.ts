@@ -1,22 +1,43 @@
 import { PullRequestData } from '../PullRequestData';
-import { PraceConfig, Pattern } from './PraceConfiguration';
+import { Pattern, PraceConfig } from './PraceConfiguration';
 import { EvaluationResult } from './EvaluationResult';
 import {
-	EvaluationAnalysis,
 	CheckStatus,
+	EvaluationAnalysis,
 	RegexResult
 } from './EvaluationAnalysis';
 import * as errors from './ConventionErrors';
+import { Reviewer } from '../Github/Reviewer';
 
 /** Logic that analyzes the attributes of a pull request for compliance in relation to a given configuration */
 export class ConventionEvaluator {
+	private static JoinReviewers(
+		{ requested_reviewers }: PullRequestData,
+		reviews: Reviewer[] = []
+	): Array<{ login: string; id: number }> {
+		const totalReviews = requested_reviewers;
+		if (reviews !== undefined && reviews.length > 0) {
+			for (const review of reviews) {
+				// add users who aren't already in the listed users
+				if (totalReviews.some((u) => u.id !== review.user.id)) {
+					totalReviews.push(review.user);
+				}
+			}
+		}
+
+		return totalReviews;
+	}
+
 	public readonly isRegexValid: boolean;
 	/** Report about failed regular expressions and their related error messages **/
 	public readonly regexResult: RegexResult;
 
+	private readonly totalReviewers: Array<{ login: string; id: number }>;
+
 	constructor(
 		private readonly prData: PullRequestData,
-		private readonly praceConfig: PraceConfig
+		private readonly praceConfig: PraceConfig,
+		reviews: Reviewer[] = []
 	) {
 		const filteredPatterns: Pattern[] = [
 			praceConfig.title,
@@ -27,6 +48,14 @@ export class ConventionEvaluator {
 		const regexEvaluation = this.evaluateRegex(filteredPatterns);
 		this.regexResult = { results: regexEvaluation };
 		this.isRegexValid = regexEvaluation.length === 0;
+		if (this.isRegexValid) {
+			this.totalReviewers = ConventionEvaluator.JoinReviewers(
+				this.prData,
+				reviews
+			);
+		} else {
+			this.totalReviewers = [];
+		}
 	}
 
 	/**
@@ -98,10 +127,10 @@ export class ConventionEvaluator {
 			return { name, valid: true };
 		}
 
-		const { requested_reviewers, requested_teams } = this.prData;
+		const { requested_teams } = this.prData;
 
 		const requestedReviewers: number =
-			this.getUnkownArrayLength(requested_reviewers) +
+			this.getUnkownArrayLength(this.totalReviewers) +
 			this.getUnkownArrayLength(requested_teams);
 
 		if (reviewers.minimum > 0 && reviewers.minimum > requestedReviewers) {
@@ -121,7 +150,7 @@ export class ConventionEvaluator {
 				errorMessage: errors.missingRequiredReviewer(users)
 			};
 
-			if (!this.isArrayValidAndNotEmpty(requested_reviewers)) {
+			if (!this.isArrayValidAndNotEmpty(this.totalReviewers)) {
 				return error;
 			}
 
