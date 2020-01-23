@@ -22,7 +22,18 @@ Add `.github/workflows/prace.yml` with the following:
 name: Prace.js
 on:
   pull_request:
-    types: ['opened', 'edited', 'reopened', 'synchronize']
+    types: [
+      'opened',
+      'edited',
+      'reopened',
+      'synchronize',
+      'review_requested',
+      'review_request_removed',
+      'assigned',
+      'unassigned',
+      'labeled',
+      'unlabeled',
+      ]
 
 jobs:
   setup:
