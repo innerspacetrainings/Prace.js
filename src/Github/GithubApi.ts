@@ -8,12 +8,15 @@ import { CheckParameters } from './CheckParameters';
 import { filterReviewers, Reviewer } from './Reviewer';
 import { PullsListReviewsResponse, Response } from '@octokit/rest';
 import { WebhookPayload } from '@actions/github/lib/interfaces';
+import ILintingReport from './ILintingReport';
 
 export class GithubApi implements IGithubApi {
 	private readonly pracePath: string = 'configuration-path';
 
-	constructor(private readonly octokit: GitHub) {
-	}
+	constructor(
+		private readonly octokit: GitHub,
+		private readonly reporter: ILintingReport
+	) {}
 
 	public getRepoInformation(): RepoInformation {
 		const { owner, repo } = context.repo;
@@ -26,21 +29,7 @@ export class GithubApi implements IGithubApi {
 	}
 
 	public async setResult(check: CheckParameters): Promise<void> {
-		const { owner, repo } = context.repo;
-		const checks = await this.octokit.checks.listForRef({
-			owner, repo,
-			ref: context.payload.pull_request!.head.sha,
-			check_name: check.name
-		});
-
-		const lastCheck = checks.data.check_runs[0];
-
-		if (lastCheck) {
-			const updatedCheckOutput = Object.assign(check, { check_run_id: lastCheck.id });
-			await this.octokit.checks.update(updatedCheckOutput);
-		} else {
-			await this.octokit.checks.create(check);
-		}
+		await this.reporter.setCheck(check);
 	}
 
 	public async getReviewers(): Promise<Reviewer[]> {

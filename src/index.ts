@@ -4,6 +4,7 @@ import { context } from '@actions/github/lib/github';
 import PraceAction from './Prace';
 import { PullRequestData } from './PullRequestData';
 import { GithubApi } from './Github/GithubApi';
+import CoreReporter from './Github/CoreReporter';
 
 /**
  * Execute the github action
@@ -26,7 +27,7 @@ async function action() {
 		);
 	}
 
-	const githubApi = new GithubApi(octokit);
+	const githubApi = new GithubApi(octokit, new CoreReporter());
 
 	const prace = new PraceAction(githubApi, pullRequest);
 	const result = await prace.execute();
