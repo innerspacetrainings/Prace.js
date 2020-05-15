@@ -8,7 +8,7 @@ export interface CheckParameters {
 	started_at?: string;
 	conclusion?: 'success' | 'failure';
 	completed_at?: string;
-	output?: Output;
+	output: Output;
 }
 
 export interface Output {
