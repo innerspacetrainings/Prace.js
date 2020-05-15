@@ -6,12 +6,13 @@ export default class CoreReporter implements ILintingReport {
 	public setCheck(check: CheckParameters): Promise<void> {
 		const { output, conclusion } = check;
 		if (conclusion === 'success') {
-			core.debug('Successfully evaluated PR and found no problems');
+			core.info('Successfully evaluated PR and found no problems');
 		} else {
 			const message = `${output.title}\n - ${output.summary}\n -${output.text}`;
 			core.setFailed(message);
 		}
 
-		return Promise.resolve();
+		// Wait for the core messages to end
+		return new Promise(resolve => setTimeout(resolve, 1000));
 	}
 }
