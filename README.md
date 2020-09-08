@@ -36,7 +36,7 @@ on:
       ]
 
 jobs:
-  setup:
+  linting:
     runs-on: ubuntu-latest
     steps:
       - uses: innerspacetrainings/Prace.js@master
