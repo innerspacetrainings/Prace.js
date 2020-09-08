@@ -24,10 +24,10 @@
   ],
   "private": true,
   "scripts": {
-    "build": "tsc",
+    "build": "run-s clean && tsc",
     "describe": "npm-scripts-info",
     "lint": "./node_modules/.bin/tslint -p tsconfig.json",
-    "package": "ncc build --source-map --license licenses.txt",
+    "package": "run-s build && ncc build --source-map --license licenses.txt -o build",
     "fix": "run-s fix:*",
     "fix:prettier": "prettier \"src/**/*.ts\" --write",
     "fix:tslint": "tslint --fix --project .",
