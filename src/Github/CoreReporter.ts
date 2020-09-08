@@ -13,6 +13,6 @@ export default class CoreReporter implements ILintingReport {
 		}
 
 		// Wait for the core messages to end
-		return new Promise(resolve => setTimeout(resolve, 1000));
+		return new Promise((resolve) => setTimeout(resolve, 1000));
 	}
 }
