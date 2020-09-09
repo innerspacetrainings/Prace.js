@@ -4,10 +4,11 @@ author: 'Innerspace GmbH'
 inputs:
   configuration-path:
     description: 'The path for the prace configuration file'
+    required: true
     default: '.github/prace.yml'
 branding:
   icon: 'edit'
   color: 'orange'
 runs:
-  using: 'docker'
-  image: 'Dockerfile'
+  using: 'node12'
+  main: 'build/index.js'
