@@ -11,4 +11,4 @@ branding:
   color: 'orange'
 runs:
   using: 'node12'
-  image: 'dist/index.js'
+  image: 'build/index.js'
