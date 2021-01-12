@@ -40,6 +40,11 @@ export default class Prace {
 		const branch: string = this.pullRequest.head.ref;
 		const config = await this.github.getConfig(branch);
 
+		if (this.pullRequest.state === 'closed') {
+			// PR is closed. Ignore
+			return true;
+		}
+
 		if (evaluator === undefined) {
 			const reviews = await this.github.getReviewers();
 			evaluator = new ConventionEvaluator(

@@ -11,6 +11,7 @@ export interface PullRequestData {
 	requested_teams: Team[];
 	additions: number;
 	deletions: number;
+	state: 'open' | 'closed';
 	changed_files: number;
 	user: User;
 }
