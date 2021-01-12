@@ -78,6 +78,13 @@ describe('Prace tests', () => {
 		);
 	});
 
+	it('Should ignore closed PRs', async () => {
+		(prData as any).state.returns('closed');
+		const result = await prace.execute();
+		expect(result).to.be.true;
+		github.didNotReceive().reportFailed(Arg.any());
+	});
+
 	it('Should correctly report failed cases', async () => {
 		(evaluator as any).isRegexValid.returns(true);
 		const failed = { name: 'example', message: 'example message' };
