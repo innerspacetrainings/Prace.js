@@ -112,7 +112,9 @@ describe('Convention Evaluator Tests', () => {
 			try {
 				convention.runEvaluations();
 			} catch (e) {
-				expect(e.message).to.equal(errors.regexError);
+				expect((e as { message: string }).message).to.equal(
+					errors.regexError
+				);
 			}
 		});
 	});
@@ -179,7 +181,7 @@ describe('Convention Evaluator Tests', () => {
 		});
 
 		it('should fail with invalid body', () => {
-			delete data.body;
+			data.body = '';
 			configuration.body = {
 				patterns: ['.+'],
 				error: 'You need to write at least something'
@@ -224,8 +226,8 @@ describe('Convention Evaluator Tests', () => {
 		const requestedTeam = 'Developers';
 
 		beforeEach(() => {
-			delete data.requested_reviewers;
-			delete data.requested_teams;
+			data.requested_reviewers = [];
+			data.requested_teams = [];
 			dataWithNoReviewers = data;
 		});
 
@@ -453,7 +455,7 @@ describe('Convention Evaluator Tests', () => {
 
 		it('should fail with no labels', () => {
 			const labelName = 'example';
-			delete data.labels;
+			data.labels = [];
 			configuration.labels = [labelName];
 
 			const convention = new ConventionEvaluator(data, configuration);
