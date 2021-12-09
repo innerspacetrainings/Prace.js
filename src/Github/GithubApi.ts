@@ -1,14 +1,14 @@
 import { context } from '@actions/github/lib/github';
-import { GitHub } from '@actions/github';
+import type { GitHub } from '../octokitTypes';
 import * as core from '@actions/core';
 import yaml from 'js-yaml';
 import { PraceConfig } from '../Evaluator/PraceConfiguration';
 import { IGithubApi, RepoInformation } from './IGithubApi';
 import { CheckParameters } from './CheckParameters';
 import { filterReviewers, Reviewer } from './Reviewer';
-import { PullsListReviewsResponse, Response } from '@octokit/rest';
 import { WebhookPayload } from '@actions/github/lib/interfaces';
 import ILintingReport from './ILintingReport';
+import { PullRequestReviewers } from '.';
 
 export class GithubApi implements IGithubApi {
 	private readonly pracePath: string = 'configuration-path';
@@ -16,7 +16,7 @@ export class GithubApi implements IGithubApi {
 	constructor(
 		private readonly octokit: GitHub,
 		private readonly reporter: ILintingReport
-	) {}
+	) { }
 
 	public getRepoInformation(): RepoInformation {
 		const { owner, repo } = context.repo;
@@ -34,13 +34,14 @@ export class GithubApi implements IGithubApi {
 
 	public async getReviewers(): Promise<Reviewer[]> {
 		const { owner, repo } = context.repo;
-		const response: Response<PullsListReviewsResponse> = await this.octokit.pulls.listReviews(
+		const response: PullRequestReviewers = await this.octokit.rest.pulls.listReviews(
 			{
 				owner,
 				repo,
 				pull_number: context.payload.pull_request!.number
 			}
 		);
+
 
 		return filterReviewers(
 			response.data,
@@ -58,7 +59,7 @@ export class GithubApi implements IGithubApi {
 		const { owner, repo } = context.repo;
 
 		try {
-			const response = await this.octokit.repos.getContents({
+			const response = await this.octokit.rest.repos.getContent({
 				owner,
 				repo,
 				path: configPath,
@@ -70,7 +71,7 @@ export class GithubApi implements IGithubApi {
 
 			return this.parseConfig(data.content);
 		} catch (error) {
-			if (error.status === 404) {
+			if ((error as { status: number }).status === 404) {
 				throw new Error('There is no configuration file!');
 			}
 
@@ -87,6 +88,6 @@ export class GithubApi implements IGithubApi {
 	}
 
 	private parseConfig(content: string): PraceConfig {
-		return yaml.safeLoad(Buffer.from(content, 'base64').toString()) || {};
+		return yaml.safeLoad(Buffer.from(content, 'base64').toString()) as PraceConfig || {};
 	}
 }

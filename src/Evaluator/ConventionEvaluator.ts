@@ -234,7 +234,7 @@ export class ConventionEvaluator {
 
 			return { name: expression, valid: newRegex !== null };
 		} catch (e) {
-			return { name: expression, valid: false, errorMessage: e.message };
+			return { name: expression, valid: false, errorMessage: (e as { message: string }).message };
 		}
 	}
 

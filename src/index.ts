@@ -1,6 +1,5 @@
-import * as github from '@actions/github';
 import * as core from '@actions/core';
-import { context } from '@actions/github/lib/github';
+import { context, getOctokit } from '@actions/github/lib/github';
 import PraceAction from './Prace';
 import { PullRequestData } from './PullRequestData';
 import { GithubApi } from './Github/GithubApi';
@@ -11,7 +10,7 @@ import CoreReporter from './Github/CoreReporter';
  */
 async function action() {
 	const githubToken = process.env.GITHUB_TOKEN!;
-	const octokit = new github.GitHub(githubToken);
+	const octokit = getOctokit(githubToken);
 
 	core.info('Starting Prace!');
 
@@ -22,8 +21,8 @@ async function action() {
 	if (!pullRequest) {
 		throw new Error(
 			"Payload doesn't contain `pull_request`. " +
-				'Make sure you followed the instructions to configure your repository ' +
-				'(https://github.com/innerspacetrainings/Prace.js/blob/master/README.md).'
+			'Make sure you followed the instructions to configure your repository ' +
+			'(https://github.com/innerspacetrainings/Prace.js/blob/master/README.md).'
 		);
 	}
 
