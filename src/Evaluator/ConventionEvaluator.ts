@@ -234,14 +234,17 @@ export class ConventionEvaluator {
 
 			return { name: expression, valid: newRegex !== null };
 		} catch (e) {
-			return { name: expression, valid: false, errorMessage: (e as { message: string }).message };
+			return {
+				name: expression,
+				valid: false,
+				errorMessage: (e as { message: string }).message
+			};
 		}
 	}
 
 	private evaluateRegex(patterns: Pattern[]): CheckStatus[] {
-		const invalidExpressions: CheckStatus[] = this.evaluateRegularExpressionFromPatterns(
-			patterns
-		);
+		const invalidExpressions: CheckStatus[] =
+			this.evaluateRegularExpressionFromPatterns(patterns);
 
 		if (invalidExpressions.length > 0) {
 			return invalidExpressions;

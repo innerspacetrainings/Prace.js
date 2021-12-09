@@ -49,9 +49,9 @@ describe('Prace tests', () => {
 
 		(evaluator as any).results.called();
 		const expectedMessage = invalidExpression('example', 'etcetera');
-		github.received().reportFailed(
-			Arg.is<string>((m) => m.includes(expectedMessage))
-		);
+		github
+			.received()
+			.reportFailed(Arg.is<string>((m) => m.includes(expectedMessage)));
 		expect(result).to.be.false;
 	});
 
@@ -60,7 +60,7 @@ describe('Prace tests', () => {
 		const evResult = { failed: false };
 		evaluator
 			.runEvaluations()
-			.returns((evResult as unknown) as EvaluationResult);
+			.returns(evResult as unknown as EvaluationResult);
 		const result = await prace.execute(evaluator);
 		expect(result).to.be.true;
 		github.didNotReceive().reportFailed(Arg.any());
@@ -73,9 +73,13 @@ describe('Prace tests', () => {
 
 		const expected = generateResult(true, expectedOutput);
 
-		github.received().setResult(
-			Arg.is<CheckParameters>((check) => compareResult(expected, check))
-		);
+		github
+			.received()
+			.setResult(
+				Arg.is<CheckParameters>((check) =>
+					compareResult(expected, check)
+				)
+			);
 	});
 
 	it('Should ignore closed PRs', async () => {
@@ -96,7 +100,7 @@ describe('Prace tests', () => {
 		};
 		evaluator
 			.runEvaluations()
-			.returns((evResult as unknown) as EvaluationResult);
+			.returns(evResult as unknown as EvaluationResult);
 
 		const result = await prace.execute(evaluator);
 		expect(result).to.be.false;
@@ -110,11 +114,13 @@ describe('Prace tests', () => {
 
 		const expectedResult = generateResult(false, expectedOutput);
 
-		github.received().setResult(
-			Arg.is<CheckParameters>((check) =>
-				compareResult(expectedResult, check)
-			)
-		);
+		github
+			.received()
+			.setResult(
+				Arg.is<CheckParameters>((check) =>
+					compareResult(expectedResult, check)
+				)
+			);
 	});
 
 	function generateResult(success: boolean, output: Output) {

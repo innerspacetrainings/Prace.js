@@ -15,14 +15,14 @@ async function action() {
 	core.info('Starting Prace!');
 
 	// Have to cast to unknown to then cast to the correct type
-	const pullRequest: PullRequestData = (context.payload
-		.pull_request as unknown) as PullRequestData;
+	const pullRequest: PullRequestData = context.payload
+		.pull_request as unknown as PullRequestData;
 
 	if (!pullRequest) {
 		throw new Error(
 			"Payload doesn't contain `pull_request`. " +
-			'Make sure you followed the instructions to configure your repository ' +
-			'(https://github.com/innerspacetrainings/Prace.js/blob/master/README.md).'
+				'Make sure you followed the instructions to configure your repository ' +
+				'(https://github.com/innerspacetrainings/Prace.js/blob/master/README.md).'
 		);
 	}
 

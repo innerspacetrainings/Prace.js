@@ -16,7 +16,7 @@ export class GithubApi implements IGithubApi {
 	constructor(
 		private readonly octokit: GitHub,
 		private readonly reporter: ILintingReport
-	) { }
+	) {}
 
 	public getRepoInformation(): RepoInformation {
 		const { owner, repo } = context.repo;
@@ -34,14 +34,12 @@ export class GithubApi implements IGithubApi {
 
 	public async getReviewers(): Promise<Reviewer[]> {
 		const { owner, repo } = context.repo;
-		const response: PullRequestReviewers = await this.octokit.rest.pulls.listReviews(
-			{
+		const response: PullRequestReviewers =
+			await this.octokit.rest.pulls.listReviews({
 				owner,
 				repo,
 				pull_number: context.payload.pull_request!.number
-			}
-		);
-
+			});
 
 		return filterReviewers(
 			response.data,
@@ -88,6 +86,10 @@ export class GithubApi implements IGithubApi {
 	}
 
 	private parseConfig(content: string): PraceConfig {
-		return yaml.safeLoad(Buffer.from(content, 'base64').toString()) as PraceConfig || {};
+		return (
+			(yaml.safeLoad(
+				Buffer.from(content, 'base64').toString()
+			) as PraceConfig) || {}
+		);
 	}
 }
