@@ -35,6 +35,7 @@ async function action() {
 
 action().catch((error) => {
 	if (process.env.NODE_ENV === 'test') {
+		core.setFailed(error);
 		throw error;
 	}
 
